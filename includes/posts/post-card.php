@@ -16,6 +16,9 @@ $replyCount = formatEngagementCount((int) ($post['reply_count'] ?? 0));
 $repostCount = formatEngagementCount((int) ($post['repost_count'] ?? 0));
 $likeCount = formatEngagementCount((int) ($post['like_count'] ?? 0));
 $viewCount = formatEngagementCount((int) ($post['view_count'] ?? 0));
+$interactionCount = formatEngagementCount((int) ($post['interaction_count'] ?? 0));
+$postUserId = (int) ($post['user_id'] ?? 0);
+$trackStats = $currentUserId > 0 && $postUserId !== $currentUserId;
 $mediaCount = count($postMediaItems);
 $galleryClass = 'post-media-gallery';
 if ($mediaCount === 1) {
@@ -28,7 +31,12 @@ if ($mediaCount === 1) {
     $galleryClass .= ' post-media-gallery--4';
 }
 ?>
-                    <article class="post-card" data-post-id="<?php echo (int) ($post['id'] ?? 0); ?>">
+                    <article
+                        class="post-card"
+                        data-post-id="<?php echo (int) ($post['id'] ?? 0); ?>"
+                        data-post-user-id="<?php echo $postUserId; ?>"
+                        data-stat-trackable="<?php echo $trackStats ? '1' : '0'; ?>"
+                    >
                         <header class="post-header">
                             <img
                                 class="post-avatar"
@@ -84,6 +92,10 @@ if ($mediaCount === 1) {
                             <button type="button" class="post-action"><i data-lucide="message-circle" aria-hidden="true"></i><span><?php echo htmlspecialchars($replyCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span><?php echo htmlspecialchars($repostCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button type="button" class="post-action"><i data-lucide="heart" aria-hidden="true"></i><span><?php echo htmlspecialchars($likeCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
-                            <button type="button" class="post-action"><i data-lucide="bar-chart-2" aria-hidden="true"></i><span><?php echo htmlspecialchars($viewCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
+                            <button type="button" class="post-action post-action-stat-views" aria-label="Post views">
+                                <i data-lucide="bar-chart-2" aria-hidden="true"></i>
+                                <span><?php echo htmlspecialchars($viewCount, ENT_QUOTES, 'UTF-8'); ?></span>
+                            </button>
+                            <span class="post-stat-interactions" hidden aria-hidden="true"><?php echo htmlspecialchars($interactionCount, ENT_QUOTES, 'UTF-8'); ?></span>
                         </footer>
                     </article>

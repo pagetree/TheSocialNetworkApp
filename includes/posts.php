@@ -76,7 +76,7 @@ function createPost(int $userId, ?string $body, ?string $locationLabel = null): 
         'INSERT INTO posts (user_id, body, location_label)
          VALUES (:user_id, :body, :location_label)
          RETURNING id, user_id, body, location_label,
-                   reply_count, repost_count, like_count, view_count, created_at'
+                   reply_count, repost_count, like_count, view_count, interaction_count, created_at'
     );
     $stmt->execute([
         'user_id' => $userId,
@@ -184,7 +184,7 @@ function fetchFeedPosts(int $limit = POST_FEED_DEFAULT_LIMIT): array
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
         'SELECT p.id, p.user_id, p.body, p.location_label,
-                p.reply_count, p.repost_count, p.like_count, p.view_count, p.created_at,
+                p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
                 u.display_name, u.handle, u.avatar_url
          FROM posts p
          INNER JOIN users u ON u.id = p.user_id
@@ -290,6 +290,7 @@ function postFeedPayload(array $row, callable $url): array
 
     return [
         'id' => (int) ($row['id'] ?? 0),
+        'user_id' => (int) ($row['user_id'] ?? 0),
         'body' => (string) ($row['body'] ?? ''),
         'media' => $media,
         'location_label' => isset($row['location_label']) && $row['location_label'] !== null
@@ -299,6 +300,7 @@ function postFeedPayload(array $row, callable $url): array
         'repost_count' => (int) ($row['repost_count'] ?? 0),
         'like_count' => (int) ($row['like_count'] ?? 0),
         'view_count' => (int) ($row['view_count'] ?? 0),
+        'interaction_count' => (int) ($row['interaction_count'] ?? 0),
         'created_at' => (string) ($row['created_at'] ?? ''),
         'time_label' => formatPostTimeLabel((string) ($row['created_at'] ?? '')),
         'author' => [
@@ -312,7 +314,7 @@ function postFeedPayload(array $row, callable $url): array
 /**
  * @param array<string, mixed> $row
  */
-function renderPostCard(array $row, callable $url): void
+function renderPostCard(array $row, callable $url, int $currentUserId = 0): void
 {
     $post = postFeedPayload($row, $url);
     require __DIR__ . '/posts/post-card.php';

@@ -55,6 +55,11 @@ if ($path === '/posts/create' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') 
     return;
 }
 
+if ($path === '/posts/stats' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/post-stats.php';
+    return;
+}
+
 if ($path === '/register') {
     if (isLoggedIn()) {
         header('Location: ' . $url('/'));
@@ -116,6 +121,8 @@ $currentUser = getCurrentUser();
 $isLoggedIn = $currentUser !== null;
 $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
 $postCsrfToken = $isLoggedIn ? createCsrfToken('post_create') : '';
+$postStatsCsrfToken = $isLoggedIn ? createCsrfToken('post_stats') : '';
+$currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
 $feedPosts = fetchFeedPosts();
 $composerAvatarUrl = $isLoggedIn
     ? userMediaUrl($currentUser, 'avatar_url', $url)
@@ -191,7 +198,7 @@ require __DIR__ . '/includes/layout/content-area-start.php';
 
                     <div class="post-feed" id="post-feed">
 <?php foreach ($feedPosts as $feedPost) {
-    renderPostCard($feedPost, $url);
+    renderPostCard($feedPost, $url, $currentUserId);
 } ?>
                     </div>
 <?php

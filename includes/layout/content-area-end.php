@@ -26,6 +26,13 @@ $pageScripts = $pageScripts ?? [];
         window.APP_PROFILE_CSRF_TOKEN = <?php echo json_encode($profileCsrfToken ?? '', JSON_THROW_ON_ERROR); ?>;
     </script>
     <?php endif; ?>
+    <?php if (!empty($postStatsCsrfToken)) : ?>
+    <script>
+        window.APP_POST_STATS_URL = <?php echo json_encode($url('/posts/stats'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_POST_STATS_CSRF_TOKEN = <?php echo json_encode($postStatsCsrfToken, JSON_THROW_ON_ERROR); ?>;
+        window.APP_CURRENT_USER_ID = <?php echo json_encode($currentUserId ?? 0, JSON_THROW_ON_ERROR); ?>;
+    </script>
+    <?php endif; ?>
     <?php if (!empty($postCsrfToken)) : ?>
     <script>
         window.APP_POST_CREATE_URL = <?php echo json_encode($url('/posts/create'), JSON_THROW_ON_ERROR); ?>;
@@ -43,6 +50,7 @@ $pageScripts = $pageScripts ?? [];
     <script src="<?php echo htmlspecialchars($url($scriptPath), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endforeach; ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/media-lightbox.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/post-stats.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script>
         lucide.createIcons();
     </script>
