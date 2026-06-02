@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-$uri = urldecode(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/');
-$filePath = __DIR__ . $uri;
+require_once __DIR__ . '/includes/paths.php';
 
-if ($uri !== '/' && is_file($filePath)) {
+$appPath = appPaths()['path'];
+$filePath = __DIR__ . $appPath;
+
+if ($appPath !== '/' && is_file($filePath)) {
     return false;
 }
 
