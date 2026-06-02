@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 
+$autoload = __DIR__ . '/../vendor/autoload.php';
+if (is_file($autoload)) {
+    require_once $autoload;
+}
+
 require_once __DIR__ . '/paths.php';
 require_once __DIR__ . '/env.php';
 loadAppEnv();
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../auth/session.php';
+require_once __DIR__ . '/security.php';
 
 function jsonResponse(array $payload, int $statusCode = 200): void
 {

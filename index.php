@@ -40,6 +40,11 @@ if ($path === '/auth/register' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST')
     return;
 }
 
+if ($path === '/auth/check-username' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
+    require __DIR__ . '/auth/check-username.php';
+    return;
+}
+
 if ($path === '/register') {
     if (isLoggedIn()) {
         header('Location: ' . $url('/'));
@@ -70,6 +75,7 @@ if ($path === '/db-check') {
 
 $currentUser = getCurrentUser();
 $isLoggedIn = $currentUser !== null;
+$loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
 
 http_response_code(200);
 header('Content-Type: text/html; charset=utf-8');
@@ -309,8 +315,9 @@ header('Content-Type: text/html; charset=utf-8');
     <?php else : ?>
     <script>
         window.APP_LOGIN_URL = <?php echo json_encode($url('/auth/login'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_CSRF_TOKEN = <?php echo json_encode($loginCsrfToken, JSON_THROW_ON_ERROR); ?>;
     </script>
-    <script src="<?php echo htmlspecialchars($url('/auth/js/login.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/login.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endif; ?>
 </body>
 </html>

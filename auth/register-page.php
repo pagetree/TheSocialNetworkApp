@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 /** @var callable(string): string $url */
+$registerCsrfToken = createCsrfToken('register');
 ?>
 <!doctype html>
 <html lang="en">
@@ -23,31 +24,69 @@ declare(strict_types=1);
                 <h1 class="register-title">Create account</h1>
                 <p class="register-subtitle">Join TheSocialNetworkApp today.</p>
                 <form class="auth-form register-form" id="register-form" novalidate>
-                    <div class="register-name-row">
-                        <label class="auth-field">
-                            <span>First name</span>
-                            <input type="text" name="first_name" autocomplete="given-name" required>
-                        </label>
-                        <label class="auth-field">
-                            <span>Last name</span>
-                            <input type="text" name="last_name" autocomplete="family-name" required>
+                    <div class="auth-honeypot" aria-hidden="true">
+                        <label>
+                            <span>Website</span>
+                            <input type="text" name="_hp_url" tabindex="-1" autocomplete="off">
                         </label>
                     </div>
                     <label class="auth-field">
                         <span>Username</span>
-                        <input type="text" name="username" autocomplete="username" required>
+                        <div class="auth-input-wrap auth-input-wrap--username">
+                            <span class="auth-input-prefix" aria-hidden="true">@</span>
+                            <input
+                                type="text"
+                                name="username"
+                                id="register-username"
+                                autocomplete="username"
+                                autocapitalize="off"
+                                autocorrect="off"
+                                spellcheck="false"
+                                required
+                            >
+                        </div>
+                        <p class="auth-field-hint" id="username-hint" hidden></p>
                     </label>
+                    <div class="register-name-row">
+                        <label class="auth-field">
+                            <span>First name</span>
+                            <div class="auth-input-wrap">
+                            <span class="auth-input-leading-icon" aria-hidden="true">
+                                <i data-lucide="user-round"></i>
+                            </span>
+                                <input type="text" name="first_name" autocomplete="given-name" required>
+                            </div>
+                        </label>
+                        <label class="auth-field">
+                            <span>Last name</span>
+                            <div class="auth-input-wrap">
+                            <span class="auth-input-leading-icon" aria-hidden="true">
+                                <i data-lucide="user-round"></i>
+                            </span>
+                                <input type="text" name="last_name" autocomplete="family-name" required>
+                            </div>
+                        </label>
+                    </div>
                     <label class="auth-field">
                         <span>Email</span>
-                        <input type="email" name="email" autocomplete="email" required>
+                        <div class="auth-input-wrap">
+                            <span class="auth-input-leading-icon" aria-hidden="true">
+                                <i data-lucide="mail"></i>
+                            </span>
+                            <input type="email" name="email" autocomplete="email" required>
+                        </div>
                     </label>
                     <label class="auth-field">
                         <span>Password</span>
-                        <input type="password" name="password" autocomplete="new-password" required>
-                    </label>
-                    <label class="auth-field">
-                        <span>Confirm password</span>
-                        <input type="password" name="password_confirm" autocomplete="new-password" required>
+                        <div class="auth-input-wrap auth-input-wrap--password">
+                            <span class="auth-input-leading-icon" aria-hidden="true">
+                                <i data-lucide="lock-keyhole"></i>
+                            </span>
+                            <input type="password" name="password" id="register-password" autocomplete="new-password" required>
+                            <button type="button" class="auth-input-toggle" id="register-password-toggle" aria-label="Show password" aria-pressed="false">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
                     </label>
                     <p class="auth-form-error" id="register-form-error" hidden></p>
                     <button type="submit" class="auth-submit-btn">Create account</button>
@@ -68,8 +107,14 @@ declare(strict_types=1);
     </div>
     <script>
         window.APP_REGISTER_URL = <?php echo json_encode($url('/auth/register'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_CHECK_USERNAME_URL = <?php echo json_encode($url('/auth/check-username'), JSON_THROW_ON_ERROR); ?>;
         window.APP_HOME_URL = <?php echo json_encode($url('/'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_CSRF_TOKEN = <?php echo json_encode($registerCsrfToken, JSON_THROW_ON_ERROR); ?>;
     </script>
-    <script src="<?php echo htmlspecialchars($url('/auth/js/register.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/register.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
 </body>
 </html>

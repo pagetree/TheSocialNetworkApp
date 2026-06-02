@@ -4,6 +4,7 @@
     --accent: #03A9F4;
     --warning: #ff9800;
     --danger: #f44336;
+    --success: #4caf50;
     --light: #D9D9D9;
     --dark: #2d3436;
     --container-radius: 20px;
@@ -547,6 +548,113 @@ body.auth-locked {
     outline: none;
 }
 
+.auth-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.auth-input-wrap input {
+    padding-left: 42px;
+}
+
+.auth-input-leading-icon {
+    position: absolute;
+    left: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    color: color-mix(in srgb, var(--light) 55%, transparent);
+    pointer-events: none;
+}
+
+.auth-input-leading-icon svg {
+    position: static;
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+}
+
+.auth-input-wrap--username input {
+    padding-left: 34px;
+}
+
+.auth-input-wrap--password input {
+    padding-right: 42px;
+}
+
+.auth-input-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: color-mix(in srgb, var(--light) 55%, transparent);
+    cursor: pointer;
+}
+
+.auth-input-toggle:hover {
+    color: var(--light);
+}
+
+.auth-input-toggle svg {
+    position: static;
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    pointer-events: none;
+}
+
+.auth-input-prefix {
+    position: absolute;
+    left: 14px;
+    color: color-mix(in srgb, var(--light) 70%, transparent);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.auth-field-hint {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.auth-field-hint.is-available {
+    color: var(--success);
+}
+
+.auth-field-hint.is-unavailable {
+    color: var(--danger);
+}
+
+.auth-field-hint.is-warning {
+    color: var(--warning);
+}
+
+.auth-field-hint.is-checking {
+    color: color-mix(in srgb, var(--light) 60%, transparent);
+}
+
+.auth-honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
 .auth-field input:focus {
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent);
 }
@@ -593,7 +701,7 @@ body.auth-locked {
 
 .register-page {
     min-height: 100vh;
-    background: url("https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/gayatri-malhotra-QTEk16LzWSI-unsplash.jpg") center / cover no-repeat;
+    background: var(--dark);
 }
 
 .register-layout {
@@ -607,9 +715,7 @@ body.auth-locked {
     align-items: center;
     justify-content: center;
     padding: var(--element-padding);
-    background: linear-gradient(140deg, color-mix(in srgb, var(--light) 12%, transparent), color-mix(in srgb, var(--light) 4%, transparent));
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: var(--dark);
 }
 
 .register-form-panel {
@@ -621,11 +727,11 @@ body.auth-locked {
     align-items: center;
     justify-content: center;
     padding: var(--element-padding);
-    background: var(--body-bg);
+    background: var(--light);
 }
 
 .register-logo {
-    width: min(70%, 320px);
+    width: min(88%, 480px);
     height: auto;
     object-fit: contain;
     display: block;
@@ -681,6 +787,6 @@ body.auth-locked {
     }
 
     .register-logo {
-        width: min(60%, 200px);
+        width: min(75%, 280px);
     }
 }

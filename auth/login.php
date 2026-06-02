@@ -2,9 +2,15 @@
 
 declare(strict_types=1);
 
-$payload = json_decode(file_get_contents('php://input') ?: '', true);
-if (!is_array($payload)) {
-    $payload = $_POST;
+$payload = authPayloadFromRequest();
+
+$guardError = guardAuthRequest('auth.login', 'login', $payload);
+if ($guardError !== null) {
+    jsonResponse([
+        'ok' => false,
+        'error' => $guardError['error'],
+    ], $guardError['status']);
+    return;
 }
 
 $identifier = trim((string) ($payload['identifier'] ?? ''));
@@ -29,6 +35,8 @@ try {
 }
 
 if ($user === null) {
+    logSecurityEvent('login_failed', ['identifier' => $identifier]);
+
     jsonResponse([
         'ok' => false,
         'error' => 'Invalid email/username or password.',
@@ -37,4 +45,5 @@ if ($user === null) {
 }
 
 loginUser($user);
+invalidateCsrfTokens('login');
 jsonResponse(['ok' => true]);

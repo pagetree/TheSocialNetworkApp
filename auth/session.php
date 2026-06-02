@@ -67,8 +67,18 @@ function attemptLogin(string $identifier, string $password): ?array
     $stmt->execute(['identifier' => $identifier]);
     $user = $stmt->fetch();
 
-    if ($user === false || !password_verify($password, $user['password_hash'])) {
+    if ($user === false || !verifyAppPassword($password, $user['password_hash'])) {
         return null;
+    }
+
+    if (passwordNeedsRehash($user['password_hash'])) {
+        $pdo = createPdoConnection();
+        $newHash = hashAppPassword($password);
+        $update = $pdo->prepare('UPDATE users SET password_hash = :password_hash WHERE id = :id');
+        $update->execute([
+            'password_hash' => $newHash,
+            'id' => (int) $user['id'],
+        ]);
     }
 
     return $user;
@@ -77,6 +87,66 @@ function attemptLogin(string $identifier, string $password): ?array
 function normalizeUsername(string $username): string
 {
     return strtolower(preg_replace('/[^a-z0-9_]/', '', strtolower(trim($username))) ?? '');
+}
+
+/**
+ * @return array{valid: bool, available: bool, username: string, error: ?string}
+ */
+function checkUsernameAvailability(string $username): array
+{
+    $normalized = normalizeUsername($username);
+
+    if ($normalized === '') {
+        return [
+            'valid' => false,
+            'available' => false,
+            'username' => '',
+            'error' => 'Username is required.',
+        ];
+    }
+
+    if (strlen($normalized) < 3) {
+        return [
+            'valid' => false,
+            'available' => false,
+            'username' => $normalized,
+            'error' => 'Username must be at least 3 characters (letters, numbers, underscore).',
+        ];
+    }
+
+    if (strlen($normalized) > 50) {
+        return [
+            'valid' => false,
+            'available' => false,
+            'username' => $normalized,
+            'error' => 'Username must be 50 characters or less.',
+        ];
+    }
+
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT 1 FROM users WHERE username = :username OR handle = :handle LIMIT 1'
+    );
+    $stmt->execute([
+        'username' => $normalized,
+        'handle' => '@' . $normalized,
+    ]);
+
+    if ($stmt->fetchColumn() !== false) {
+        return [
+            'valid' => true,
+            'available' => false,
+            'username' => $normalized,
+            'error' => 'Username is already taken.',
+        ];
+    }
+
+    return [
+        'valid' => true,
+        'available' => true,
+        'username' => $normalized,
+        'error' => null,
+    ];
 }
 
 function registerUser(
@@ -91,7 +161,7 @@ function registerUser(
     $email = strtolower(trim($email));
     $handle = '@' . $username;
     $displayName = trim($firstName . ' ' . $lastName);
-    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+    $passwordHash = hashAppPassword($password);
 
     $stmt = $pdo->prepare(
         'INSERT INTO users (username, display_name, handle, email, password_hash)

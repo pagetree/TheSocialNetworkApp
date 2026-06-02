@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 /** @var callable(string): string $url */
+/** @var string $loginCsrfToken */
 ?>
 <div class="auth-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-login-title">
     <div class="auth-modal">
@@ -14,6 +15,12 @@ declare(strict_types=1);
         <h1 class="auth-modal-title" id="auth-login-title">Sign in</h1>
         <p class="auth-modal-subtitle">Welcome back. Sign in to continue.</p>
         <form class="auth-form" id="login-form" novalidate>
+            <div class="auth-honeypot" aria-hidden="true">
+                <label>
+                    <span>Website</span>
+                    <input type="text" name="_hp_url" tabindex="-1" autocomplete="off">
+                </label>
+            </div>
             <label class="auth-field">
                 <span>Email or username</span>
                 <input type="text" name="identifier" autocomplete="username" required>

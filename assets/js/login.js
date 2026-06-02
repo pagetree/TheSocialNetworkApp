@@ -3,8 +3,9 @@
     const errorEl = document.getElementById("login-form-error");
     const submitBtn = form?.querySelector(".auth-submit-btn");
     const loginUrl = window.APP_LOGIN_URL;
+    const csrfToken = window.APP_CSRF_TOKEN;
 
-    if (!form || !errorEl || !submitBtn || !loginUrl) {
+    if (!form || !errorEl || !submitBtn || !loginUrl || !csrfToken) {
         return;
     }
 
@@ -40,7 +41,12 @@
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ identifier, password }),
+                body: JSON.stringify({
+                    identifier,
+                    password,
+                    csrf_token: csrfToken,
+                    _hp_url: String(formData.get("_hp_url") ?? ""),
+                }),
             });
 
             const data = await response.json().catch(() => ({}));
