@@ -60,6 +60,16 @@ if ($path === '/posts/stats' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     return;
 }
 
+if ($path === '/posts/reply' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/post-reply-create.php';
+    return;
+}
+
+if ($path === '/posts/like' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/post-like.php';
+    return;
+}
+
 if ($path === '/register') {
     if (isLoggedIn()) {
         header('Location: ' . $url('/'));
@@ -98,6 +108,44 @@ if ($path === '/profile') {
     return;
 }
 
+if (preg_match('#^/post/(\d+)/?$#', $path, $postRouteMatch)) {
+    $postId = (int) $postRouteMatch[1];
+    $post = fetchPostById($postId);
+
+    if ($post === null) {
+        http_response_code(404);
+        header('Content-Type: text/html; charset=utf-8');
+        $pageTitle = 'Post not found — TheSocialNetworkApp';
+        $activeNav = 'explore';
+        $mainClass = 'app-content post-detail-page';
+        $currentUser = getCurrentUser();
+        $isLoggedIn = $currentUser !== null;
+        $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
+        $postStatsCsrfToken = $isLoggedIn ? createCsrfToken('post_stats') : '';
+        $currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
+        $pageScripts = [];
+
+        require __DIR__ . '/includes/layout/head.php';
+        require __DIR__ . '/includes/layout/content-area-start.php';
+        echo '<p class="post-detail-empty">This post could not be found.</p>';
+        require __DIR__ . '/includes/layout/content-area-end.php';
+        return;
+    }
+
+    $currentUser = getCurrentUser();
+    $isLoggedIn = $currentUser !== null;
+    $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
+    $postStatsCsrfToken = $isLoggedIn ? createCsrfToken('post_stats') : '';
+    $postLikeCsrfToken = $isLoggedIn ? createCsrfToken('post_like') : '';
+    $currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
+    $pageScripts = ['/assets/js/post-reply-composer.js'];
+
+    http_response_code(200);
+    header('Content-Type: text/html; charset=utf-8');
+    require __DIR__ . '/post.php';
+    return;
+}
+
 if ($path === '/db-check') {
     try {
         $pdo = createPdoConnection();
@@ -122,8 +170,16 @@ $isLoggedIn = $currentUser !== null;
 $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
 $postCsrfToken = $isLoggedIn ? createCsrfToken('post_create') : '';
 $postStatsCsrfToken = $isLoggedIn ? createCsrfToken('post_stats') : '';
+$postLikeCsrfToken = $isLoggedIn ? createCsrfToken('post_like') : '';
 $currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
 $feedPosts = fetchFeedPosts();
+$likedPostIds = [];
+if ($isLoggedIn && $feedPosts !== []) {
+    $likedPostIds = array_flip(fetchLikedPostIdsForUser(
+        $currentUserId,
+        array_map(static fn (array $feedPost): int => (int) ($feedPost['id'] ?? 0), $feedPosts)
+    ));
+}
 $composerAvatarUrl = $isLoggedIn
     ? userMediaUrl($currentUser, 'avatar_url', $url)
     : 'https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/romeo-leaupepe-su-a-70gb9CHBX4g-unsplash.jpg';
@@ -198,7 +254,12 @@ require __DIR__ . '/includes/layout/content-area-start.php';
 
                     <div class="post-feed" id="post-feed">
 <?php foreach ($feedPosts as $feedPost) {
-    renderPostCard($feedPost, $url, $currentUserId);
+    renderPostCard(
+        $feedPost,
+        $url,
+        $currentUserId,
+        isset($likedPostIds[(int) ($feedPost['id'] ?? 0)])
+    );
 } ?>
                     </div>
 <?php

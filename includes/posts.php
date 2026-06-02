@@ -201,6 +201,43 @@ function fetchFeedPosts(int $limit = POST_FEED_DEFAULT_LIMIT): array
     return is_array($rows) ? hydrateFeedPostsWithMedia($rows) : [];
 }
 
+/**
+ * @return array<string, mixed>|null
+ */
+function fetchPostById(int $postId): ?array
+{
+    if ($postId < 1) {
+        return null;
+    }
+
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT p.id, p.user_id, p.body, p.location_label,
+                p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
+                u.display_name, u.handle, u.avatar_url
+         FROM posts p
+         INNER JOIN users u ON u.id = p.user_id
+         WHERE p.id = :id
+           AND p.is_deleted = FALSE
+         LIMIT 1'
+    );
+    $stmt->execute(['id' => $postId]);
+    $row = $stmt->fetch();
+
+    if ($row === false) {
+        return null;
+    }
+
+    $hydrated = hydrateFeedPostsWithMedia([$row]);
+
+    return $hydrated[0] ?? null;
+}
+
+function postUrl(int $postId, callable $url): string
+{
+    return $url('/post/' . $postId);
+}
+
 function formatPostTimeLabel(string $createdAt): string
 {
     try {
@@ -235,6 +272,17 @@ function formatPostTimeLabel(string $createdAt): string
     }
 
     return $created->format('M j, Y');
+}
+
+function formatPostDetailDateLabel(string $createdAt): string
+{
+    try {
+        $created = new DateTimeImmutable($createdAt);
+    } catch (Exception) {
+        return '';
+    }
+
+    return $created->format('M j, Y') . ' · ' . $created->format('g:i A');
 }
 
 function formatEngagementCount(int $count): string
@@ -303,6 +351,7 @@ function postFeedPayload(array $row, callable $url): array
         'interaction_count' => (int) ($row['interaction_count'] ?? 0),
         'created_at' => (string) ($row['created_at'] ?? ''),
         'time_label' => formatPostTimeLabel((string) ($row['created_at'] ?? '')),
+        'detail_date_label' => formatPostDetailDateLabel((string) ($row['created_at'] ?? '')),
         'author' => [
             'display_name' => $user['display_name'],
             'handle' => $user['handle'],
@@ -314,8 +363,10 @@ function postFeedPayload(array $row, callable $url): array
 /**
  * @param array<string, mixed> $row
  */
-function renderPostCard(array $row, callable $url, int $currentUserId = 0): void
+function renderPostCard(array $row, callable $url, int $currentUserId = 0, bool $viewerLiked = false): void
 {
     $post = postFeedPayload($row, $url);
+    $post['post_url'] = postUrl((int) $post['id'], $url);
+    $post['viewer_liked'] = $viewerLiked;
     require __DIR__ . '/posts/post-card.php';
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 /** @var array<string, mixed> $post */
 /** @var callable(string): string $url */
+/** @var int $currentUserId */
 
 $authorName = (string) ($post['author']['display_name'] ?? 'User');
 $authorHandle = (string) ($post['author']['handle'] ?? '@user');
@@ -19,24 +20,24 @@ $viewCount = formatEngagementCount((int) ($post['view_count'] ?? 0));
 $interactionCount = formatEngagementCount((int) ($post['interaction_count'] ?? 0));
 $postUserId = (int) ($post['user_id'] ?? 0);
 $trackStats = $currentUserId > 0 && $postUserId !== $currentUserId;
-$mediaCount = count($postMediaItems);
-$galleryClass = 'post-media-gallery';
-if ($mediaCount === 1) {
-    $galleryClass .= ' post-media-gallery--1';
-} elseif ($mediaCount === 2) {
-    $galleryClass .= ' post-media-gallery--2';
-} elseif ($mediaCount === 3) {
-    $galleryClass .= ' post-media-gallery--3';
-} elseif ($mediaCount >= 4) {
-    $galleryClass .= ' post-media-gallery--4';
-}
+$postUrl = (string) ($post['post_url'] ?? postUrl((int) ($post['id'] ?? 0), $url));
+$hasMedia = count($postMediaItems) > 0;
+$postLinkLabel = 'View post by ' . $authorName;
+$viewerLiked = (bool) ($post['viewer_liked'] ?? false);
+$likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-like';
 ?>
                     <article
-                        class="post-card"
+                        class="post-card post-card--linkable"
                         data-post-id="<?php echo (int) ($post['id'] ?? 0); ?>"
                         data-post-user-id="<?php echo $postUserId; ?>"
                         data-stat-trackable="<?php echo $trackStats ? '1' : '0'; ?>"
+                        data-post-url="<?php echo htmlspecialchars($postUrl, ENT_QUOTES, 'UTF-8'); ?>"
                     >
+                        <a
+                            class="post-card-cover-link"
+                            href="<?php echo htmlspecialchars($postUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                            aria-label="<?php echo htmlspecialchars($postLinkLabel, ENT_QUOTES, 'UTF-8'); ?>"
+                        ></a>
                         <header class="post-header">
                             <img
                                 class="post-avatar"
@@ -59,39 +60,19 @@ if ($mediaCount === 1) {
                         <?php if ($postBody !== '') : ?>
                         <p class="post-text"><?php echo htmlspecialchars($postBody, ENT_QUOTES, 'UTF-8'); ?></p>
                         <?php endif; ?>
-                        <?php if ($mediaCount > 0) : ?>
-                        <div class="<?php echo htmlspecialchars($galleryClass, ENT_QUOTES, 'UTF-8'); ?>">
-                            <?php foreach ($postMediaItems as $mediaItem) :
-                                $mediaUrl = (string) ($mediaItem['url'] ?? '');
-                                $mediaType = (string) ($mediaItem['type'] ?? '');
-                                if ($mediaUrl === '') {
-                                    continue;
-                                }
-                                ?>
-                                <?php if ($mediaType === 'video') : ?>
-                            <video
-                                class="post-media post-media--video"
-                                controls
-                                preload="metadata"
-                                playsinline
-                                src="<?php echo htmlspecialchars($mediaUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                            ></video>
-                                <?php else : ?>
-                            <img
-                                class="post-media post-media--zoomable"
-                                src="<?php echo htmlspecialchars($mediaUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                                alt=""
-                                role="button"
-                                tabindex="0"
-                            >
-                                <?php endif; ?>
-                            <?php endforeach; ?>
-                        </div>
-                        <?php endif; ?>
+                        <?php if ($hasMedia) {
+                            require __DIR__ . '/post-media-gallery.php';
+                        } ?>
                         <footer class="post-actions" aria-label="Post engagement">
                             <button type="button" class="post-action"><i data-lucide="message-circle" aria-hidden="true"></i><span><?php echo htmlspecialchars($replyCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span><?php echo htmlspecialchars($repostCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
-                            <button type="button" class="post-action"><i data-lucide="heart" aria-hidden="true"></i><span><?php echo htmlspecialchars($likeCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
+                            <button
+                                type="button"
+                                class="post-action<?php echo $likeActionClass; ?>"
+                                aria-label="<?php echo $viewerLiked ? 'Unlike post' : 'Like post'; ?>"
+                                aria-pressed="<?php echo $viewerLiked ? 'true' : 'false'; ?>"
+                                data-liked="<?php echo $viewerLiked ? '1' : '0'; ?>"
+                            ><i data-lucide="heart" aria-hidden="true"></i><span><?php echo htmlspecialchars($likeCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button type="button" class="post-action post-action-stat-views" aria-label="Post views">
                                 <i data-lucide="bar-chart-2" aria-hidden="true"></i>
                                 <span><?php echo htmlspecialchars($viewCount, ENT_QUOTES, 'UTF-8'); ?></span>
