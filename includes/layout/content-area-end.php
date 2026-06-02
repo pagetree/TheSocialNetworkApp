@@ -16,6 +16,9 @@ $pageScripts = $pageScripts ?? [];
     <?php if (!empty($showProfileEditModal)) {
         require dirname(__DIR__) . '/profile/edit-profile-modal.php';
     } ?>
+    <?php if ($isLoggedIn) {
+        require __DIR__ . '/media-lightbox.php';
+    } ?>
     <?php if ($isLoggedIn) : ?>
     <?php if (!empty($showProfileEditModal)) : ?>
     <script>
@@ -39,6 +42,7 @@ $pageScripts = $pageScripts ?? [];
     <?php foreach ($pageScripts as $scriptPath) : ?>
     <script src="<?php echo htmlspecialchars($url($scriptPath), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endforeach; ?>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/media-lightbox.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script>
         lucide.createIcons();
     </script>

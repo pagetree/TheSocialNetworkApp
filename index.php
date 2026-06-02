@@ -168,15 +168,6 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                         <button type="button" class="post-tool-btn" id="post-composer-video-btn" aria-label="Add video">
                                             <i data-lucide="film" aria-hidden="true"></i>
                                         </button>
-                                        <button type="button" class="post-tool-btn" aria-label="Add poll" disabled>
-                                            <i data-lucide="chart-no-axes-column" aria-hidden="true"></i>
-                                        </button>
-                                        <button type="button" class="post-tool-btn" aria-label="Add emoji" disabled>
-                                            <i data-lucide="smile" aria-hidden="true"></i>
-                                        </button>
-                                        <button type="button" class="post-tool-btn" aria-label="Add location" disabled>
-                                            <i data-lucide="map-pin" aria-hidden="true"></i>
-                                        </button>
                                     </div>
                                     <div class="post-composer-submit-wrap">
                                         <div

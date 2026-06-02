@@ -70,9 +70,11 @@ if ($mediaCount === 1) {
                             ></video>
                                 <?php else : ?>
                             <img
-                                class="post-media"
+                                class="post-media post-media--zoomable"
                                 src="<?php echo htmlspecialchars($mediaUrl, ENT_QUOTES, 'UTF-8'); ?>"
                                 alt=""
+                                role="button"
+                                tabindex="0"
                             >
                                 <?php endif; ?>
                             <?php endforeach; ?>
