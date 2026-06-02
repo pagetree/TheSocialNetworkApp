@@ -27,6 +27,12 @@ $pageScripts = $pageScripts ?? [];
     <script>
         window.APP_POST_CREATE_URL = <?php echo json_encode($url('/posts/create'), JSON_THROW_ON_ERROR); ?>;
         window.APP_POST_CSRF_TOKEN = <?php echo json_encode($postCsrfToken, JSON_THROW_ON_ERROR); ?>;
+        window.APP_POST_MEDIA_LIMITS = <?php echo json_encode([
+            'imageMaxBytes' => POST_IMAGE_MAX_BYTES,
+            'videoMaxBytes' => POST_VIDEO_MAX_BYTES,
+            'maxImages' => POST_MAX_IMAGES,
+            'maxVideos' => POST_MAX_VIDEOS,
+        ], JSON_THROW_ON_ERROR); ?>;
     </script>
     <?php endif; ?>
     <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>

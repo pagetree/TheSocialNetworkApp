@@ -75,6 +75,45 @@ function r2BuildObjectKey(int $userId, string $originalFilename): string
     return $config['upload_prefix'] . '/' . r2BuildUploadFilename($userId, $originalFilename);
 }
 
+function r2PostMediaPrefix(): string
+{
+    return trim((string) (getenv('R2_POST_MEDIA_PREFIX') ?: 'posts-media'), '/');
+}
+
+function r2SanitizeOriginalFilename(string $originalFilename): string
+{
+    $original = basename(str_replace('\\', '/', $originalFilename));
+    $original = preg_replace('/[^a-zA-Z0-9._-]+/', '-', $original) ?? 'upload';
+    $original = trim($original, '.-');
+
+    if ($original === '') {
+        return 'upload.bin';
+    }
+
+    if (strlen($original) > 120) {
+        $extension = pathinfo($original, PATHINFO_EXTENSION);
+        $stem = pathinfo($original, PATHINFO_FILENAME);
+        $stem = substr((string) $stem, 0, 100);
+        $original = $extension !== '' ? $stem . '.' . $extension : $stem;
+    }
+
+    return $original;
+}
+
+function r2BuildPostMediaFilename(int $userId, int $postId, string $originalFilename): string
+{
+    $uploadDate = (new DateTimeImmutable('now'))->format('Y-m-d');
+    $uniqueId = bin2hex(random_bytes(8));
+    $original = r2SanitizeOriginalFilename($originalFilename);
+
+    return $userId . '.' . $postId . '.' . $uploadDate . '.' . $uniqueId . '.' . $original;
+}
+
+function r2BuildPostMediaObjectKey(int $userId, int $postId, string $originalFilename): string
+{
+    return r2PostMediaPrefix() . '/' . r2BuildPostMediaFilename($userId, $postId, $originalFilename);
+}
+
 function r2MimeTypeForExtension(string $extension): string
 {
     return match (strtolower($extension)) {
@@ -178,6 +217,75 @@ function r2UploadUserFile(int $userId, string $fieldName): array
         'ok' => true,
         'url' => r2PublicUrlForKey($objectKey),
         'key' => $objectKey,
+    ];
+}
+
+/**
+ * @param array{
+ *     media_type: string,
+ *     content_type: string,
+ *     tmp_path: string,
+ *     original_filename: string
+ * } $validatedMedia
+ * @return array{ok: true, url: string, key: string, media_type: string}|array{ok: false, error: string}
+ */
+function r2UploadPostMediaFile(int $userId, int $postId, array $validatedMedia): array
+{
+    if (!r2IsConfigured()) {
+        return ['ok' => false, 'error' => 'File storage is not configured.'];
+    }
+
+    $objectKey = r2BuildPostMediaObjectKey($userId, $postId, $validatedMedia['original_filename']);
+    $body = file_get_contents($validatedMedia['tmp_path']);
+
+    if ($body === false) {
+        return ['ok' => false, 'error' => 'Unable to read uploaded file.'];
+    }
+
+    $config = r2Config();
+    $canonicalUri = r2EncodeUriPath($config['bucket'] . '/' . $objectKey);
+
+    try {
+        r2SignedRequest('PUT', $canonicalUri, $body, $validatedMedia['content_type']);
+    } catch (Throwable) {
+        return ['ok' => false, 'error' => 'Unable to upload media right now.'];
+    }
+
+    return [
+        'ok' => true,
+        'url' => r2PublicUrlForKey($objectKey),
+        'key' => $objectKey,
+        'media_type' => $validatedMedia['media_type'],
+    ];
+}
+
+/**
+ * @return array{
+ *     ok: true,
+ *     url: string,
+ *     key: string,
+ *     media_type: string,
+ *     validated: array<string, mixed>
+ * }|array{ok: false, error: string}
+ */
+function r2UploadPostMedia(int $userId, int $postId, string $fieldName): array
+{
+    $validated = validatePostMediaUpload($fieldName);
+    if (!$validated['ok']) {
+        return $validated;
+    }
+
+    $upload = r2UploadPostMediaFile($userId, $postId, $validated);
+    if (!$upload['ok']) {
+        return $upload;
+    }
+
+    return [
+        'ok' => true,
+        'url' => $upload['url'],
+        'key' => $upload['key'],
+        'media_type' => $upload['media_type'],
+        'validated' => $validated,
     ];
 }
 

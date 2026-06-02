@@ -28,6 +28,21 @@ function validatePostBody(string $body): ?string
     return null;
 }
 
+function validatePostBodyForCreate(string $body, bool $hasMedia): ?string
+{
+    $body = sanitizePostText($body);
+
+    if ($body === '' && !$hasMedia) {
+        return 'Write something or add media before posting.';
+    }
+
+    if ($body !== '' && mb_strlen($body) > POST_BODY_MAX_LENGTH) {
+        return 'Post must be ' . POST_BODY_MAX_LENGTH . ' characters or less.';
+    }
+
+    return null;
+}
+
 function validatePostLocationLabel(string $locationLabel): ?string
 {
     $locationLabel = sanitizePostText($locationLabel);
@@ -54,13 +69,13 @@ function normalizePostLocationLabel(string $locationLabel): ?string
 /**
  * @return array<string, mixed>|null
  */
-function createPost(int $userId, string $body, ?string $locationLabel = null): ?array
+function createPost(int $userId, ?string $body, ?string $locationLabel = null): ?array
 {
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
         'INSERT INTO posts (user_id, body, location_label)
          VALUES (:user_id, :body, :location_label)
-         RETURNING id, user_id, body, media_url, media_type, location_label,
+         RETURNING id, user_id, body, location_label,
                    reply_count, repost_count, like_count, view_count, created_at'
     );
     $stmt->execute([
@@ -74,6 +89,93 @@ function createPost(int $userId, string $body, ?string $locationLabel = null): ?
 }
 
 /**
+ * @param list<array{url: string, media_type: string}> $mediaRecords
+ */
+function attachPostMediaRecords(int $postId, array $mediaRecords): void
+{
+    if ($mediaRecords === []) {
+        return;
+    }
+
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'INSERT INTO post_media (post_id, media_url, media_type, sort_order)
+         VALUES (:post_id, :media_url, :media_type, :sort_order)'
+    );
+
+    foreach ($mediaRecords as $sortOrder => $record) {
+        $stmt->execute([
+            'post_id' => $postId,
+            'media_url' => $record['url'],
+            'media_type' => $record['media_type'],
+            'sort_order' => $sortOrder,
+        ]);
+    }
+}
+
+/**
+ * @param list<int> $postIds
+ * @return array<int, list<array<string, mixed>>>
+ */
+function fetchPostMediaGroupedByPostIds(array $postIds): array
+{
+    $postIds = array_values(array_unique(array_filter(array_map('intval', $postIds), static fn (int $id): bool => $id > 0)));
+    if ($postIds === []) {
+        return [];
+    }
+
+    $placeholders = implode(', ', array_fill(0, count($postIds), '?'));
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT id, post_id, media_url, media_type, sort_order, created_at
+         FROM post_media
+         WHERE post_id IN (' . $placeholders . ')
+         ORDER BY post_id ASC, sort_order ASC, id ASC'
+    );
+    $stmt->execute($postIds);
+
+    $grouped = [];
+    while ($row = $stmt->fetch()) {
+        $postId = (int) $row['post_id'];
+        $grouped[$postId][] = $row;
+    }
+
+    return $grouped;
+}
+
+/**
+ * @param list<array<string, mixed>> $rows
+ * @return list<array<string, mixed>>
+ */
+function hydrateFeedPostsWithMedia(array $rows): array
+{
+    $postIds = array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $rows);
+    $grouped = fetchPostMediaGroupedByPostIds($postIds);
+
+    foreach ($rows as &$row) {
+        $postId = (int) ($row['id'] ?? 0);
+        $row['media_items'] = $grouped[$postId] ?? [];
+    }
+    unset($row);
+
+    return $rows;
+}
+
+function deletePostForUser(int $postId, int $userId): void
+{
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'DELETE FROM posts
+         WHERE id = :id
+           AND user_id = :user_id'
+    );
+    $stmt->execute([
+        'id' => $postId,
+        'user_id' => $userId,
+    ]);
+}
+
+/**
  * @return list<array<string, mixed>>
  */
 function fetchFeedPosts(int $limit = POST_FEED_DEFAULT_LIMIT): array
@@ -81,7 +183,7 @@ function fetchFeedPosts(int $limit = POST_FEED_DEFAULT_LIMIT): array
     $limit = max(1, min($limit, 100));
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
-        'SELECT p.id, p.user_id, p.body, p.media_url, p.media_type, p.location_label,
+        'SELECT p.id, p.user_id, p.body, p.location_label,
                 p.reply_count, p.repost_count, p.like_count, p.view_count, p.created_at,
                 u.display_name, u.handle, u.avatar_url
          FROM posts p
@@ -96,7 +198,7 @@ function fetchFeedPosts(int $limit = POST_FEED_DEFAULT_LIMIT): array
 
     $rows = $stmt->fetchAll();
 
-    return is_array($rows) ? $rows : [];
+    return is_array($rows) ? hydrateFeedPostsWithMedia($rows) : [];
 }
 
 function formatPostTimeLabel(string $createdAt): string
@@ -148,6 +250,31 @@ function formatEngagementCount(int $count): string
     return (string) $count;
 }
 
+function postMediaPayloadItems(array $row): array
+{
+    $items = [];
+    $mediaRows = $row['media_items'] ?? [];
+
+    if (!is_array($mediaRows)) {
+        return $items;
+    }
+
+    foreach ($mediaRows as $mediaRow) {
+        if (!is_array($mediaRow)) {
+            continue;
+        }
+
+        $items[] = [
+            'id' => (int) ($mediaRow['id'] ?? 0),
+            'url' => (string) ($mediaRow['media_url'] ?? ''),
+            'type' => (string) ($mediaRow['media_type'] ?? ''),
+            'sort_order' => (int) ($mediaRow['sort_order'] ?? 0),
+        ];
+    }
+
+    return $items;
+}
+
 /**
  * @param array<string, mixed> $row
  * @return array<string, mixed>
@@ -159,16 +286,12 @@ function postFeedPayload(array $row, callable $url): array
         'handle' => (string) ($row['handle'] ?? ''),
         'avatar_url' => (string) ($row['avatar_url'] ?? ''),
     ];
+    $media = postMediaPayloadItems($row);
 
     return [
         'id' => (int) ($row['id'] ?? 0),
         'body' => (string) ($row['body'] ?? ''),
-        'media_url' => isset($row['media_url']) && $row['media_url'] !== null
-            ? (string) $row['media_url']
-            : null,
-        'media_type' => isset($row['media_type']) && $row['media_type'] !== null
-            ? (string) $row['media_type']
-            : null,
+        'media' => $media,
         'location_label' => isset($row['location_label']) && $row['location_label'] !== null
             ? (string) $row['location_label']
             : null,

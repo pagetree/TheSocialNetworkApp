@@ -11,7 +11,7 @@ if ($sessionUser === null) {
     return;
 }
 
-$payload = authPayloadFromRequest();
+$payload = $_POST;
 $guardError = guardAuthRequest('posts.create', 'post_create', $payload);
 if ($guardError !== null) {
     jsonResponse([
@@ -23,17 +23,10 @@ if ($guardError !== null) {
 
 $body = (string) ($payload['body'] ?? '');
 $locationLabel = (string) ($payload['location_label'] ?? '');
-
-if (array_key_exists('media_url', $payload) || array_key_exists('media_type', $payload)) {
-    jsonResponse([
-        'ok' => false,
-        'error' => 'Media uploads are not available yet.',
-    ], 422);
-    return;
-}
+$hasMedia = postMediaHasUpload('media');
 
 $errors = [
-    validatePostBody($body),
+    validatePostBodyForCreate($body, $hasMedia),
     validatePostLocationLabel($locationLabel),
 ];
 
@@ -47,12 +40,27 @@ foreach ($errors as $error) {
     }
 }
 
+$mediaFiles = [];
+if ($hasMedia) {
+    $mediaValidation = validatePostMediaUploads('media');
+    if (!$mediaValidation['ok']) {
+        jsonResponse([
+            'ok' => false,
+            'error' => $mediaValidation['error'],
+        ], 422);
+        return;
+    }
+
+    $mediaFiles = $mediaValidation['files'];
+}
+
 $userId = (int) $sessionUser['id'];
 $normalizedBody = normalizePostBody($body);
+$bodyForDb = $normalizedBody === '' ? null : $normalizedBody;
 $normalizedLocation = normalizePostLocationLabel($locationLabel);
 
 try {
-    $post = createPost($userId, $normalizedBody, $normalizedLocation);
+    $post = createPost($userId, $bodyForDb, $normalizedLocation);
 } catch (Throwable) {
     jsonResponse([
         'ok' => false,
@@ -69,8 +77,64 @@ if ($post === null) {
     return;
 }
 
+$postId = (int) $post['id'];
+$uploadedMedia = [];
+
+if ($mediaFiles !== []) {
+    foreach ($mediaFiles as $mediaFile) {
+        $mediaUpload = r2UploadPostMediaFile($userId, $postId, $mediaFile);
+        if (!$mediaUpload['ok']) {
+            foreach ($uploadedMedia as $uploaded) {
+                r2DeleteObjectByUrl($uploaded['url']);
+            }
+            deletePostForUser($postId, $userId);
+            jsonResponse([
+                'ok' => false,
+                'error' => $mediaUpload['error'],
+            ], 422);
+            return;
+        }
+
+        $uploadedMedia[] = [
+            'url' => $mediaUpload['url'],
+            'media_type' => $mediaUpload['media_type'],
+        ];
+    }
+
+    try {
+        attachPostMediaRecords($postId, $uploadedMedia);
+    } catch (Throwable) {
+        foreach ($uploadedMedia as $uploaded) {
+            r2DeleteObjectByUrl($uploaded['url']);
+        }
+        deletePostForUser($postId, $userId);
+        jsonResponse([
+            'ok' => false,
+            'error' => 'Unable to create post right now.',
+        ], 500);
+        return;
+    }
+
+    $post['media_items'] = array_map(
+        static fn (array $item, int $sortOrder): array => [
+            'id' => 0,
+            'media_url' => $item['url'],
+            'media_type' => $item['media_type'],
+            'sort_order' => $sortOrder,
+        ],
+        $uploadedMedia,
+        array_keys($uploadedMedia)
+    );
+}
+
 $author = fetchUserById($userId);
 if ($author === null) {
+    if ($uploadedMedia !== []) {
+        foreach ($uploadedMedia as $uploaded) {
+            r2DeleteObjectByUrl($uploaded['url']);
+        }
+    }
+    deletePostForUser($postId, $userId);
     jsonResponse([
         'ok' => false,
         'error' => 'Unable to create post right now.',

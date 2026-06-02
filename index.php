@@ -149,12 +149,23 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                     aria-describedby="post-char-counter-label post-composer-error"
                                 ></textarea>
                                 <p class="post-composer-error" id="post-composer-error" hidden></p>
+                                <div class="post-composer-media-preview" id="post-composer-media-preview" hidden>
+                                    <div class="post-composer-media-grid" id="post-composer-media-grid"></div>
+                                </div>
+                                <input
+                                    type="file"
+                                    id="post-composer-media-input"
+                                    name="media[]"
+                                    class="post-composer-media-input"
+                                    hidden
+                                    multiple
+                                >
                                 <div class="post-composer-actions">
                                     <div class="post-composer-tools" aria-label="Post tools">
-                                        <button type="button" class="post-tool-btn" aria-label="Add image" disabled>
+                                        <button type="button" class="post-tool-btn" id="post-composer-image-btn" aria-label="Add image">
                                             <i data-lucide="image" aria-hidden="true"></i>
                                         </button>
-                                        <button type="button" class="post-tool-btn" aria-label="Add GIF" disabled>
+                                        <button type="button" class="post-tool-btn" id="post-composer-video-btn" aria-label="Add video">
                                             <i data-lucide="film" aria-hidden="true"></i>
                                         </button>
                                         <button type="button" class="post-tool-btn" aria-label="Add poll" disabled>
