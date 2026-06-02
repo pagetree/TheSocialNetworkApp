@@ -50,6 +50,11 @@ if ($path === '/auth/profile' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') 
     return;
 }
 
+if ($path === '/posts/create' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/post-create.php';
+    return;
+}
+
 if ($path === '/register') {
     if (isLoggedIn()) {
         header('Location: ' . $url('/'));
@@ -110,6 +115,11 @@ if ($path === '/db-check') {
 $currentUser = getCurrentUser();
 $isLoggedIn = $currentUser !== null;
 $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
+$postCsrfToken = $isLoggedIn ? createCsrfToken('post_create') : '';
+$feedPosts = fetchFeedPosts();
+$composerAvatarUrl = $isLoggedIn
+    ? userMediaUrl($currentUser, 'avatar_url', $url)
+    : 'https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/romeo-leaupepe-su-a-70gb9CHBX4g-unsplash.jpg';
 
 http_response_code(200);
 header('Content-Type: text/html; charset=utf-8');
@@ -125,33 +135,35 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                     <article class="post-card post-composer">
                         <img
                             class="post-avatar"
-                            src="https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/romeo-leaupepe-su-a-70gb9CHBX4g-unsplash.jpg"
+                            src="<?php echo htmlspecialchars($composerAvatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
                             alt="Your avatar"
                         >
                         <div class="post-composer-body">
                             <div class="post-composer-box">
                                 <textarea
                                     class="post-composer-input"
+                                    id="post-composer-input"
                                     rows="3"
                                     maxlength="300"
                                     placeholder="What's happening?"
-                                    aria-describedby="post-char-counter-label"
+                                    aria-describedby="post-char-counter-label post-composer-error"
                                 ></textarea>
+                                <p class="post-composer-error" id="post-composer-error" hidden></p>
                                 <div class="post-composer-actions">
                                     <div class="post-composer-tools" aria-label="Post tools">
-                                        <button type="button" class="post-tool-btn" aria-label="Add image">
+                                        <button type="button" class="post-tool-btn" aria-label="Add image" disabled>
                                             <i data-lucide="image" aria-hidden="true"></i>
                                         </button>
-                                        <button type="button" class="post-tool-btn" aria-label="Add GIF">
+                                        <button type="button" class="post-tool-btn" aria-label="Add GIF" disabled>
                                             <i data-lucide="film" aria-hidden="true"></i>
                                         </button>
-                                        <button type="button" class="post-tool-btn" aria-label="Add poll">
+                                        <button type="button" class="post-tool-btn" aria-label="Add poll" disabled>
                                             <i data-lucide="chart-no-axes-column" aria-hidden="true"></i>
                                         </button>
-                                        <button type="button" class="post-tool-btn" aria-label="Add emoji">
+                                        <button type="button" class="post-tool-btn" aria-label="Add emoji" disabled>
                                             <i data-lucide="smile" aria-hidden="true"></i>
                                         </button>
-                                        <button type="button" class="post-tool-btn" aria-label="Add location">
+                                        <button type="button" class="post-tool-btn" aria-label="Add location" disabled>
                                             <i data-lucide="map-pin" aria-hidden="true"></i>
                                         </button>
                                     </div>
@@ -168,102 +180,17 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                                 <circle class="post-char-counter-progress" cx="18" cy="18" r="15.5"></circle>
                                             </svg>
                                         </div>
-                                        <button type="button" class="post-submit-btn">Post</button>
+                                        <button type="button" class="post-submit-btn" id="post-composer-submit" disabled>Post</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </article>
 
-                    <article class="post-card">
-                        <header class="post-header">
-                            <img
-                                class="post-avatar"
-                                src="https://placehold.co/96x96/png"
-                                alt="Ecommerce Industry avatar"
-                            >
-                            <div class="post-meta">
-                                <p class="post-meta-line">
-                                    <span class="post-author">Ecommerce Industry</span>
-                                    <span class="post-handle">@ecommerce__industry</span>
-                                    <time class="post-time" datetime="PT13M">13 minutes ago</time>
-                                </p>
-                            </div>
-                            <button type="button" class="post-menu-btn" aria-label="Post options">
-                                <i data-lucide="ellipsis" aria-hidden="true"></i>
-                            </button>
-                        </header>
-                        <p class="post-text">The Ecommerce Industry is booming. Are you ready to take advantage of this growing market?</p>
-                        <footer class="post-actions" aria-label="Post engagement">
-                            <button type="button" class="post-action"><i data-lucide="message-circle" aria-hidden="true"></i><span>20.5K</span></button>
-                            <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span>36.1K</span></button>
-                            <button type="button" class="post-action"><i data-lucide="heart" aria-hidden="true"></i><span>9.2K</span></button>
-                            <button type="button" class="post-action"><i data-lucide="bar-chart-2" aria-hidden="true"></i><span>1.1M</span></button>
-                        </footer>
-                    </article>
-
-                    <article class="post-card">
-                        <header class="post-header">
-                            <img
-                                class="post-avatar"
-                                src="https://placehold.co/96x96/png"
-                                alt="Entrepreneur avatar"
-                            >
-                            <div class="post-meta">
-                                <p class="post-meta-line">
-                                    <span class="post-author">Entrepreneur</span>
-                                    <span class="post-handle">@EntrepreneurQ</span>
-                                    <time class="post-time" datetime="PT1H">1 hour ago</time>
-                                </p>
-                            </div>
-                            <button type="button" class="post-menu-btn" aria-label="Post options">
-                                <i data-lucide="ellipsis" aria-hidden="true"></i>
-                            </button>
-                        </header>
-                        <p class="post-text">How to build your online business from zero to hero.</p>
-                        <img
-                            class="post-media"
-                            src="https://placehold.co/900x500/1a2a38/d9d9d9?text=Post+Media"
-                            alt="Post media"
-                        >
-                        <footer class="post-actions" aria-label="Post engagement">
-                            <button type="button" class="post-action"><i data-lucide="message-circle" aria-hidden="true"></i><span>1.2K</span></button>
-                            <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span>4.8K</span></button>
-                            <button type="button" class="post-action"><i data-lucide="heart" aria-hidden="true"></i><span>12.4K</span></button>
-                            <button type="button" class="post-action"><i data-lucide="bar-chart-2" aria-hidden="true"></i><span>210K</span></button>
-                        </footer>
-                    </article>
-
-                    <article class="post-card">
-                        <header class="post-header">
-                            <img
-                                class="post-avatar"
-                                src="https://placehold.co/96x96/png"
-                                alt="CNN avatar"
-                            >
-                            <div class="post-meta">
-                                <p class="post-meta-line">
-                                    <span class="post-author">CNN</span>
-                                    <span class="post-handle">@CNN</span>
-                                    <time class="post-time" datetime="PT2H">2 hours ago</time>
-                                </p>
-                            </div>
-                            <button type="button" class="post-menu-btn" aria-label="Post options">
-                                <i data-lucide="ellipsis" aria-hidden="true"></i>
-                            </button>
-                        </header>
-                        <p class="post-text">Breaking news and top stories from around the world.</p>
-                        <img
-                            class="post-media"
-                            src="https://placehold.co/900x500/203447/d9d9d9?text=CNN+Media"
-                            alt="CNN post media"
-                        >
-                        <footer class="post-actions" aria-label="Post engagement">
-                            <button type="button" class="post-action"><i data-lucide="message-circle" aria-hidden="true"></i><span>8.4K</span></button>
-                            <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span>15.2K</span></button>
-                            <button type="button" class="post-action"><i data-lucide="heart" aria-hidden="true"></i><span>42.7K</span></button>
-                            <button type="button" class="post-action"><i data-lucide="bar-chart-2" aria-hidden="true"></i><span>3.6M</span></button>
-                        </footer>
-                    </article>
+                    <div class="post-feed" id="post-feed">
+<?php foreach ($feedPosts as $feedPost) {
+    renderPostCard($feedPost, $url);
+} ?>
+                    </div>
 <?php
 require __DIR__ . '/includes/layout/content-area-end.php';

@@ -319,6 +319,18 @@ body {
     transition: opacity 140ms ease, background 140ms ease;
 }
 
+.post-submit-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.post-composer-error {
+    margin: 0;
+    color: var(--danger);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
 .post-header {
     display: grid;
     grid-template-columns: 48px minmax(0, 1fr) auto;

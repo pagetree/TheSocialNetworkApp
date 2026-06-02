@@ -23,6 +23,12 @@ $pageScripts = $pageScripts ?? [];
         window.APP_PROFILE_CSRF_TOKEN = <?php echo json_encode($profileCsrfToken ?? '', JSON_THROW_ON_ERROR); ?>;
     </script>
     <?php endif; ?>
+    <?php if (!empty($postCsrfToken)) : ?>
+    <script>
+        window.APP_POST_CREATE_URL = <?php echo json_encode($url('/posts/create'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_POST_CSRF_TOKEN = <?php echo json_encode($postCsrfToken, JSON_THROW_ON_ERROR); ?>;
+    </script>
+    <?php endif; ?>
     <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
     <?php foreach ($pageScripts as $scriptPath) : ?>
     <script src="<?php echo htmlspecialchars($url($scriptPath), ENT_QUOTES, 'UTF-8'); ?>"></script>
