@@ -45,12 +45,46 @@ if ($path === '/auth/check-username' && ($_SERVER['REQUEST_METHOD'] ?? '') === '
     return;
 }
 
+if ($path === '/auth/profile' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/profile-update.php';
+    return;
+}
+
 if ($path === '/register') {
     if (isLoggedIn()) {
         header('Location: ' . $url('/'));
         exit;
     }
     require __DIR__ . '/auth/register-page.php';
+    return;
+}
+
+if ($path === '/profile.php') {
+    header('Location: ' . $url('/profile'), true, 301);
+    exit;
+}
+
+if ($path === '/profile') {
+    $currentUser = getCurrentUser();
+    $isLoggedIn = $currentUser !== null;
+    $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
+    $profileUser = null;
+    $profileCsrfToken = '';
+
+    if ($isLoggedIn) {
+        $freshUser = fetchUserById((int) $currentUser['id']);
+        if ($freshUser !== null) {
+            loginUser($freshUser);
+            $profileUser = $freshUser;
+        } else {
+            $profileUser = $currentUser;
+        }
+        $profileCsrfToken = createCsrfToken('profile_edit');
+    }
+
+    http_response_code(200);
+    header('Content-Type: text/html; charset=utf-8');
+    require __DIR__ . '/profile.php';
     return;
 }
 
@@ -79,86 +113,15 @@ $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
 
 http_response_code(200);
 header('Content-Type: text/html; charset=utf-8');
-?>
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TheSocialNetworkApp</title>
-    <link rel="icon" type="image/png" href="<?php echo htmlspecialchars($url('/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;500;600;700;800;900;1000&family=Nunito+Sans:opsz,wght@6..12,200;6..12,300;6..12,400;6..12,500;6..12,600;6..12,700;6..12,800;6..12,900;6..12,1000&display=swap">
-    <link rel="stylesheet" href="<?php echo htmlspecialchars($url('/assets/css/main.css'), ENT_QUOTES, 'UTF-8'); ?>">
-</head>
-<body<?php echo $isLoggedIn ? '' : ' class="auth-locked"'; ?>>
-    <?php if (!$isLoggedIn) {
-        require __DIR__ . '/auth/login-modal.php';
-    } ?>
-    <div class="glass-overlay"<?php echo $isLoggedIn ? '' : ' aria-hidden="true"'; ?>>
-        <div class="app-container">
-            <header class="app-topbar">
-                <div class="topbar-sidebar">
-                    <a href="#" class="topbar-logo" aria-label="TheSocialNetworkApp">
-                        <img src="<?php echo htmlspecialchars($url('/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="TheSocialNetworkApp logo">
-                    </a>
-                </div>
-                <div class="topbar-content">
-                    <nav class="app-topbar-nav" aria-label="Primary navigation">
-                        <a href="#" class="topbar-link is-active">
-                            <i data-lucide="house" aria-hidden="true"></i>
-                            <span>Home</span>
-                        </a>
-                        <a href="#" class="topbar-link">
-                            <i data-lucide="compass" aria-hidden="true"></i>
-                            <span>Explore</span>
-                        </a>
-                        <a href="#" class="topbar-link">
-                            <i data-lucide="message-circle" aria-hidden="true"></i>
-                            <span>Messages</span>
-                        </a>
-                        <a href="#" class="topbar-link">
-                            <i data-lucide="bell" aria-hidden="true"></i>
-                            <span>Notifications</span>
-                        </a>
-                        <a href="#" class="topbar-link">
-                            <i data-lucide="user-round" aria-hidden="true"></i>
-                            <span>Profile</span>
-                        </a>
-                    </nav>
-                </div>
-            </header>
 
-            <div class="app-main">
-                <aside class="app-sidebar">
-                    <article class="profile-card">
-                        <img
-                            class="profile-card-avatar"
-                            src="https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/romeo-leaupepe-su-a-70gb9CHBX4g-unsplash.jpg"
-                            alt="User avatar placeholder"
-                        >
-                        <h2 class="profile-card-name">User Name</h2>
-                        <p class="profile-card-handle">@username</p>
-                        <p class="profile-card-location">Croatia</p>
-                        <p class="profile-card-bio">UI, UX Designer and Web Developer from Croatia</p>
-                        <div class="profile-card-stats" aria-label="Profile stats">
-                            <div class="profile-card-stat">
-                                <span class="profile-card-stat-label">Posts</span>
-                                <span class="profile-card-stat-value">19</span>
-                            </div>
-                            <div class="profile-card-stat">
-                                <span class="profile-card-stat-label">Followers</span>
-                                <span class="profile-card-stat-value">499</span>
-                            </div>
-                            <div class="profile-card-stat">
-                                <span class="profile-card-stat-label">Following</span>
-                                <span class="profile-card-stat-value">46</span>
-                            </div>
-                        </div>
-                    </article>
-                </aside>
-                <main class="app-content">
+$pageTitle = 'TheSocialNetworkApp';
+$activeNav = 'explore';
+$mainClass = 'app-content';
+$pageScripts = ['/assets/js/post-composer.js'];
+
+require __DIR__ . '/includes/layout/head.php';
+require __DIR__ . '/includes/layout/content-area-start.php';
+?>
                     <article class="post-card post-composer">
                         <img
                             class="post-avatar"
@@ -302,22 +265,5 @@ header('Content-Type: text/html; charset=utf-8');
                             <button type="button" class="post-action"><i data-lucide="bar-chart-2" aria-hidden="true"></i><span>3.6M</span></button>
                         </footer>
                     </article>
-                </main>
-            </div>
-        </div>
-    </div>
-    <?php if ($isLoggedIn) : ?>
-    <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-    <script src="<?php echo htmlspecialchars($url('/assets/js/post-composer.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
-    <script>
-        lucide.createIcons();
-    </script>
-    <?php else : ?>
-    <script>
-        window.APP_LOGIN_URL = <?php echo json_encode($url('/auth/login'), JSON_THROW_ON_ERROR); ?>;
-        window.APP_CSRF_TOKEN = <?php echo json_encode($loginCsrfToken, JSON_THROW_ON_ERROR); ?>;
-    </script>
-    <script src="<?php echo htmlspecialchars($url('/assets/js/login.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
-    <?php endif; ?>
-</body>
-</html>
+<?php
+require __DIR__ . '/includes/layout/content-area-end.php';

@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/paths.php';
 
-$basePath = appBasePath();
-$requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$appPath = appRequestPath();
 
-if ($basePath !== '' && str_starts_with($requestPath, $basePath)) {
-    $appPath = substr($requestPath, strlen($basePath)) ?: '/';
-} else {
-    $appPath = $requestPath;
-}
-
-if ($appPath === '' || !str_starts_with($appPath, '/')) {
-    $appPath = $appPath === '' ? '/' : '/' . ltrim($appPath, '/');
+if ($appPath === '/profile.php') {
+    require __DIR__ . '/index.php';
+    return true;
 }
 
 $filePath = __DIR__ . $appPath;

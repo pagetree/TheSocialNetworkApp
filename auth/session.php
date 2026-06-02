@@ -59,7 +59,7 @@ function attemptLogin(string $identifier, string $password): ?array
 {
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
-        'SELECT id, username, display_name, handle, email, password_hash, avatar_url, bio, location
+        'SELECT id, username, display_name, handle, email, password_hash, avatar_url, cover_url, bio, location, website_url, date_of_birth, created_at
          FROM users
          WHERE email = :identifier OR username = :identifier
          LIMIT 1'
@@ -166,7 +166,7 @@ function registerUser(
     $stmt = $pdo->prepare(
         'INSERT INTO users (username, display_name, handle, email, password_hash)
          VALUES (:username, :display_name, :handle, :email, :password_hash)
-         RETURNING id, username, display_name, handle, email, avatar_url, bio, location'
+         RETURNING id, username, display_name, handle, email, avatar_url, cover_url, bio, location, website_url, date_of_birth, created_at'
     );
     $stmt->execute([
         'username' => $username,
@@ -197,4 +197,84 @@ function userExistsByEmailOrUsername(string $email, string $username): bool
     ]);
 
     return $stmt->fetchColumn() !== false;
+}
+
+/**
+ * @return array<string, mixed>|null
+ */
+function fetchUserById(int $userId): ?array
+{
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT ' . userSessionSelectSql() . '
+         FROM users
+         WHERE id = :id
+         LIMIT 1'
+    );
+    $stmt->execute(['id' => $userId]);
+    $user = $stmt->fetch();
+
+    return $user === false ? null : $user;
+}
+
+/**
+ * @param array{display_name: string, bio: ?string, location: ?string, website_url: ?string, date_of_birth: ?string, avatar_url: ?string, cover_url: ?string} $profile
+ * @return array<string, mixed>|null
+ */
+function updateUserProfile(int $userId, array $profile): ?array
+{
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'UPDATE users
+         SET display_name = :display_name,
+             bio = :bio,
+             location = :location,
+             website_url = :website_url,
+             date_of_birth = :date_of_birth,
+             avatar_url = :avatar_url,
+             cover_url = :cover_url,
+             updated_at = NOW()
+         WHERE id = :id
+         RETURNING ' . userSessionSelectSql()
+    );
+    $stmt->execute([
+        'id' => $userId,
+        'display_name' => $profile['display_name'],
+        'bio' => $profile['bio'],
+        'location' => $profile['location'],
+        'website_url' => $profile['website_url'],
+        'date_of_birth' => $profile['date_of_birth'],
+        'avatar_url' => $profile['avatar_url'],
+        'cover_url' => $profile['cover_url'],
+    ]);
+    $user = $stmt->fetch();
+
+    return $user === false ? null : $user;
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function userProfilePayload(array $user, callable $url): array
+{
+    $websiteUrl = (string) ($user['website_url'] ?? '');
+    $dateOfBirth = $user['date_of_birth'] ?? null;
+    $location = (string) ($user['location'] ?? '');
+    $bio = (string) ($user['bio'] ?? '');
+
+    return [
+        'id' => (int) $user['id'],
+        'username' => (string) $user['username'],
+        'handle' => (string) $user['handle'],
+        'display_name' => (string) $user['display_name'],
+        'bio' => $bio,
+        'location' => $location,
+        'website_url' => $websiteUrl,
+        'website_label' => websiteDisplayLabel($websiteUrl),
+        'date_of_birth' => is_string($dateOfBirth) ? $dateOfBirth : null,
+        'date_of_birth_label' => formatProfileBirthdayLabel(is_string($dateOfBirth) ? $dateOfBirth : null),
+        'joined_label' => formatProfileJoinedDate((string) ($user['created_at'] ?? '')),
+        'avatar_url' => userMediaUrl($user, 'avatar_url', $url),
+        'cover_url' => userMediaUrl($user, 'cover_url', $url),
+    ];
 }

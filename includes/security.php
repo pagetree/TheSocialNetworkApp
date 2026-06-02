@@ -14,6 +14,7 @@ function rateLimitConfig(string $action): array
         'auth.register' => ['max' => 5, 'window_seconds' => 900],
         'auth.login' => ['max' => 10, 'window_seconds' => 900],
         'auth.check_username' => ['max' => 60, 'window_seconds' => 900],
+        'profile.update' => ['max' => 15, 'window_seconds' => 900],
         default => ['max' => 30, 'window_seconds' => 60],
     };
 }

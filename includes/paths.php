@@ -46,15 +46,24 @@ function appBasePath(): string
     return rtrim($scriptDir, '/');
 }
 
-/**
- * @return array{base: string, path: string, url: callable(string): string}
- */
-function appPaths(): array
+function normalizeAppPath(string $appPath): string
 {
-    static $paths = null;
+    if ($appPath !== '/' && str_ends_with($appPath, '/')) {
+        $appPath = rtrim($appPath, '/') ?: '/';
+    }
 
-    if ($paths !== null) {
-        return $paths;
+    return $appPath;
+}
+
+/**
+ * App-relative path for the current request (e.g. /profile).
+ */
+function appRequestPath(): string
+{
+    static $appPath = null;
+
+    if ($appPath !== null) {
+        return $appPath;
     }
 
     $basePath = appBasePath();
@@ -69,6 +78,25 @@ function appPaths(): array
     if ($appPath === '' || !str_starts_with($appPath, '/')) {
         $appPath = $appPath === '' ? '/' : '/' . ltrim($appPath, '/');
     }
+
+    $appPath = normalizeAppPath($appPath);
+
+    return $appPath;
+}
+
+/**
+ * @return array{base: string, path: string, url: callable(string): string}
+ */
+function appPaths(): array
+{
+    static $paths = null;
+
+    if ($paths !== null) {
+        return $paths;
+    }
+
+    $basePath = appBasePath();
+    $appPath = appRequestPath();
 
     $url = static function (string $uri) use ($basePath): string {
         if ($uri === '' || $uri === '/') {
