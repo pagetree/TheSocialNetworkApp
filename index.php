@@ -5,6 +5,9 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/bootstrap.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+$basePath = $scriptDir === '/' ? '' : rtrim($scriptDir, '/');
+$url = static fn(string $uri): string => $basePath . $uri;
 
 if ($path === '/health') {
     jsonResponse([
@@ -42,12 +45,12 @@ header('Content-Type: text/html; charset=utf-8');
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>TheSocialNetworkApp</title>
-    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="<?php echo htmlspecialchars($url('/assets/css/main.css'), ENT_QUOTES, 'UTF-8'); ?>">
 </head>
 <body>
     <header class="site-header">
         <div class="container nav">
-            <a class="brand" href="/">
+            <a class="brand" href="<?php echo htmlspecialchars($url('/'), ENT_QUOTES, 'UTF-8'); ?>">
                 <span class="material-symbols-outlined">hub</span>
                 <span>SocialNet</span>
             </a>
@@ -169,7 +172,7 @@ header('Content-Type: text/html; charset=utf-8');
             <div class="container cta-box">
                 <h2>Launch your network with confidence</h2>
                 <p>Production-ready scaffold powered by Railway + PostgreSQL.</p>
-                <a class="btn btn-primary btn-lg" href="/db-check">Test database connection</a>
+                <a class="btn btn-primary btn-lg" href="<?php echo htmlspecialchars($url('/db-check'), ENT_QUOTES, 'UTF-8'); ?>">Test database connection</a>
             </div>
         </section>
     </main>
@@ -178,8 +181,8 @@ header('Content-Type: text/html; charset=utf-8');
         <div class="container footer-row">
             <p>&copy; <?php echo date('Y'); ?> TheSocialNetworkApp</p>
             <div class="footer-links">
-                <a href="/health">Health</a>
-                <a href="/db-check">DB Check</a>
+                <a href="<?php echo htmlspecialchars($url('/health'), ENT_QUOTES, 'UTF-8'); ?>">Health</a>
+                <a href="<?php echo htmlspecialchars($url('/db-check'), ENT_QUOTES, 'UTF-8'); ?>">DB Check</a>
             </div>
         </div>
     </footer>
