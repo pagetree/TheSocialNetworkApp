@@ -3,6 +3,50 @@
 declare(strict_types=1);
 
 /**
+ * Web path prefix for this app (empty string when served from domain root).
+ */
+function appBasePath(): string
+{
+    $override = getenv('APP_BASE_PATH');
+    if (is_string($override) && $override !== '') {
+        $normalized = str_replace('\\', '/', trim($override));
+
+        if ($normalized === '/') {
+            return '';
+        }
+
+        return rtrim($normalized, '/');
+    }
+
+    $projectRoot = str_replace('\\', '/', realpath(dirname(__DIR__)) ?: dirname(__DIR__));
+    $documentRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: '');
+
+    if ($documentRoot !== '' && str_starts_with($projectRoot, $documentRoot)) {
+        $relative = substr($projectRoot, strlen($documentRoot));
+
+        if ($relative === '' || $relative === '/') {
+            return '';
+        }
+
+        return rtrim($relative, '/');
+    }
+
+    $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
+
+    if (str_ends_with($scriptName, '/router.php') || str_ends_with($scriptName, 'router.php')) {
+        return '';
+    }
+
+    $scriptDir = dirname($scriptName);
+
+    if ($scriptDir === '/' || $scriptDir === '.' || $scriptDir === '\\') {
+        return '';
+    }
+
+    return rtrim($scriptDir, '/');
+}
+
+/**
  * @return array{base: string, path: string, url: callable(string): string}
  */
 function appPaths(): array
@@ -13,9 +57,7 @@ function appPaths(): array
         return $paths;
     }
 
-    $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php'));
-    $basePath = $scriptDir === '/' ? '' : rtrim($scriptDir, '/');
-
+    $basePath = appBasePath();
     $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
     if ($basePath !== '' && str_starts_with($requestPath, $basePath)) {
@@ -24,16 +66,18 @@ function appPaths(): array
         $appPath = $requestPath;
     }
 
-    if ($appPath === '') {
-        $appPath = '/';
+    if ($appPath === '' || !str_starts_with($appPath, '/')) {
+        $appPath = $appPath === '' ? '/' : '/' . ltrim($appPath, '/');
     }
 
     $url = static function (string $uri) use ($basePath): string {
-        if ($uri === '') {
-            return $basePath ?: '/';
+        if ($uri === '' || $uri === '/') {
+            return ($basePath === '' ? '' : $basePath) . '/';
         }
 
-        return $basePath . ($uri[0] === '/' ? $uri : '/' . $uri);
+        $path = $uri[0] === '/' ? $uri : '/' . $uri;
+
+        return $basePath . $path;
     };
 
     $paths = [
@@ -43,4 +87,19 @@ function appPaths(): array
     ];
 
     return $paths;
+}
+
+/**
+ * Absolute URL helper when APP_URL is configured (optional).
+ */
+function appUrl(string $uri = '/'): string
+{
+    $appUrl = getenv('APP_URL');
+    $path = appPaths()['url']($uri);
+
+    if (!is_string($appUrl) || $appUrl === '') {
+        return $path;
+    }
+
+    return rtrim(str_replace('\\', '/', $appUrl), '/') . ($path === '/' ? '' : $path);
 }
