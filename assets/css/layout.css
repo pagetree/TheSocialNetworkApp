@@ -87,29 +87,23 @@
     flex-shrink: 0;
 }
 
-.topbar-logout-form button {
+.topbar-logout-form button.topbar-link {
     font: inherit;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
+    font-family: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
     padding: 0;
+    margin: 0;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    box-shadow: none;
 }
 
-.topbar-link--logout {
-    margin-left: auto;
-    flex-shrink: 0;
-    color: #f4212e;
-    opacity: 1;
-}
-
-.topbar-logout-form .topbar-link--logout {
-    margin-left: 0;
-}
-
-.topbar-link--logout:hover {
-    color: color-mix(in srgb, #f4212e 82%, #fff);
-    opacity: 1;
+.topbar-logout-form button.topbar-link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
 }
 
 .app-main {

@@ -49,6 +49,15 @@
     box-shadow: 0 12px 32px color-mix(in srgb, #000 35%, transparent);
 }
 
+.post-menu-dropdown--floating {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: auto;
+    margin: 0;
+    z-index: 1200;
+}
+
 .post-menu-option {
     display: block;
     width: 100%;
@@ -87,13 +96,9 @@
 }
 
 .post-card--linkable .post-menu,
-.post-card--linkable .post-menu-dropdown,
 .post-card--linkable .post-menu-btn,
-.post-card--linkable .post-menu-option,
 .hashtag-page .post-reply-item .post-menu,
-.hashtag-page .post-reply-item .post-menu-dropdown,
-.hashtag-page .post-reply-item .post-menu-btn,
-.hashtag-page .post-reply-item .post-menu-option {
+.hashtag-page .post-reply-item .post-menu-btn {
     pointer-events: auto;
     position: relative;
     z-index: 3;

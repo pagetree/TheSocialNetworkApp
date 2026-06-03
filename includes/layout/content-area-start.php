@@ -64,7 +64,7 @@ if (!$isLoggedIn) {
                         class="topbar-logout-form"
                     >
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($logoutCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                        <button type="submit" class="topbar-link topbar-link--logout">
+                        <button type="submit" class="topbar-link">
                             <i data-lucide="log-out" aria-hidden="true"></i>
                             <span>Logout</span>
                         </button>
