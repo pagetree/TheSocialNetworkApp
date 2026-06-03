@@ -21,6 +21,7 @@ function appStylesheetPaths(): array
         '/assets/css/auth.css',
         '/assets/css/register.css',
         '/assets/css/onboarding.css',
+        '/assets/css/hashtag.css',
     ];
 }
 

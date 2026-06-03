@@ -212,6 +212,10 @@
             return false;
         }
 
+        if (target.closest(".post-hashtag")) {
+            return false;
+        }
+
         return Boolean(
             target.closest(".post-header")
             || target.closest(".post-text")

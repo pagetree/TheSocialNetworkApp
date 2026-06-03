@@ -63,7 +63,7 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                             </button>
                         </header>
                         <?php if ($postBody !== '') : ?>
-                        <p class="post-text"><?php echo htmlspecialchars($postBody, ENT_QUOTES, 'UTF-8'); ?></p>
+                        <p class="post-text"><?php echo formatPostBodyHtml($postBody, $url); ?></p>
                         <?php endif; ?>
                         <?php if ($hasMedia) {
                             require __DIR__ . '/post-media-gallery.php';

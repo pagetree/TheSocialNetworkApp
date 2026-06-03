@@ -239,6 +239,66 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
     return;
 }
 
+if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#', $path, $hashtagRouteMatch)) {
+    $hashtagTag = normalizeHashtagTag((string) $hashtagRouteMatch[1]);
+    if ($hashtagTag === '') {
+        http_response_code(404);
+        header('Content-Type: text/html; charset=utf-8');
+        $pageTitle = 'Hashtag not found — TheSocialNetworkApp';
+        $activeNav = 'explore';
+        $mainClass = 'app-content hashtag-page';
+        $currentUser = getCurrentUser();
+        $isLoggedIn = $currentUser !== null;
+        $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
+        $currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
+        $pageScripts = [];
+
+        require __DIR__ . '/includes/layout/head.php';
+        require __DIR__ . '/includes/layout/content-area-start.php';
+        echo '<p class="hashtag-page-empty">This hashtag is not valid.</p>';
+        require __DIR__ . '/includes/layout/content-area-end.php';
+        return;
+    }
+
+    $hashtagMeta = fetchHashtagByTag($hashtagTag);
+    $hashtagPosts = fetchPostsByHashtag($hashtagTag);
+    $hashtagPostCount = (int) ($hashtagMeta['post_count'] ?? count($hashtagPosts));
+
+    $currentUser = getCurrentUser();
+    $isLoggedIn = $currentUser !== null;
+    $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
+    $postStatsCsrfToken = $isLoggedIn ? createCsrfToken('post_stats') : '';
+    $postLikeCsrfToken = $isLoggedIn ? createCsrfToken('post_like') : '';
+    $replyCsrfToken = $isLoggedIn ? createCsrfToken('post_reply') : '';
+    $showFeedReplyModal = $isLoggedIn;
+    $currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
+    $hashtagLikedPostIds = [];
+
+    if ($isLoggedIn && $hashtagPosts !== []) {
+        $hashtagLikedPostIds = array_flip(fetchLikedPostIdsForUser(
+            $currentUserId,
+            array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $hashtagPosts)
+        ));
+    }
+
+    http_response_code(200);
+    header('Content-Type: text/html; charset=utf-8');
+    $pageTitle = '#' . $hashtagTag . ' — TheSocialNetworkApp';
+    $activeNav = 'explore';
+    $mainClass = 'app-content hashtag-page';
+    $pageScripts = ['/assets/js/who-to-follow.js'];
+    if ($showFeedReplyModal) {
+        $pageScripts[] = '/assets/js/reply-media-picker.js';
+        $pageScripts[] = '/assets/js/feed-reply-modal.js';
+    }
+
+    require __DIR__ . '/includes/layout/head.php';
+    require __DIR__ . '/includes/layout/content-area-start.php';
+    require __DIR__ . '/hashtag.php';
+    require __DIR__ . '/includes/layout/content-area-end.php';
+    return;
+}
+
 if (preg_match('#^/post/(\d+)/?$#', $path, $postRouteMatch)) {
     $postId = (int) $postRouteMatch[1];
     $post = fetchPostById($postId);

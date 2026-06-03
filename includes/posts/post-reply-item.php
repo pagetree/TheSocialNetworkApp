@@ -44,7 +44,7 @@ $nestedStyle = $depth > 0 ? ' style="--reply-depth: ' . (int) $depth . ';"' : ''
                                     </p>
                                 </header>
                                 <?php if ($replyBody !== '') : ?>
-                                <p class="post-reply-text"><?php echo htmlspecialchars($replyBody, ENT_QUOTES, 'UTF-8'); ?></p>
+                                <p class="post-reply-text"><?php echo formatPostBodyHtml($replyBody, $url); ?></p>
                                 <?php endif; ?>
                                 <?php
                                 $replyMedia = is_array($reply['media'] ?? null) ? $reply['media'] : [];

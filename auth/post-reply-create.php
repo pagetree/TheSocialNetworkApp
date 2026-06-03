@@ -130,6 +130,10 @@ if ($mediaFiles !== []) {
     );
 }
 
+if ($bodyForDb !== '') {
+    syncPostReplyHashtags($replyId, $bodyForDb);
+}
+
 $appPaths = appPaths();
 jsonResponse([
     'ok' => true,

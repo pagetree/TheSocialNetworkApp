@@ -146,6 +146,10 @@ $post['display_name'] = $author['display_name'];
 $post['handle'] = $author['handle'];
 $post['avatar_url'] = $author['avatar_url'];
 
+if ($bodyForDb !== null) {
+    syncPostHashtags($postId, $bodyForDb);
+}
+
 $appPaths = appPaths();
 jsonResponse([
     'ok' => true,

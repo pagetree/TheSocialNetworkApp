@@ -56,7 +56,7 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                         </header>
 
                         <?php if ($postBody !== '') : ?>
-                        <p class="post-detail-text"><?php echo htmlspecialchars($postBody, ENT_QUOTES, 'UTF-8'); ?></p>
+                        <p class="post-detail-text"><?php echo formatPostBodyHtml($postBody, $url); ?></p>
                         <?php endif; ?>
 
                         <?php if ($hasMedia) {

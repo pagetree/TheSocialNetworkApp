@@ -309,7 +309,7 @@
             return;
         }
 
-        if (!card.closest("#post-feed, #profile-post-feed")) {
+        if (!card.closest("#post-feed, #profile-post-feed, #hashtag-post-feed")) {
             return;
         }
 
@@ -320,6 +320,7 @@
 
     document.getElementById("post-feed")?.addEventListener("click", handleReplyClick);
     document.getElementById("profile-post-feed")?.addEventListener("click", handleReplyClick);
+    document.getElementById("hashtag-post-feed")?.addEventListener("click", handleReplyClick);
 
     updateCounter();
 })();

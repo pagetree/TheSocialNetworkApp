@@ -56,7 +56,8 @@
 .post-card--linkable .post-header,
 .post-card--linkable .post-menu-btn,
 .post-card--linkable .post-media--zoomable,
-.post-card--linkable .post-media--video {
+.post-card--linkable .post-media--video,
+.post-card--linkable .post-hashtag {
     pointer-events: auto;
     position: relative;
     z-index: 2;

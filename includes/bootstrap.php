@@ -25,6 +25,7 @@ require_once __DIR__ . '/onboarding.php';
 require_once __DIR__ . '/post-participants.php';
 require_once __DIR__ . '/post-scores.php';
 require_once __DIR__ . '/r2-storage.php';
+require_once __DIR__ . '/hashtags.php';
 
 function jsonResponse(array $payload, int $statusCode = 200): void
 {

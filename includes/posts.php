@@ -163,6 +163,7 @@ function hydrateFeedPostsWithMedia(array $rows): array
 
 function deletePostForUser(int $postId, int $userId): void
 {
+    $hashtagIds = fetchHashtagIdsForPost($postId);
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
         'DELETE FROM posts
@@ -173,6 +174,7 @@ function deletePostForUser(int $postId, int $userId): void
         'id' => $postId,
         'user_id' => $userId,
     ]);
+    recomputeHashtagPostCounts($hashtagIds);
 }
 
 /**
