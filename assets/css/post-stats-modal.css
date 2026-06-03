@@ -10,13 +10,10 @@ body.post-stats-modal-open {
     display: none;
     align-items: center;
     justify-content: center;
-    padding: 1.25rem;
-    background:
-        radial-gradient(circle at 20% 10%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 42%),
-        radial-gradient(circle at 80% 90%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 38%),
-        color-mix(in srgb, var(--body-bg) 72%, transparent);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    padding: 1.5rem;
+    background: color-mix(in srgb, var(--body-bg) 75%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .post-stats-modal-overlay:not([hidden]) {
@@ -24,67 +21,39 @@ body.post-stats-modal-open {
 }
 
 .post-stats-modal {
-    --stat-likes: #ff6b8a;
-    --stat-reposts: #5eead4;
-    --stat-replies: var(--accent);
-    --stat-views: #60a5fa;
-    --stat-clicks: #c084fc;
-    --stat-score: #fbbf24;
-    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-
     position: relative;
-    width: min(100%, 680px);
-    max-height: min(88vh, 720px);
+    width: min(100%, 560px);
+    max-height: min(85vh, 620px);
     margin: auto;
-    border-radius: calc(var(--container-radius) + 4px);
-    border: 1px solid color-mix(in srgb, var(--light) 10%, transparent);
-    background:
-        linear-gradient(165deg, color-mix(in srgb, var(--elements-bg) 96%, var(--accent) 4%), var(--elements-bg));
-    padding: 1.75rem;
+    border-radius: var(--container-radius);
+    background: var(--elements-bg);
+    padding: var(--element-padding);
     display: grid;
-    gap: 1.35rem;
+    gap: 1.25rem;
     overflow: auto;
-    box-shadow:
-        0 24px 80px color-mix(in srgb, var(--body-bg) 55%, transparent),
-        0 0 0 1px color-mix(in srgb, var(--light) 4%, transparent) inset;
-    animation: post-stats-modal-in 320ms var(--ease-out-expo);
-}
-
-@keyframes post-stats-modal-in {
-    from {
-        opacity: 0;
-        transform: translateY(18px) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
 }
 
 .post-stats-modal-close {
     position: absolute;
-    top: 14px;
-    right: 14px;
+    top: 12px;
+    right: 12px;
     z-index: 2;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
-    border: 1px solid color-mix(in srgb, var(--light) 10%, transparent);
+    width: 36px;
+    height: 36px;
+    border: 0;
     border-radius: 50%;
-    background: color-mix(in srgb, var(--body-bg) 70%, transparent);
+    background: color-mix(in srgb, var(--body-bg) 72%, transparent);
     color: var(--light);
     cursor: pointer;
-    transition: background 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms var(--ease-out-expo);
+    transition: background 140ms ease, color 140ms ease;
 }
 
 .post-stats-modal-close:hover {
-    background: color-mix(in srgb, var(--accent) 18%, transparent);
-    border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
     color: var(--accent);
-    transform: scale(1.04);
 }
 
 .post-stats-modal-close svg {
@@ -94,24 +63,20 @@ body.post-stats-modal-open {
 }
 
 .post-stats-modal-header {
-    display: grid;
-    gap: 0.35rem;
-    padding-right: 2.75rem;
+    padding-right: 2.5rem;
 }
 
 .post-stats-modal-title {
     margin: 0;
-    font-size: clamp(1.35rem, 2.4vw, 1.65rem);
+    font-size: 1.35rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
     color: var(--light);
 }
 
 .post-stats-modal-subtitle {
-    margin: 0;
-    font-size: 0.88rem;
-    font-weight: 500;
-    color: color-mix(in srgb, var(--accent) 78%, var(--light));
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: color-mix(in srgb, var(--light) 65%, transparent);
 }
 
 .post-stats-modal-body {
@@ -121,13 +86,11 @@ body.post-stats-modal-open {
 
 .post-stats-modal-content {
     display: grid;
-    gap: 1.35rem;
+    gap: 1.25rem;
 }
 
 .post-stats-modal-status {
     margin: 0;
-    padding: 1.25rem 0;
-    text-align: center;
     color: color-mix(in srgb, var(--light) 70%, transparent);
 }
 
@@ -139,12 +102,9 @@ body.post-stats-modal-open {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0;
-    padding: 0.35rem;
-    border-radius: 18px;
-    border: 1px solid color-mix(in srgb, var(--light) 8%, transparent);
-    background:
-        linear-gradient(145deg, color-mix(in srgb, var(--body-bg) 82%, transparent), color-mix(in srgb, var(--elements-bg) 92%, var(--accent) 8%));
-    box-shadow: 0 12px 40px color-mix(in srgb, var(--body-bg) 45%, transparent);
+    padding: 1rem;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--body-bg) 55%, transparent);
 }
 
 .post-stats-hero-card[data-count="1"] {
@@ -156,190 +116,65 @@ body.post-stats-modal-open {
 }
 
 .post-stats-hero-item {
-    position: relative;
     display: grid;
     justify-items: center;
-    gap: 0.45rem;
-    padding: 1.35rem 1rem;
+    gap: 0.35rem;
+    padding: 0.5rem;
     text-align: center;
-    animation: post-stats-fade-up 420ms var(--ease-out-expo) both;
-    animation-delay: var(--hero-delay, 0ms);
 }
 
-.post-stats-hero-item:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    top: 18%;
-    right: 0;
-    width: 1px;
-    height: 64%;
-    background: linear-gradient(
-        to bottom,
-        transparent,
-        color-mix(in srgb, var(--light) 14%, transparent),
-        transparent
-    );
+.post-stats-hero-item:not(:last-child) {
+    border-right: 1px solid color-mix(in srgb, var(--light) 10%, transparent);
 }
 
-.post-stats-hero-card[data-count="2"] .post-stats-hero-item:last-child::after,
-.post-stats-hero-card[data-count="1"] .post-stats-hero-item::after {
-    display: none;
-}
-
-.post-stats-hero-item[data-metric-key="likes"] .post-stats-hero-icon {
-    color: var(--stat-likes);
-    background: color-mix(in srgb, var(--stat-likes) 16%, transparent);
-    box-shadow: 0 0 24px color-mix(in srgb, var(--stat-likes) 22%, transparent);
-}
-
-.post-stats-hero-item[data-metric-key="reposts"] .post-stats-hero-icon {
-    color: var(--stat-reposts);
-    background: color-mix(in srgb, var(--stat-reposts) 16%, transparent);
-    box-shadow: 0 0 24px color-mix(in srgb, var(--stat-reposts) 22%, transparent);
-}
-
-.post-stats-hero-item[data-metric-key="replies"] .post-stats-hero-icon {
-    color: var(--stat-replies);
-    background: color-mix(in srgb, var(--stat-replies) 16%, transparent);
-    box-shadow: 0 0 24px color-mix(in srgb, var(--stat-replies) 22%, transparent);
+.post-stats-hero-card[data-count="2"] .post-stats-hero-item:last-child,
+.post-stats-hero-card[data-count="1"] .post-stats-hero-item {
+    border-right: 0;
 }
 
 .post-stats-hero-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
-    transition: transform 220ms var(--ease-out-expo);
-}
-
-.post-stats-hero-item:hover .post-stats-hero-icon {
-    transform: translateY(-2px) scale(1.05);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
 }
 
 .post-stats-hero-icon svg {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     stroke: currentColor;
 }
 
 .post-stats-hero-value {
     margin: 0;
-    font-size: clamp(1.65rem, 3vw, 2rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
+    font-size: 1.35rem;
+    font-weight: 700;
     line-height: 1;
     color: var(--light);
 }
 
 .post-stats-hero-label {
     margin: 0;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--light) 58%, transparent);
-}
-
-.post-stats-insights {
-    display: grid;
-    gap: 1rem;
-}
-
-.post-stats-insights-header {
-    display: grid;
-    gap: 0.25rem;
-}
-
-.post-stats-insights-title {
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--light) 72%, transparent);
-}
-
-.post-stats-insights-lead {
-    margin: 0;
-    font-size: 0.88rem;
-    color: color-mix(in srgb, var(--light) 52%, transparent);
+    font-size: 0.82rem;
+    color: color-mix(in srgb, var(--light) 62%, transparent);
 }
 
 .post-stats-insights-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.85rem;
+    gap: 0.65rem;
 }
 
-.post-stats-insight-tile {
-    position: relative;
-    overflow: hidden;
-    display: grid;
-    gap: 0.55rem;
-    padding: 1.1rem 1.15rem;
-    min-height: 132px;
-    border-radius: 16px;
-    border: 1px solid color-mix(in srgb, var(--light) 8%, transparent);
-    background: color-mix(in srgb, var(--body-bg) 58%, transparent);
-    animation: post-stats-fade-up 460ms var(--ease-out-expo) both;
-    animation-delay: var(--insight-delay, 0ms);
-    transition: transform 220ms var(--ease-out-expo), border-color 220ms ease;
-}
-
-.post-stats-insight-tile:hover {
-    transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--light) 16%, transparent);
-}
-
-.post-stats-insight-tile--views {
-    grid-column: 1 / -1;
-    min-height: 118px;
-    background:
-        linear-gradient(120deg, color-mix(in srgb, var(--stat-views) 14%, var(--body-bg)), color-mix(in srgb, var(--body-bg) 88%, transparent));
-}
-
-.post-stats-insight-tile--interactions {
-    background:
-        linear-gradient(145deg, color-mix(in srgb, var(--stat-clicks) 12%, var(--body-bg)), color-mix(in srgb, var(--body-bg) 90%, transparent));
-}
-
-.post-stats-insight-tile--score {
-    background:
-        linear-gradient(145deg, color-mix(in srgb, var(--stat-score) 14%, var(--body-bg)), color-mix(in srgb, var(--body-bg) 90%, transparent));
-}
-
-.post-stats-insight-glow {
-    position: absolute;
-    top: -40%;
-    right: -20%;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    pointer-events: none;
-    opacity: 0.45;
-    filter: blur(28px);
-}
-
-.post-stats-insight-tile--views .post-stats-insight-glow {
-    background: var(--stat-views);
-}
-
-.post-stats-insight-tile--interactions .post-stats-insight-glow {
-    background: var(--stat-clicks);
-}
-
-.post-stats-insight-tile--score .post-stats-insight-glow {
-    background: var(--stat-score);
-}
-
-.post-stats-insight-top {
+.post-stats-insight-row {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
-    position: relative;
-    z-index: 1;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--body-bg) 55%, transparent);
 }
 
 .post-stats-insight-icon {
@@ -348,25 +183,10 @@ body.post-stats-modal-open {
     justify-content: center;
     width: 36px;
     height: 36px;
-    border-radius: 11px;
-    background: color-mix(in srgb, var(--light) 8%, transparent);
-    color: var(--light);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
     flex-shrink: 0;
-}
-
-.post-stats-insight-tile--views .post-stats-insight-icon {
-    color: var(--stat-views);
-    background: color-mix(in srgb, var(--stat-views) 18%, transparent);
-}
-
-.post-stats-insight-tile--interactions .post-stats-insight-icon {
-    color: var(--stat-clicks);
-    background: color-mix(in srgb, var(--stat-clicks) 18%, transparent);
-}
-
-.post-stats-insight-tile--score .post-stats-insight-icon {
-    color: var(--stat-score);
-    background: color-mix(in srgb, var(--stat-score) 18%, transparent);
 }
 
 .post-stats-insight-icon svg {
@@ -375,43 +195,23 @@ body.post-stats-modal-open {
     stroke: currentColor;
 }
 
+.post-stats-insight-copy {
+    display: grid;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
 .post-stats-insight-label {
     margin: 0;
     font-size: 0.82rem;
-    font-weight: 600;
-    color: color-mix(in srgb, var(--light) 68%, transparent);
+    color: color-mix(in srgb, var(--light) 62%, transparent);
 }
 
 .post-stats-insight-value {
-    position: relative;
-    z-index: 1;
     margin: 0;
-    font-size: clamp(1.45rem, 2.5vw, 1.85rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--light);
-}
-
-.post-stats-insight-copy {
-    position: relative;
-    z-index: 1;
-    margin: 0;
-    font-size: 0.78rem;
-    line-height: 1.45;
-    color: color-mix(in srgb, var(--light) 48%, transparent);
-}
-
-@keyframes post-stats-fade-up {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .post-action-stat-views.is-active,
@@ -432,28 +232,17 @@ body.post-stats-modal-open {
     color: var(--accent);
 }
 
-@media (max-width: 560px) {
-    .post-stats-modal {
-        padding: 1.25rem;
-    }
-
+@media (max-width: 520px) {
     .post-stats-hero-card {
         grid-template-columns: 1fr;
     }
 
-    .post-stats-hero-item::after {
-        display: none;
+    .post-stats-hero-item {
+        border-right: 0;
+        border-bottom: 1px solid color-mix(in srgb, var(--light) 10%, transparent);
     }
 
-    .post-stats-hero-item:not(:last-child) {
-        border-bottom: 1px solid color-mix(in srgb, var(--light) 8%, transparent);
-    }
-
-    .post-stats-insights-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .post-stats-insight-tile--views {
-        grid-column: auto;
+    .post-stats-hero-item:last-child {
+        border-bottom: 0;
     }
 }
