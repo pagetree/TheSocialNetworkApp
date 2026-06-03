@@ -61,18 +61,30 @@ $whoToFollowAvatarUrl = userMediaUrl(null, 'avatar_url', $url);
                         <ul class="who-to-follow-list">
                             <?php foreach ($whoToFollowPlaceholders as $suggestion) : ?>
                             <li class="who-to-follow-item">
-                                <img
-                                    class="who-to-follow-avatar"
-                                    src="<?php echo htmlspecialchars($whoToFollowAvatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                                    alt="<?php echo htmlspecialchars((string) $suggestion['display_name'] . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
-                                    width="40"
-                                    height="40"
-                                    loading="lazy"
-                                    decoding="async"
-                                >
-                                <div class="who-to-follow-meta">
-                                    <span class="who-to-follow-name"><?php echo htmlspecialchars((string) $suggestion['display_name'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                    <span class="who-to-follow-handle"><?php echo htmlspecialchars((string) $suggestion['handle'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                <div class="who-to-follow-row">
+                                    <div class="who-to-follow-identity">
+                                        <img
+                                            class="who-to-follow-avatar"
+                                            src="<?php echo htmlspecialchars($whoToFollowAvatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                            alt="<?php echo htmlspecialchars((string) $suggestion['display_name'] . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
+                                            width="60"
+                                            height="60"
+                                            loading="lazy"
+                                            decoding="async"
+                                        >
+                                        <div class="who-to-follow-meta">
+                                            <span class="who-to-follow-name"><?php echo htmlspecialchars((string) $suggestion['display_name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <span class="who-to-follow-handle"><?php echo htmlspecialchars((string) $suggestion['handle'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="profile-follow-btn post-participants-follow-btn"
+                                        data-placeholder-follow
+                                        aria-pressed="false"
+                                    >
+                                        <span class="profile-follow-btn-label">Follow</span>
+                                    </button>
                                 </div>
                             </li>
                             <?php endforeach; ?>
