@@ -86,59 +86,33 @@ body.content-report-modal-open {
     gap: var(--post-gap);
 }
 
-.content-report-reasons {
-    margin: 0;
-    padding: 0;
-    border: 0;
+.content-report-reason-wrap {
     display: grid;
     gap: 8px;
-}
-
-.content-report-sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-.content-report-reason {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 1px solid color-mix(in srgb, var(--light) 12%, transparent);
-    background: color-mix(in srgb, var(--light) 3%, transparent);
-    cursor: pointer;
-    transition: border-color 140ms ease, background 140ms ease;
-}
-
-.content-report-reason:hover {
-    border-color: color-mix(in srgb, var(--light) 22%, transparent);
-    background: color-mix(in srgb, var(--light) 6%, transparent);
-}
-
-.content-report-reason:has(input:checked) {
-    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-    background: color-mix(in srgb, var(--accent) 10%, transparent);
-}
-
-.content-report-reason input {
-    margin: 0;
-    flex-shrink: 0;
-    accent-color: var(--accent);
 }
 
 .content-report-reason-label {
     font-size: 14px;
     font-weight: 600;
     color: var(--light);
-    line-height: 1.35;
+}
+
+.content-report-reason-select {
+    width: 100%;
+    border: 1px solid color-mix(in srgb, var(--light) 16%, transparent);
+    border-radius: 12px;
+    padding: 12px 14px;
+    background: color-mix(in srgb, var(--light) 3%, transparent);
+    color: var(--light);
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.45;
+    cursor: pointer;
+}
+
+.content-report-reason-select:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .content-report-details-wrap {

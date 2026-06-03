@@ -17,20 +17,23 @@ declare(strict_types=1);
             <p class="content-report-modal-subtitle" id="content-report-modal-subtitle"></p>
         </header>
         <form class="content-report-modal-form" id="content-report-modal-form" novalidate>
-            <fieldset class="content-report-reasons">
-                <legend class="content-report-sr-only">Reason for report</legend>
-<?php foreach (contentReportReasonOptions() as $index => $reasonOption) : ?>
-                <label class="content-report-reason">
-                    <input
-                        type="radio"
-                        name="content_report_reason"
-                        value="<?php echo htmlspecialchars($reasonOption['code'], ENT_QUOTES, 'UTF-8'); ?>"
-                        <?php echo $index === 0 ? '' : ''; ?>
-                    >
-                    <span class="content-report-reason-label"><?php echo htmlspecialchars($reasonOption['label'], ENT_QUOTES, 'UTF-8'); ?></span>
-                </label>
+            <div class="content-report-reason-wrap">
+                <label class="content-report-reason-label" for="content-report-reason">Reason</label>
+                <select
+                    class="content-report-reason-select"
+                    id="content-report-reason"
+                    name="content_report_reason"
+                    required
+                    aria-describedby="content-report-error content-report-success"
+                >
+                    <option value="" selected disabled>Choose a reason</option>
+<?php foreach (contentReportReasonOptions() as $reasonOption) : ?>
+                    <option value="<?php echo htmlspecialchars($reasonOption['code'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <?php echo htmlspecialchars($reasonOption['label'], ENT_QUOTES, 'UTF-8'); ?>
+                    </option>
 <?php endforeach; ?>
-            </fieldset>
+                </select>
+            </div>
             <div class="content-report-details-wrap">
                 <label class="content-report-details-label" for="content-report-details">
                     Additional details <span class="content-report-details-optional">(optional)</span>

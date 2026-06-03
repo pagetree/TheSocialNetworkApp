@@ -8,6 +8,7 @@
     const form = document.getElementById("content-report-modal-form");
     const titleEl = document.getElementById("content-report-modal-title");
     const subtitleEl = document.getElementById("content-report-modal-subtitle");
+    const reasonSelect = document.getElementById("content-report-reason");
     const detailsInput = document.getElementById("content-report-details");
     const errorEl = document.getElementById("content-report-error");
     const successEl = document.getElementById("content-report-success");
@@ -22,6 +23,7 @@
         || !form
         || !titleEl
         || !subtitleEl
+        || !reasonSelect
         || !detailsInput
         || !errorEl
         || !successEl
@@ -59,10 +61,7 @@
         errorEl.textContent = "";
     };
 
-    const selectedReason = () => {
-        const checked = form.querySelector('input[name="content_report_reason"]:checked');
-        return checked instanceof HTMLInputElement ? checked.value : "";
-    };
+    const selectedReason = () => reasonSelect.value.trim();
 
     const updateSubmitState = () => {
         const reason = selectedReason();
@@ -73,7 +72,7 @@
     };
 
     const resetForm = () => {
-        form.reset();
+        reasonSelect.value = "";
         detailsInput.value = "";
         setError("");
         setSuccess("");
@@ -114,10 +113,7 @@
         document.body.classList.add("content-report-modal-open");
         window.lucide?.createIcons?.();
 
-        const firstReason = form.querySelector('input[name="content_report_reason"]');
-        if (firstReason instanceof HTMLInputElement) {
-            firstReason.focus();
-        }
+        reasonSelect.focus();
     };
 
     const submitReport = async () => {
@@ -172,7 +168,7 @@
                 throw new Error(data.error || "Unable to submit report right now.");
             }
 
-            form.querySelectorAll("input, textarea, button").forEach((element) => {
+            form.querySelectorAll("select, textarea, button").forEach((element) => {
                 element.disabled = true;
             });
             submitBtn.classList.remove("is-loading");
@@ -181,7 +177,7 @@
 
             window.setTimeout(() => {
                 closeModal();
-                form.querySelectorAll("input, textarea, button").forEach((element) => {
+                form.querySelectorAll("select, textarea, button").forEach((element) => {
                     element.disabled = false;
                 });
             }, 1400);
@@ -211,7 +207,7 @@
         }
     });
 
-    form.addEventListener("change", updateSubmitState);
+    reasonSelect.addEventListener("change", updateSubmitState);
     detailsInput.addEventListener("input", updateSubmitState);
 
     form.addEventListener("submit", (event) => {
