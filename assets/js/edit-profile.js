@@ -172,18 +172,10 @@
         }
 
         const sidebarName = document.getElementById("profile-sidebar-name");
-        const sidebarBio = document.getElementById("profile-sidebar-bio");
-        const sidebarLocation = document.getElementById("profile-sidebar-location");
         const sidebarAvatar = document.getElementById("profile-sidebar-avatar");
 
         if (sidebarName) {
             sidebarName.textContent = user.display_name ?? "";
-        }
-        if (sidebarBio) {
-            sidebarBio.textContent = user.bio ?? "";
-        }
-        if (sidebarLocation) {
-            sidebarLocation.textContent = user.location ?? "";
         }
         if (sidebarAvatar && user.avatar_url) {
             sidebarAvatar.src = user.avatar_url;

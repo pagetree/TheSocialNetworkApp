@@ -45,9 +45,6 @@ $currentUserId = $currentUserId ?? 0;
                                         <span class="post-participants-meta">
                                             <span class="post-participants-name"><?php echo htmlspecialchars($participantName, ENT_QUOTES, 'UTF-8'); ?></span>
                                             <span class="post-participants-handle"><?php echo htmlspecialchars($participantHandle, ENT_QUOTES, 'UTF-8'); ?></span>
-                                            <?php if ($participantBio !== '') : ?>
-                                            <p class="post-participants-bio"><?php echo htmlspecialchars($participantBio, ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <?php endif; ?>
                                         </span>
                                     </a>
                                     <?php else : ?>
@@ -61,9 +58,6 @@ $currentUserId = $currentUserId ?? 0;
                                         <span class="post-participants-meta">
                                             <span class="post-participants-name"><?php echo htmlspecialchars($participantName, ENT_QUOTES, 'UTF-8'); ?></span>
                                             <span class="post-participants-handle"><?php echo htmlspecialchars($participantHandle, ENT_QUOTES, 'UTF-8'); ?></span>
-                                            <?php if ($participantBio !== '') : ?>
-                                            <p class="post-participants-bio"><?php echo htmlspecialchars($participantBio, ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <?php endif; ?>
                                         </span>
                                     </div>
                                     <?php endif; ?>
@@ -80,6 +74,9 @@ $currentUserId = $currentUserId ?? 0;
                                     </button>
                                     <?php endif; ?>
                                 </div>
+                                <?php if ($participantBio !== '') : ?>
+                                <p class="post-participants-bio"><?php echo htmlspecialchars($participantBio, ENT_QUOTES, 'UTF-8'); ?></p>
+                                <?php endif; ?>
                             </li>
                             <?php endforeach; ?>
                         </ul>

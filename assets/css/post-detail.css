@@ -144,7 +144,7 @@
     margin-top: var(--post-gap);
     background: var(--elements-bg);
     border-radius: var(--container-radius);
-    padding: var(--element-padding);
+    padding: var(--element-padding) 0;
 }
 
 .post-reply-composer-avatar {

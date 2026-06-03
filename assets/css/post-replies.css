@@ -11,7 +11,7 @@
     gap: var(--reply-thread-gap);
     background: var(--elements-bg);
     border-radius: var(--container-radius);
-    padding: var(--element-padding);
+    padding: var(--element-padding) 0;
 }
 
 .post-reply-thread {

@@ -7,10 +7,16 @@ declare(strict_types=1);
 $sidebarUser = getCurrentUser();
 $sidebarName = is_array($sidebarUser) ? (string) $sidebarUser['display_name'] : 'User Name';
 $sidebarHandle = is_array($sidebarUser) ? (string) $sidebarUser['handle'] : '@username';
-$sidebarBio = is_array($sidebarUser)
-    ? trim((string) ($sidebarUser['bio'] ?? ''))
-    : 'UI, UX Designer and Web Developer from Croatia';
 $sidebarAvatar = userMediaUrl($sidebarUser, 'avatar_url', $url);
+$sidebarFollowersCount = 0;
+$sidebarFollowingCount = 0;
+if (is_array($sidebarUser)) {
+    $sidebarFollowCounts = fetchUserFollowCounts((int) ($sidebarUser['id'] ?? 0));
+    $sidebarFollowersCount = $sidebarFollowCounts['followers'];
+    $sidebarFollowingCount = $sidebarFollowCounts['following'];
+}
+$sidebarFollowersLabel = formatEngagementCount($sidebarFollowersCount);
+$sidebarFollowingLabel = formatEngagementCount($sidebarFollowingCount);
 ?>
                 <aside class="app-sidebar">
                     <article class="profile-card">
@@ -26,14 +32,13 @@ $sidebarAvatar = userMediaUrl($sidebarUser, 'avatar_url', $url);
                                 <p class="profile-card-handle"><?php echo htmlspecialchars($sidebarHandle, ENT_QUOTES, 'UTF-8'); ?></p>
                             </div>
                         </header>
-                        <p id="profile-sidebar-bio" class="profile-card-bio"><?php echo htmlspecialchars($sidebarBio, ENT_QUOTES, 'UTF-8'); ?></p>
                         <div class="profile-card-stats" aria-label="Profile stats">
                             <span class="profile-card-stat">
-                                <span class="profile-card-stat-value">499</span>
+                                <span id="profile-sidebar-followers-count" class="profile-card-stat-value"><?php echo htmlspecialchars($sidebarFollowersLabel, ENT_QUOTES, 'UTF-8'); ?></span>
                                 <span class="profile-card-stat-label">Followers</span>
                             </span>
                             <span class="profile-card-stat">
-                                <span class="profile-card-stat-value">46</span>
+                                <span id="profile-sidebar-following-count" class="profile-card-stat-value"><?php echo htmlspecialchars($sidebarFollowingLabel, ENT_QUOTES, 'UTF-8'); ?></span>
                                 <span class="profile-card-stat-label">Following</span>
                             </span>
                         </div>
