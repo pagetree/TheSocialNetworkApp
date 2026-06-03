@@ -55,6 +55,8 @@ if (!$isLoggedIn) {
                             <span>Profile</span>
                         </a>
                     </nav>
+                </div>
+                <div class="topbar-end">
                     <?php if ($isLoggedIn) :
                         $logoutCsrfToken = createCsrfToken('logout');
                     ?>
@@ -71,9 +73,6 @@ if (!$isLoggedIn) {
                     </form>
                     <?php endif; ?>
                 </div>
-                <?php if ($layoutHasRightSidebar) : ?>
-                <div class="topbar-aside" aria-hidden="true"></div>
-                <?php endif; ?>
             </header>
 
             <div class="<?php echo htmlspecialchars($appMainClass, ENT_QUOTES, 'UTF-8'); ?>">

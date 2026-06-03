@@ -12,7 +12,7 @@
 
 .app-topbar {
     display: grid;
-    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr) auto;
     gap: var(--layout-gap);
     align-items: center;
 }
@@ -82,8 +82,14 @@
     opacity: 1;
 }
 
+.topbar-end {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 0;
+}
+
 .topbar-logout-form {
-    margin-left: auto;
     flex-shrink: 0;
 }
 
@@ -127,10 +133,6 @@
 
 .app-sidebar--right {
     align-items: flex-start;
-}
-
-.topbar-aside {
-    min-width: 0;
 }
 
 .app-content {
