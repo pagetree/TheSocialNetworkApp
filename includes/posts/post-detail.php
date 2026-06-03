@@ -77,10 +77,15 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                                 <time datetime="<?php echo htmlspecialchars($createdAt, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($detailDateLabel, ENT_QUOTES, 'UTF-8'); ?></time>
                             </p>
                             <?php endif; ?>
-                            <p class="post-detail-meta-item post-detail-meta-views">
+                            <button
+                                type="button"
+                                class="post-detail-meta-item post-detail-meta-views-btn post-action-stat-views"
+                                aria-label="View post stats"
+                                data-post-id="<?php echo (int) ($post['id'] ?? 0); ?>"
+                            >
                                 <i data-lucide="bar-chart-2" aria-hidden="true"></i>
                                 <span><span class="post-detail-view-count"><?php echo htmlspecialchars($viewCount, ENT_QUOTES, 'UTF-8'); ?></span> views</span>
-                            </p>
+                            </button>
                             <span class="post-stat-interactions" hidden aria-hidden="true"><?php echo htmlspecialchars($interactionCount, ENT_QUOTES, 'UTF-8'); ?></span>
                         </footer>
 
@@ -94,6 +99,15 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                                 aria-pressed="<?php echo $viewerLiked ? 'true' : 'false'; ?>"
                                 data-liked="<?php echo $viewerLiked ? '1' : '0'; ?>"
                             ><i data-lucide="heart" aria-hidden="true"></i><span><?php echo htmlspecialchars($likeCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
+                            <button
+                                type="button"
+                                class="post-action post-action-stat-views"
+                                aria-label="View post stats"
+                                data-post-id="<?php echo (int) ($post['id'] ?? 0); ?>"
+                            >
+                                <i data-lucide="bar-chart-2" aria-hidden="true"></i>
+                                <span class="post-detail-view-count"><?php echo htmlspecialchars($viewCount, ENT_QUOTES, 'UTF-8'); ?></span>
+                            </button>
                         </footer>
                     </article>
 

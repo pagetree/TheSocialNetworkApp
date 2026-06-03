@@ -105,6 +105,11 @@ if ($path === '/posts/stats' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     return;
 }
 
+if ($path === '/posts/stats/detail' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/post-stats-detail.php';
+    return;
+}
+
 if ($path === '/posts/reply' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     require __DIR__ . '/auth/post-reply-create.php';
     return;

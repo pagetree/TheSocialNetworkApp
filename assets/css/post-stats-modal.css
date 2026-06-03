@@ -1,0 +1,155 @@
+
+body.post-stats-modal-open {
+    overflow: hidden;
+}
+
+.post-stats-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: linear-gradient(140deg, color-mix(in srgb, var(--light) 12%, transparent), color-mix(in srgb, var(--light) 4%, transparent));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.post-stats-modal-overlay:not([hidden]) {
+    display: flex;
+}
+
+.post-stats-modal {
+    position: relative;
+    width: min(100%, 420px);
+    max-height: min(85vh, 560px);
+    margin: auto;
+    border-radius: var(--container-radius);
+    background: var(--elements-bg);
+    padding: var(--element-padding);
+    display: grid;
+    gap: 1rem;
+    overflow: auto;
+}
+
+.post-stats-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--body-bg) 72%, transparent);
+    color: var(--light);
+    cursor: pointer;
+    transition: background 140ms ease, color 140ms ease;
+}
+
+.post-stats-modal-close:hover {
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    color: var(--accent);
+}
+
+.post-stats-modal-close svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+}
+
+.post-stats-modal-title {
+    margin: 0;
+    padding-right: 2.5rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--light);
+}
+
+.post-stats-modal-subtitle {
+    margin: -0.35rem 0 0;
+    font-size: 0.9rem;
+    color: color-mix(in srgb, var(--light) 65%, transparent);
+}
+
+.post-stats-modal-body {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.post-stats-modal-status {
+    margin: 0;
+    color: color-mix(in srgb, var(--light) 70%, transparent);
+}
+
+.post-stats-modal-status.is-error {
+    color: var(--danger);
+}
+
+.post-stats-metric {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--body-bg) 55%, transparent);
+}
+
+.post-stats-metric-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.post-stats-metric-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+.post-stats-metric-copy {
+    display: grid;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.post-stats-metric-label {
+    margin: 0;
+    font-size: 0.82rem;
+    color: color-mix(in srgb, var(--light) 62%, transparent);
+}
+
+.post-stats-metric-value {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--light);
+}
+
+.post-action-stat-views.is-active,
+.post-detail-meta-views-btn.is-active {
+    color: var(--accent);
+}
+
+.post-detail-meta-views-btn {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    transition: color 140ms ease;
+}
+
+.post-detail-meta-views-btn:hover {
+    color: var(--accent);
+}

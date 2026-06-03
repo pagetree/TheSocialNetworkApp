@@ -208,7 +208,12 @@
             return false;
         }
 
-        if (target.closest(".post-actions") || target.closest(".post-menu")) {
+        if (
+            target.closest(".post-actions")
+            || target.closest(".post-menu")
+            || target.closest(".post-action-stat-views")
+            || target.closest(".post-detail-meta-views-btn")
+        ) {
             return false;
         }
 

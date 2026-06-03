@@ -20,6 +20,7 @@ $replyTimeLabel = (string) ($reply['time_label'] ?? '');
 $createdAt = (string) ($reply['created_at'] ?? '');
 $likeCount = formatEngagementCount((int) ($reply['like_count'] ?? 0));
 $replyCount = formatEngagementCount((int) ($reply['reply_count'] ?? 0));
+$replyId = (int) ($reply['id'] ?? 0);
 $nestedClass = $depth > 0 ? ' post-reply-item--nested' : '';
 $nestedStyle = $depth > 0 ? ' style="--reply-depth: ' . (int) $depth . ';"' : '';
 ?>
@@ -77,6 +78,15 @@ $nestedStyle = $depth > 0 ? ' style="--reply-depth: ' . (int) $depth . ';"' : ''
                                     <button type="button" class="post-action" aria-label="Like reply">
                                         <i data-lucide="heart" aria-hidden="true"></i>
                                         <span><?php echo htmlspecialchars($likeCount, ENT_QUOTES, 'UTF-8'); ?></span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="post-action post-action-stat-views"
+                                        aria-label="View reply stats"
+                                        data-reply-id="<?php echo $replyId; ?>"
+                                    >
+                                        <i data-lucide="bar-chart-2" aria-hidden="true"></i>
+                                        <span><?php echo htmlspecialchars($replyCount, ENT_QUOTES, 'UTF-8'); ?></span>
                                     </button>
                                 </footer>
                             </div>

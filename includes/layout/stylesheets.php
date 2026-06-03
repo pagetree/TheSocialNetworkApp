@@ -23,6 +23,7 @@ function appStylesheetPaths(): array
         '/assets/css/register.css',
         '/assets/css/onboarding.css',
         '/assets/css/hashtag.css',
+        '/assets/css/post-stats-modal.css',
     ];
 }
 
