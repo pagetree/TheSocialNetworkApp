@@ -40,10 +40,16 @@
             return;
         }
 
-        const viewSpan = card.querySelector(".post-action-stat-views span")
-            || card.querySelector(".post-detail-view-count");
-        if (viewSpan && data.view_label) {
-            viewSpan.textContent = data.view_label;
+        const viewCountEls = card.querySelectorAll(".post-detail-view-count");
+        if (viewCountEls.length && data.view_label) {
+            viewCountEls.forEach((el) => {
+                el.textContent = data.view_label;
+            });
+        } else {
+            const viewSpan = card.querySelector(".post-action-stat-views span");
+            if (viewSpan && data.view_label) {
+                viewSpan.textContent = data.view_label;
+            }
         }
 
         const interactionEl = card.querySelector(".post-stat-interactions");

@@ -6,54 +6,146 @@
     const titleEl = document.getElementById("post-stats-modal-title");
     const subtitleEl = document.getElementById("post-stats-modal-subtitle");
     const bodyEl = document.getElementById("post-stats-modal-body");
+    const contentEl = document.getElementById("post-stats-modal-content");
+    const heroEl = document.getElementById("post-stats-modal-hero");
+    const insightsEl = document.getElementById("post-stats-modal-insights");
+    const insightsGridEl = document.getElementById("post-stats-modal-insights-grid");
     const statusEl = document.getElementById("post-stats-modal-status");
 
-    if (!detailUrl || !csrfToken || !overlay || !closeBtn || !titleEl || !subtitleEl || !bodyEl || !statusEl) {
+    if (
+        !detailUrl
+        || !csrfToken
+        || !overlay
+        || !closeBtn
+        || !titleEl
+        || !subtitleEl
+        || !bodyEl
+        || !contentEl
+        || !heroEl
+        || !insightsEl
+        || !insightsGridEl
+        || !statusEl
+    ) {
         return;
     }
+
+    const HERO_ORDER = ["likes", "reposts", "replies"];
+    const INSIGHT_ORDER = ["views", "interactions", "score"];
+
+    const INSIGHT_COPY = {
+        views: "Total impressions across the feed and post page.",
+        interactions: "Profile visits driven by this post.",
+        score: "Weighted engagement score from the last 14 days.",
+    };
 
     let activeTrigger = null;
     let fetchController = null;
 
     const setStatus = (message, isError = false) => {
+        contentEl.hidden = true;
         statusEl.textContent = message;
         statusEl.hidden = false;
         statusEl.classList.toggle("is-error", isError);
     };
 
     const clearMetrics = () => {
-        bodyEl.querySelectorAll(".post-stats-metric").forEach((node) => node.remove());
+        heroEl.replaceChildren();
+        insightsGridEl.replaceChildren();
+        heroEl.hidden = true;
+        insightsEl.hidden = true;
+        contentEl.hidden = true;
+    };
+
+    const createHeroItem = (metric) => {
+        const item = document.createElement("div");
+        item.className = "post-stats-hero-item";
+        item.dataset.metricKey = String(metric.key || "");
+
+        const iconWrap = document.createElement("span");
+        iconWrap.className = "post-stats-hero-icon";
+        iconWrap.innerHTML = `<i data-lucide="${metric.icon || "bar-chart-2"}" aria-hidden="true"></i>`;
+
+        const value = document.createElement("p");
+        value.className = "post-stats-hero-value";
+        value.textContent = String(metric.value || "0");
+
+        const label = document.createElement("p");
+        label.className = "post-stats-hero-label";
+        label.textContent = String(metric.label || "");
+
+        item.append(iconWrap, value, label);
+        return item;
+    };
+
+    const createInsightTile = (metric) => {
+        const tile = document.createElement("article");
+        const key = String(metric.key || "");
+        tile.className = `post-stats-insight-tile post-stats-insight-tile--${key}`;
+        tile.dataset.metricKey = key;
+
+        const top = document.createElement("div");
+        top.className = "post-stats-insight-top";
+
+        const iconWrap = document.createElement("span");
+        iconWrap.className = "post-stats-insight-icon";
+        iconWrap.innerHTML = `<i data-lucide="${metric.icon || "bar-chart-2"}" aria-hidden="true"></i>`;
+
+        const label = document.createElement("p");
+        label.className = "post-stats-insight-label";
+        label.textContent = String(metric.label || "");
+
+        top.append(iconWrap, label);
+
+        const value = document.createElement("p");
+        value.className = "post-stats-insight-value";
+        value.textContent = String(metric.value || "0");
+
+        const copy = document.createElement("p");
+        copy.className = "post-stats-insight-copy";
+        copy.textContent = INSIGHT_COPY[key] || "";
+
+        const glow = document.createElement("span");
+        glow.className = "post-stats-insight-glow";
+        glow.setAttribute("aria-hidden", "true");
+
+        tile.append(glow, top, value, copy);
+        return tile;
     };
 
     const renderMetrics = (metrics) => {
         clearMetrics();
+
+        const metricByKey = new Map(metrics.map((metric) => [String(metric.key || ""), metric]));
+        const heroMetrics = HERO_ORDER.map((key) => metricByKey.get(key)).filter(Boolean);
+        const insightMetrics = INSIGHT_ORDER.map((key) => metricByKey.get(key)).filter(Boolean);
+
+        if (heroMetrics.length === 0 && insightMetrics.length === 0) {
+            setStatus("No stats available yet.");
+            return;
+        }
+
         statusEl.hidden = true;
         statusEl.classList.remove("is-error");
+        contentEl.hidden = false;
 
-        metrics.forEach((metric) => {
-            const row = document.createElement("div");
-            row.className = "post-stats-metric";
-            row.dataset.metricKey = String(metric.key || "");
+        if (heroMetrics.length > 0) {
+            heroEl.hidden = false;
+            heroEl.dataset.count = String(heroMetrics.length);
+            heroMetrics.forEach((metric, index) => {
+                const item = createHeroItem(metric);
+                item.style.setProperty("--hero-delay", `${index * 70}ms`);
+                heroEl.append(item);
+            });
+        }
 
-            const iconWrap = document.createElement("span");
-            iconWrap.className = "post-stats-metric-icon";
-            iconWrap.innerHTML = `<i data-lucide="${metric.icon || "bar-chart-2"}" aria-hidden="true"></i>`;
-
-            const copy = document.createElement("div");
-            copy.className = "post-stats-metric-copy";
-
-            const label = document.createElement("p");
-            label.className = "post-stats-metric-label";
-            label.textContent = String(metric.label || "");
-
-            const value = document.createElement("p");
-            value.className = "post-stats-metric-value";
-            value.textContent = String(metric.value || "0");
-
-            copy.append(label, value);
-            row.append(iconWrap, copy);
-            bodyEl.append(row);
-        });
+        if (insightMetrics.length > 0) {
+            insightsEl.hidden = false;
+            insightMetrics.forEach((metric, index) => {
+                const tile = createInsightTile(metric);
+                tile.style.setProperty("--insight-delay", `${120 + index * 80}ms`);
+                insightsGridEl.append(tile);
+            });
+        }
 
         window.lucide?.createIcons?.();
     };
@@ -119,11 +211,6 @@
             }
 
             const metrics = Array.isArray(data.metrics) ? data.metrics : [];
-            if (metrics.length === 0) {
-                setStatus("No stats available yet.");
-                return;
-            }
-
             renderMetrics(metrics);
         } catch (error) {
             if (error?.name === "AbortError") {

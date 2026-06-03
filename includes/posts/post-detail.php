@@ -83,8 +83,7 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                                 aria-label="View post stats"
                                 data-post-id="<?php echo (int) ($post['id'] ?? 0); ?>"
                             >
-                                <i data-lucide="bar-chart-2" aria-hidden="true"></i>
-                                <span><span class="post-detail-view-count"><?php echo htmlspecialchars($viewCount, ENT_QUOTES, 'UTF-8'); ?></span> views</span>
+                                <span><span class="post-detail-view-count"><?php echo htmlspecialchars($viewCount, ENT_QUOTES, 'UTF-8'); ?></span> Views</span>
                             </button>
                             <span class="post-stat-interactions" hidden aria-hidden="true"><?php echo htmlspecialchars($interactionCount, ENT_QUOTES, 'UTF-8'); ?></span>
                         </footer>
