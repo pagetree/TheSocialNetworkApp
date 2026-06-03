@@ -17,6 +17,18 @@ if (is_array($sidebarUser)) {
 }
 $sidebarFollowersLabel = formatEngagementCount($sidebarFollowersCount);
 $sidebarFollowingLabel = formatEngagementCount($sidebarFollowingCount);
+
+const SIDEBAR_WHO_TO_FOLLOW_LIMIT = 4;
+
+/** @var list<array{display_name: string, handle: string}> $whoToFollowPlaceholders */
+$whoToFollowPlaceholders = [
+    ['display_name' => 'Maya Chen', 'handle' => '@mayachen'],
+    ['display_name' => 'Jordan Blake', 'handle' => '@jblake'],
+    ['display_name' => 'Sofia Ruiz', 'handle' => '@sofiaruiz'],
+    ['display_name' => 'Alex Kim', 'handle' => '@alexkim'],
+];
+$whoToFollowPlaceholders = array_slice($whoToFollowPlaceholders, 0, SIDEBAR_WHO_TO_FOLLOW_LIMIT);
+$whoToFollowAvatarUrl = userMediaUrl(null, 'avatar_url', $url);
 ?>
                 <aside class="app-sidebar">
                     <article class="profile-card">
@@ -42,5 +54,28 @@ $sidebarFollowingLabel = formatEngagementCount($sidebarFollowingCount);
                                 <span class="profile-card-stat-label">Following</span>
                             </span>
                         </div>
+                    </article>
+
+                    <article class="who-to-follow-card">
+                        <h2 class="who-to-follow-card-title">Who to follow</h2>
+                        <ul class="who-to-follow-list">
+                            <?php foreach ($whoToFollowPlaceholders as $suggestion) : ?>
+                            <li class="who-to-follow-item">
+                                <img
+                                    class="who-to-follow-avatar"
+                                    src="<?php echo htmlspecialchars($whoToFollowAvatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                    alt="<?php echo htmlspecialchars((string) $suggestion['display_name'] . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
+                                    width="40"
+                                    height="40"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                                <div class="who-to-follow-meta">
+                                    <span class="who-to-follow-name"><?php echo htmlspecialchars((string) $suggestion['display_name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    <span class="who-to-follow-handle"><?php echo htmlspecialchars((string) $suggestion['handle'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                </div>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
                     </article>
                 </aside>
