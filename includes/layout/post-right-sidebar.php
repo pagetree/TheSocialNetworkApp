@@ -70,7 +70,9 @@ $currentUserId = $currentUserId ?? 0;
                                         aria-pressed="<?php echo $viewerFollows ? 'true' : 'false'; ?>"
                                         aria-label="<?php echo $viewerFollows ? 'Unfollow ' : 'Follow '; ?><?php echo htmlspecialchars($participantName, ENT_QUOTES, 'UTF-8'); ?>"
                                     >
-                                        <span class="profile-follow-btn-label"><?php echo $viewerFollows ? 'Following' : 'Follow'; ?></span>
+                                        <span class="profile-follow-btn-label profile-follow-btn-label--follow">Follow</span>
+                                        <span class="profile-follow-btn-label profile-follow-btn-label--following">Following</span>
+                                        <span class="profile-follow-btn-label profile-follow-btn-label--unfollow">Unfollow</span>
                                     </button>
                                     <?php endif; ?>
                                 </div>

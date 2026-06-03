@@ -24,6 +24,16 @@
             followBtn.dataset.following = following ? "1" : "0";
             followBtn.setAttribute("aria-pressed", following ? "true" : "false");
 
+            const ariaName = followBtn.getAttribute("aria-label")?.replace(/^(Follow|Unfollow)\s+/, "") ?? "user";
+            followBtn.setAttribute(
+                "aria-label",
+                (following ? "Unfollow " : "Follow ") + ariaName
+            );
+
+            if (followBtn.querySelector(".profile-follow-btn-label--follow")) {
+                return;
+            }
+
             const label = followBtn.querySelector(".profile-follow-btn-label");
             if (label) {
                 label.textContent = following ? "Following" : "Follow";

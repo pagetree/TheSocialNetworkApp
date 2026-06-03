@@ -83,7 +83,9 @@ $whoToFollowAvatarUrl = userMediaUrl(null, 'avatar_url', $url);
                                         data-placeholder-follow
                                         aria-pressed="false"
                                     >
-                                        <span class="profile-follow-btn-label">Follow</span>
+                                        <span class="profile-follow-btn-label profile-follow-btn-label--follow">Follow</span>
+                                        <span class="profile-follow-btn-label profile-follow-btn-label--following">Following</span>
+                                        <span class="profile-follow-btn-label profile-follow-btn-label--unfollow">Unfollow</span>
                                     </button>
                                 </div>
                             </li>
