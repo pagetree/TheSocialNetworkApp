@@ -58,9 +58,13 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                                     <?php endif; ?>
                                 </p>
                             </div>
-                            <button type="button" class="post-menu-btn" aria-label="Post options">
-                                <i data-lucide="ellipsis" aria-hidden="true"></i>
-                            </button>
+                            <?php
+                            $menuKind = 'post';
+                            $menuTargetId = (int) ($post['id'] ?? 0);
+                            $menuOwnerUserId = $postUserId;
+                            $menuConversationId = 0;
+                            require __DIR__ . '/post-menu.php';
+                            ?>
                         </header>
                         <?php if ($postBody !== '') : ?>
                         <p class="post-text"><?php echo formatPostBodyHtml($postBody, $url); ?></p>

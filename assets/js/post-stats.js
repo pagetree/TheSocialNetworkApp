@@ -208,7 +208,7 @@
             return false;
         }
 
-        if (target.closest(".post-actions") || target.closest(".post-menu-btn")) {
+        if (target.closest(".post-actions") || target.closest(".post-menu")) {
             return false;
         }
 

@@ -47,7 +47,7 @@ $postCountLabel = $hashtagPostCount === 1
             $currentUserId,
             isset($hashtagLikedPostIds[$postId])
         );
-        renderHashtagPostCardReplies($hashtagRepliesByPost[$postId] ?? [], $url);
+        renderHashtagPostCardReplies($hashtagRepliesByPost[$postId] ?? [], $url, $currentUserId, $postId);
     }
 endif; ?>
                     </div>

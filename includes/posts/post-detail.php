@@ -53,6 +53,13 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                                 <p class="post-detail-name"><?php echo htmlspecialchars($authorName, ENT_QUOTES, 'UTF-8'); ?></p>
                                 <p class="post-detail-handle"><?php echo htmlspecialchars($authorHandle, ENT_QUOTES, 'UTF-8'); ?></p>
                             </div>
+                            <?php
+                            $menuKind = 'post';
+                            $menuTargetId = (int) ($post['id'] ?? 0);
+                            $menuOwnerUserId = $postUserId;
+                            $menuConversationId = 0;
+                            require __DIR__ . '/post-menu.php';
+                            ?>
                         </header>
 
                         <?php if ($postBody !== '') : ?>
@@ -95,7 +102,7 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                     } ?>
 
                     <section class="post-replies" id="post-replies" aria-label="Replies">
-<?php renderPostReplyTree($replies, $url); ?>
+<?php renderPostReplyTree($replies, $url, $currentUserId, (int) ($post['id'] ?? 0)); ?>
                     </section>
 
                     <?php if ($isLoggedIn) {

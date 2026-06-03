@@ -343,17 +343,19 @@ function postReplyPayload(array $row, callable $url): array
         'created_at' => (string) ($row['created_at'] ?? ''),
         'time_label' => formatPostTimeLabel((string) ($row['created_at'] ?? '')),
         'author' => [
+            'user_id' => (int) ($row['user_id'] ?? 0),
             'display_name' => $user['display_name'],
             'handle' => $user['handle'],
             'avatar_url' => userMediaUrl($user, 'avatar_url', $url),
         ],
+        'user_id' => (int) ($row['user_id'] ?? 0),
     ];
 }
 
 /**
  * @param list<array<string, mixed>> $rows
  */
-function renderPostReplyTree(array $rows, callable $url): void
+function renderPostReplyTree(array $rows, callable $url, int $currentUserId = 0, int $conversationId = 0): void
 {
     $children = [];
 
@@ -363,8 +365,12 @@ function renderPostReplyTree(array $rows, callable $url): void
         $children[$parentKey][] = $row;
     }
 
-    $renderSubtree = static function (array $row, int $depth) use (&$renderSubtree, $children, $url): void {
-        renderPostReplyItem($row, $url, $depth);
+    if ($conversationId < 1 && $rows !== []) {
+        $conversationId = (int) ($rows[0]['conversation_id'] ?? 0);
+    }
+
+    $renderSubtree = static function (array $row, int $depth) use (&$renderSubtree, $children, $url, $currentUserId, $conversationId): void {
+        renderPostReplyItem($row, $url, $depth, $currentUserId, $conversationId);
 
         foreach ($children[(string) ($row['id'] ?? '')] ?? [] as $childRow) {
             $renderSubtree($childRow, $depth + 1);
@@ -381,8 +387,9 @@ function renderPostReplyTree(array $rows, callable $url): void
 /**
  * @param array<string, mixed> $row
  */
-function renderPostReplyItem(array $row, callable $url, int $depth = 0): void
+function renderPostReplyItem(array $row, callable $url, int $depth = 0, int $currentUserId = 0, int $conversationId = 0): void
 {
     $reply = postReplyPayload($row, $url);
+    $menuConversationId = $conversationId > 0 ? $conversationId : (int) ($row['conversation_id'] ?? 0);
     require __DIR__ . '/posts/post-reply-item.php';
 }

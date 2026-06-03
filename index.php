@@ -101,6 +101,11 @@ if ($path === '/posts/like' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     return;
 }
 
+if ($path === '/posts/remove' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/post-remove.php';
+    return;
+}
+
 if ($path === '/users/follow' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     require __DIR__ . '/auth/profile-follow.php';
     return;

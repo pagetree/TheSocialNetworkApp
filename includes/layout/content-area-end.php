@@ -79,6 +79,13 @@ if (!$onboardingLayout) : ?>
         window.APP_POST_LIKE_CSRF_TOKEN = <?php echo json_encode($postLikeCsrfToken, JSON_THROW_ON_ERROR); ?>;
     </script>
     <?php endif; ?>
+    <?php if ($isLoggedIn && !$onboardingLayout) : ?>
+    <script>
+        window.APP_POST_REMOVE_URL = <?php echo json_encode($url('/posts/remove'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_POST_REMOVE_CSRF_TOKEN = <?php echo json_encode(createCsrfToken('post_remove'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_CURRENT_USER_ID = <?php echo json_encode((int) ($currentUserId ?? 0), JSON_THROW_ON_ERROR); ?>;
+    </script>
+    <?php endif; ?>
     <?php if (!empty($replyCsrfToken)) : ?>
     <script>
         window.APP_POST_REPLY_URL = <?php echo json_encode($url('/posts/reply'), JSON_THROW_ON_ERROR); ?>;
@@ -125,6 +132,7 @@ if (!$onboardingLayout) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/media-lightbox.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-stats.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-likes.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/post-remove.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php else : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/login.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endif; ?>

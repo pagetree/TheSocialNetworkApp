@@ -5,8 +5,13 @@ declare(strict_types=1);
 /** @var array<string, mixed> $reply */
 /** @var callable(string): string $url */
 /** @var int $depth */
+/** @var int $currentUserId */
+/** @var int $menuConversationId */
 
 $depth = $depth ?? 0;
+$currentUserId = (int) ($currentUserId ?? 0);
+$menuConversationId = (int) ($menuConversationId ?? 0);
+$replyUserId = (int) ($reply['author']['user_id'] ?? $reply['user_id'] ?? 0);
 $authorName = (string) ($reply['author']['display_name'] ?? 'User');
 $authorHandle = (string) ($reply['author']['handle'] ?? '@user');
 $authorAvatar = (string) ($reply['author']['avatar_url'] ?? '');
@@ -23,6 +28,7 @@ $nestedStyle = $depth > 0 ? ' style="--reply-depth: ' . (int) $depth . ';"' : ''
                             data-reply-id="<?php echo (int) ($reply['id'] ?? 0); ?>"
                             data-reply-depth="<?php echo (int) $depth; ?>"
                             data-parent-reply-id="<?php echo (int) ($reply['parent_reply_id'] ?? 0); ?>"
+                            data-reply-user-id="<?php echo $replyUserId; ?>"
                             <?php echo $nestedStyle; ?>
                         >
                             <div class="post-reply-avatar-col">
@@ -42,6 +48,12 @@ $nestedStyle = $depth > 0 ? ' style="--reply-depth: ' . (int) $depth . ';"' : ''
                                         <time class="post-reply-time" datetime="<?php echo htmlspecialchars($createdAt, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($replyTimeLabel, ENT_QUOTES, 'UTF-8'); ?></time>
                                         <?php endif; ?>
                                     </p>
+                                    <?php
+                                    $menuKind = 'reply';
+                                    $menuTargetId = (int) ($reply['id'] ?? 0);
+                                    $menuOwnerUserId = $replyUserId;
+                                    require __DIR__ . '/post-menu.php';
+                                    ?>
                                 </header>
                                 <?php if ($replyBody !== '') : ?>
                                 <p class="post-reply-text"><?php echo formatPostBodyHtml($replyBody, $url); ?></p>

@@ -19,6 +19,7 @@ function rateLimitConfig(string $action): array
         'posts.stats' => ['max' => 120, 'window_seconds' => 900],
         'posts.reply' => ['max' => 30, 'window_seconds' => 900],
         'posts.like' => ['max' => 60, 'window_seconds' => 900],
+        'posts.remove' => ['max' => 30, 'window_seconds' => 900],
         'users.follow' => ['max' => 60, 'window_seconds' => 900],
         'onboarding.avatar' => ['max' => 20, 'window_seconds' => 900],
         'onboarding.bio' => ['max' => 20, 'window_seconds' => 900],

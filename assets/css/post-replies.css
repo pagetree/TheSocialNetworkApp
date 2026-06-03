@@ -75,6 +75,10 @@
     padding-bottom: 2px;
 }
 
+.post-reply-item .post-menu {
+    pointer-events: auto;
+}
+
 .post-reply-meta-line {
     margin: 0;
     display: flex;

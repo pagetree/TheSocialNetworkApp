@@ -1,0 +1,93 @@
+.post-menu {
+    position: relative;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.post-header {
+    position: relative;
+}
+
+.post-reply-header {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.post-reply-header .post-reply-meta-line {
+    flex: 1;
+    min-width: 0;
+}
+
+.post-detail-header {
+    position: relative;
+    padding-right: 44px;
+}
+
+.post-detail-header .post-menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.post-detail .post-menu {
+    pointer-events: auto;
+}
+
+.post-menu-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 12;
+    min-width: 168px;
+    padding: 6px;
+    border-radius: 12px;
+    background: var(--elements-bg);
+    border: 1px solid color-mix(in srgb, var(--light) 14%, transparent);
+    box-shadow: 0 12px 32px color-mix(in srgb, #000 35%, transparent);
+}
+
+.post-menu-option {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: transparent;
+    color: #f87171;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.post-menu-option:hover,
+.post-menu-option:focus-visible {
+    background: color-mix(in srgb, #f87171 12%, transparent);
+    outline: none;
+}
+
+.post-menu-option:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.post-card--linkable .post-menu,
+.post-card--linkable .post-menu-dropdown,
+.post-card--linkable .post-menu-btn,
+.post-card--linkable .post-menu-option,
+.hashtag-page .post-reply-item .post-menu,
+.hashtag-page .post-reply-item .post-menu-dropdown,
+.hashtag-page .post-reply-item .post-menu-btn,
+.hashtag-page .post-reply-item .post-menu-option {
+    pointer-events: auto;
+    position: relative;
+    z-index: 3;
+}
+
+.hashtag-page .post-card--linkable .post-menu {
+    z-index: 3;
+}

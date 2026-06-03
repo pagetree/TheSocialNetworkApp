@@ -98,6 +98,27 @@
         return section;
     };
 
+    const buildReplyMenuHtml = (reply, card) => {
+        const replyId = Number(reply.id || 0);
+        const replyUserId = Number(reply.author?.user_id || reply.user_id || 0);
+        const currentUserId = Number(window.APP_CURRENT_USER_ID || 0);
+        const conversationId = Number(card?.dataset?.postId || 0);
+
+        if (replyId < 1 || replyUserId < 1 || currentUserId < 1 || replyUserId !== currentUserId) {
+            return "";
+        }
+
+        return `
+                    <div class="post-menu" data-menu-kind="reply" data-target-id="${replyId}" data-conversation-id="${conversationId}">
+                        <button type="button" class="post-menu-btn" aria-haspopup="menu" aria-expanded="false" aria-label="Reply options">
+                            <i data-lucide="ellipsis" aria-hidden="true"></i>
+                        </button>
+                        <div class="post-menu-dropdown" role="menu" hidden>
+                            <button type="button" class="post-menu-option post-menu-option--remove" role="menuitem">Remove reply</button>
+                        </div>
+                    </div>`;
+    };
+
     const buildReplyElement = (reply, card) => {
         const article = document.createElement("article");
         const body = String(reply.body ?? "").trim();
@@ -108,11 +129,14 @@
         const avatarUrl = reply.author?.avatar_url ?? "";
         const likeCount = String(reply.like_count ?? 0);
         const replyCount = String(reply.reply_count ?? 0);
+        const replyUserId = Number(reply.author?.user_id || reply.user_id || 0);
+        const menuHtml = buildReplyMenuHtml(reply, card);
 
         article.className = "post-reply-item";
         article.dataset.replyId = String(reply.id ?? "");
         article.dataset.replyDepth = "0";
         article.dataset.parentReplyId = "0";
+        article.dataset.replyUserId = String(replyUserId);
 
         article.innerHTML = `
             <div class="post-reply-avatar-col">
@@ -126,6 +150,7 @@
                         <span class="post-reply-handle">${escapeHtml(authorHandle)}</span>
                         <time class="post-reply-time" datetime="${escapeHtml(reply.created_at ?? "")}">${escapeHtml(reply.time_label ?? "just now")}</time>
                     </p>
+                    ${menuHtml}
                 </header>
                 ${bodyHtml !== "" ? `<p class="post-reply-text">${bodyHtml}</p>` : ""}
                 <footer class="post-actions post-reply-actions" aria-label="Reply engagement">
