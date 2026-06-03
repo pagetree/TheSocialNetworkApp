@@ -24,6 +24,7 @@ function userSessionColumns(): array
         'location',
         'website_url',
         'date_of_birth',
+        'is_visible',
         'created_at',
     ];
 }

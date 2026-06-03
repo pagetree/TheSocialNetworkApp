@@ -32,6 +32,8 @@
     const fieldLocation = document.getElementById("profile-edit-location");
     const fieldWebsite = document.getElementById("profile-edit-website");
     const fieldDob = document.getElementById("profile-edit-dob");
+    const fieldIsVisible = document.getElementById("profile-edit-is-visible");
+    const displayIsVisible = document.getElementById("profile-display-is-visible");
 
     if (!overlay || !form || !openBtn || !updateUrl || !csrfToken) {
         return;
@@ -85,6 +87,9 @@
         }
         if (fieldDob && displayDob) {
             fieldDob.value = displayDob.dataset.iso || "";
+        }
+        if (fieldIsVisible && displayIsVisible) {
+            fieldIsVisible.checked = displayIsVisible.value === "1";
         }
         if (coverInput) {
             coverInput.value = "";

@@ -97,6 +97,11 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                 >
                                 <div class="profile-hero-actions">
                                     <?php if ($isOwnProfile) : ?>
+                                    <input
+                                        type="hidden"
+                                        id="profile-display-is-visible"
+                                        value="<?php echo $hasProfileUser && userProfileIsVisible($profileUser) ? '1' : '0'; ?>"
+                                    >
                                     <button type="button" class="profile-edit-btn" id="profile-edit-open">
                                         <i data-lucide="square-pen" aria-hidden="true"></i>
                                         <span>Edit profile</span>

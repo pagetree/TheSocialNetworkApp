@@ -135,6 +135,18 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
                         <input type="date" name="date_of_birth" id="profile-edit-dob">
                     </div>
                 </label>
+                <label class="profile-edit-visibility" for="profile-edit-is-visible">
+                    <input
+                        type="checkbox"
+                        name="is_visible"
+                        id="profile-edit-is-visible"
+                        value="1"
+                    >
+                    <span class="profile-edit-visibility-text">
+                        <strong>Public profile</strong>
+                        <span>Show my profile when I like, reply to, or interact with posts.</span>
+                    </span>
+                </label>
             </div>
 
             <p class="profile-edit-form-error" id="profile-edit-form-error" hidden></p>

@@ -14,6 +14,20 @@ $pageTitle = 'Post — TheSocialNetworkApp';
 $activeNav = 'explore';
 $mainClass = 'app-content post-detail-page';
 $pageScripts = ['/assets/js/reply-media-picker.js', '/assets/js/post-reply-composer.js'];
+$postParticipants = fetchVisiblePostParticipants((int) ($post['id'] ?? 0), POST_PARTICIPANTS_LIMIT);
+$postParticipantFollowedIds = [];
+$profileFollowCsrfToken = '';
+if ($isLoggedIn) {
+    $profileFollowCsrfToken = createCsrfToken('profile_follow');
+    if ($postParticipants !== []) {
+        $postParticipantFollowedIds = fetchFollowedUserIdsAmong(
+            $currentUserId,
+            array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $postParticipants)
+        );
+    }
+    $pageScripts[] = '/assets/js/profile-follow.js';
+}
+$layoutHasRightSidebar = true;
 
 require __DIR__ . '/includes/layout/head.php';
 require __DIR__ . '/includes/layout/content-area-start.php';

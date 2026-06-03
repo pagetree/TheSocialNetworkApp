@@ -241,7 +241,7 @@ function fetchUserByUsername(string $username): ?array
 }
 
 /**
- * @param array{display_name: string, bio: ?string, location: ?string, website_url: ?string, date_of_birth: ?string, avatar_url: ?string, cover_url: ?string} $profile
+ * @param array{display_name: string, bio: ?string, location: ?string, website_url: ?string, date_of_birth: ?string, avatar_url: ?string, cover_url: ?string, is_visible: bool} $profile
  * @return array<string, mixed>|null
  */
 function updateUserProfile(int $userId, array $profile): ?array
@@ -256,6 +256,7 @@ function updateUserProfile(int $userId, array $profile): ?array
              date_of_birth = :date_of_birth,
              avatar_url = :avatar_url,
              cover_url = :cover_url,
+             is_visible = :is_visible,
              updated_at = NOW()
          WHERE id = :id
          RETURNING ' . userSessionSelectSql()
@@ -269,6 +270,7 @@ function updateUserProfile(int $userId, array $profile): ?array
         'date_of_birth' => $profile['date_of_birth'],
         'avatar_url' => $profile['avatar_url'],
         'cover_url' => $profile['cover_url'],
+        'is_visible' => $profile['is_visible'],
     ]);
     $user = $stmt->fetch();
 
@@ -299,5 +301,6 @@ function userProfilePayload(array $user, callable $url): array
         'joined_label' => formatProfileJoinedDate((string) ($user['created_at'] ?? '')),
         'avatar_url' => userMediaUrl($user, 'avatar_url', $url),
         'cover_url' => userMediaUrl($user, 'cover_url', $url),
+        'is_visible' => userProfileIsVisible($user),
     ];
 }

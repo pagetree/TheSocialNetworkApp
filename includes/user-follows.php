@@ -110,3 +110,36 @@ function toggleUserFollow(int $followerId, int $followingId): array
 
     return ['ok' => true, 'following' => true];
 }
+
+/**
+ * @param list<int> $targetUserIds
+ * @return array<int, true>
+ */
+function fetchFollowedUserIdsAmong(int $followerId, array $targetUserIds): array
+{
+    $targetUserIds = array_values(array_unique(array_filter(
+        array_map('intval', $targetUserIds),
+        static fn (int $id): bool => $id > 0
+    )));
+
+    if ($followerId < 1 || $targetUserIds === []) {
+        return [];
+    }
+
+    $placeholders = implode(', ', array_fill(0, count($targetUserIds), '?'));
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT following_id
+         FROM user_follows
+         WHERE follower_id = ?
+           AND following_id IN (' . $placeholders . ')'
+    );
+    $stmt->execute(array_merge([$followerId], $targetUserIds));
+
+    $followed = [];
+    while ($row = $stmt->fetch()) {
+        $followed[(int) $row['following_id']] = true;
+    }
+
+    return $followed;
+}

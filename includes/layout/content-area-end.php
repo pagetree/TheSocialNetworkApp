@@ -10,6 +10,11 @@ declare(strict_types=1);
 $pageScripts = $pageScripts ?? [];
 ?>
                 </main>
+<?php
+if (!empty($layoutHasRightSidebar)) {
+    require __DIR__ . '/post-right-sidebar.php';
+}
+?>
             </div>
         </div>
     </div>

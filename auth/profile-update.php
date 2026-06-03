@@ -26,6 +26,7 @@ $bio = (string) ($payload['bio'] ?? '');
 $location = (string) ($payload['location'] ?? '');
 $website = (string) ($payload['website'] ?? '');
 $dateOfBirth = (string) ($payload['date_of_birth'] ?? '');
+$isVisible = isset($payload['is_visible']) && (string) $payload['is_visible'] === '1';
 
 $errors = [
     validateProfileDisplayName($displayName),
@@ -85,6 +86,7 @@ try {
         'date_of_birth' => normalizeProfileDateOfBirth($dateOfBirth),
         'avatar_url' => $avatarUrl === '' ? null : $avatarUrl,
         'cover_url' => $coverUrl === '' ? null : $coverUrl,
+        'is_visible' => $isVisible,
     ]);
 } catch (Throwable $exception) {
     jsonResponse([

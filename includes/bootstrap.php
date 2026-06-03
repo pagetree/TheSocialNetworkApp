@@ -21,6 +21,7 @@ require_once __DIR__ . '/post-stats.php';
 require_once __DIR__ . '/post-replies.php';
 require_once __DIR__ . '/post-likes.php';
 require_once __DIR__ . '/user-follows.php';
+require_once __DIR__ . '/post-participants.php';
 require_once __DIR__ . '/post-scores.php';
 require_once __DIR__ . '/r2-storage.php';
 
