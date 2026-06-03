@@ -23,28 +23,18 @@ if ($guardError !== null) {
 $userId = (int) $sessionUser['id'];
 $currentUser = fetchUserById($userId) ?? $sessionUser;
 $avatarUrl = (string) ($currentUser['avatar_url'] ?? '');
-$presetUrl = trim((string) ($payload['preset_avatar_url'] ?? ''));
 
-if ($presetUrl !== '') {
-    if (!isAllowedOnboardingAvatarUrl($presetUrl)) {
-        jsonResponse(['ok' => false, 'error' => 'Choose a valid profile photo.'], 422);
-        return;
-    }
-
-    $avatarUrl = $presetUrl;
-} else {
-    $avatarUpload = r2UploadUserFile($userId, 'avatar');
-    if (!$avatarUpload['ok']) {
-        jsonResponse([
-            'ok' => false,
-            'error' => $avatarUpload['error'] ?? 'Upload a profile photo.',
-        ], 422);
-        return;
-    }
-
-    r2DeleteObjectByUrl($avatarUrl === '' ? null : $avatarUrl);
-    $avatarUrl = $avatarUpload['url'];
+$avatarUpload = r2UploadUserFile($userId, 'avatar');
+if (!$avatarUpload['ok']) {
+    jsonResponse([
+        'ok' => false,
+        'error' => $avatarUpload['error'] ?? 'Upload a profile photo.',
+    ], 422);
+    return;
 }
+
+r2DeleteObjectByUrl($avatarUrl === '' ? null : $avatarUrl);
+$avatarUrl = $avatarUpload['url'];
 
 try {
     $updatedUser = updateUserOnboardingAvatar($userId, $avatarUrl);

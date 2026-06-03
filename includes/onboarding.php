@@ -63,30 +63,126 @@ function userNeedsOnboarding(?array $user): bool
 }
 
 /**
- * @return list<string>
+ * @return array<string, list<string>>
  */
-function onboardingPresetAvatarUrls(): array
+function interestGroupCatalog(): array
 {
     return [
-        'https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/romeo-leaupepe-su-a-70gb9CHBX4g-unsplash.jpg',
-        'https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/gayatri-malhotra-QTEk16LzWSI-unsplash.jpg',
+        'Technology & Digital' => [
+            'technology',
+            'ai',
+            'startups',
+            'crypto',
+            'content-creation',
+            'gaming',
+            'esports',
+        ],
+        'Arts & Entertainment' => [
+            'design',
+            'photography',
+            'photography-video',
+            'art',
+            'writing',
+            'music',
+            'movies-tv',
+            'anime',
+            'comedy',
+            'podcasts',
+            'dance',
+        ],
+        'Sports & Outdoors' => [
+            'sports',
+            'fitness',
+            'outdoors',
+        ],
+        'Food & Lifestyle' => [
+            'travel',
+            'food',
+            'cooking',
+            'fashion',
+            'beauty',
+            'home-garden',
+            'cars',
+            'pets',
+            'family',
+            'dating',
+        ],
+        'Learning & Society' => [
+            'books',
+            'science',
+            'business',
+            'finance',
+            'career',
+            'education',
+            'history',
+            'languages',
+            'news',
+            'politics',
+        ],
+        'Creativity & Hobbies' => [
+            'diy',
+            'crafts',
+            'board-games',
+        ],
+        'Wellness & Community' => [
+            'health',
+            'environment',
+            'volunteering',
+            'spirituality',
+        ],
     ];
 }
 
-function isAllowedOnboardingAvatarUrl(string $avatarUrl): bool
+/**
+ * @param list<array{id: int, slug: string, label: string}> $interests
+ * @return list<array{title: string, interests: list<array{id: int, slug: string, label: string}>}>
+ */
+function groupOnboardingInterests(array $interests): array
 {
-    $avatarUrl = trim($avatarUrl);
-    if ($avatarUrl === '' || !isExternalMediaUrl($avatarUrl)) {
-        return false;
-    }
-
-    foreach (onboardingPresetAvatarUrls() as $presetUrl) {
-        if ($avatarUrl === $presetUrl) {
-            return true;
+    $catalog = interestGroupCatalog();
+    $slugToGroup = [];
+    foreach ($catalog as $title => $slugs) {
+        foreach ($slugs as $slug) {
+            $slugToGroup[$slug] = $title;
         }
     }
 
-    return false;
+    $buckets = [];
+    foreach ($catalog as $title => $slugs) {
+        $buckets[$title] = [];
+    }
+    $otherTitle = 'More interests';
+    $other = [];
+
+    foreach ($interests as $interest) {
+        $slug = (string) ($interest['slug'] ?? '');
+        $groupTitle = $slugToGroup[$slug] ?? null;
+        if ($groupTitle !== null) {
+            $buckets[$groupTitle][] = $interest;
+            continue;
+        }
+        $other[] = $interest;
+    }
+
+    $grouped = [];
+    foreach ($catalog as $title => $slugs) {
+        if ($buckets[$title] === []) {
+            continue;
+        }
+        $grouped[] = [
+            'title' => $title,
+            'interests' => $buckets[$title],
+        ];
+    }
+
+    if ($other !== []) {
+        $grouped[] = [
+            'title' => $otherTitle,
+            'interests' => $other,
+        ];
+    }
+
+    return $grouped;
 }
 
 /**
@@ -306,6 +402,41 @@ function fetchOnboardingSuggestions(int $userId, int $limit = ONBOARDING_SUGGEST
     }
 
     return $suggestions;
+}
+
+/**
+ * @param list<int> $targetUserIds
+ */
+function unfollowUsersOnboarding(int $followerId, array $targetUserIds): int
+{
+    $targetUserIds = array_values(array_unique(array_filter(
+        array_map('intval', $targetUserIds),
+        static fn (int $id): bool => $id > 0 && $id !== $followerId
+    )));
+
+    if ($targetUserIds === []) {
+        return 0;
+    }
+
+    if (count($targetUserIds) > ONBOARDING_MAX_BULK_FOLLOWS) {
+        throw new InvalidArgumentException(
+            'You can update up to ' . ONBOARDING_MAX_BULK_FOLLOWS . ' accounts at once.'
+        );
+    }
+
+    $unfollowed = 0;
+    foreach ($targetUserIds as $targetUserId) {
+        if (!isUserFollowedBy($followerId, $targetUserId)) {
+            continue;
+        }
+
+        $result = toggleUserFollow($followerId, $targetUserId);
+        if ($result['ok'] && !($result['following'] ?? true)) {
+            $unfollowed++;
+        }
+    }
+
+    return $unfollowed;
 }
 
 /**

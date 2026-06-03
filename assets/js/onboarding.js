@@ -9,7 +9,6 @@
     const errorEl = document.getElementById("onboarding-step-error");
     const skipButtons = document.querySelectorAll("[data-onboarding-skip]");
 
-    let selectedPresetUrl = "";
     let avatarObjectUrl = null;
 
     const showError = (message) => {
@@ -28,11 +27,31 @@
         errorEl.hidden = true;
     };
 
-    const setBusy = (button, busy) => {
+    const setBusy = (button, busy, loadingLabel = "Saving...") => {
         if (!button) {
             return;
         }
+
+        const spinner = button.querySelector(".onboarding-btn-spinner");
+        const label = button.querySelector(".onboarding-btn-label");
+
+        if (label && !label.dataset.defaultLabel) {
+            label.dataset.defaultLabel = label.textContent.trim();
+        }
+
         button.disabled = busy;
+        button.classList.toggle("is-loading", busy);
+        button.setAttribute("aria-busy", busy ? "true" : "false");
+
+        if (spinner) {
+            spinner.hidden = !busy;
+        }
+
+        if (label) {
+            label.textContent = busy
+                ? loadingLabel
+                : label.dataset.defaultLabel || label.textContent;
+        }
     };
 
     const nextStepUrl = () => {
@@ -113,15 +132,11 @@
     centerCurrentStepInProgress();
 
     if (config.step === "avatar") {
+        const previewWrap = document.querySelector(".onboarding-avatar-preview-wrap");
         const preview = document.getElementById("onboarding-avatar-preview");
+        const placeholder = document.getElementById("onboarding-avatar-placeholder");
         const fileInput = document.getElementById("onboarding-avatar-input");
         const continueBtn = document.getElementById("onboarding-avatar-continue");
-        const presetButtons = document.querySelectorAll(".onboarding-avatar-preset");
-        const preselectedPreset = document.querySelector(".onboarding-avatar-preset.is-selected");
-
-        if (preselectedPreset?.dataset.presetUrl) {
-            selectedPresetUrl = preselectedPreset.dataset.presetUrl;
-        }
 
         const revokeAvatarObjectUrl = () => {
             if (avatarObjectUrl) {
@@ -131,29 +146,27 @@
         };
 
         const setPreviewSrc = (src) => {
-            if (preview) {
+            if (!preview) {
+                return;
+            }
+            if (src) {
                 preview.src = src;
+                preview.hidden = false;
+                previewWrap?.classList.add("has-preview");
+                if (placeholder) {
+                    placeholder.hidden = true;
+                    placeholder.setAttribute("aria-hidden", "true");
+                }
+                return;
+            }
+            preview.removeAttribute("src");
+            preview.hidden = true;
+            previewWrap?.classList.remove("has-preview");
+            if (placeholder) {
+                placeholder.hidden = false;
+                placeholder.setAttribute("aria-hidden", "false");
             }
         };
-
-        presetButtons.forEach((button) => {
-            button.addEventListener("mousedown", (event) => {
-                event.preventDefault();
-            });
-            button.addEventListener("click", (event) => {
-                event.preventDefault();
-                clearError();
-                revokeAvatarObjectUrl();
-                if (fileInput) {
-                    fileInput.value = "";
-                }
-                selectedPresetUrl = button.dataset.presetUrl || "";
-                presetButtons.forEach((item) => item.classList.remove("is-selected"));
-                button.classList.add("is-selected");
-                setPreviewSrc(selectedPresetUrl);
-                lockStepsProgressScroll();
-            });
-        });
 
         fileInput?.addEventListener("change", () => {
             clearError();
@@ -161,8 +174,6 @@
             if (!file) {
                 return;
             }
-            selectedPresetUrl = "";
-            presetButtons.forEach((item) => item.classList.remove("is-selected"));
             revokeAvatarObjectUrl();
             avatarObjectUrl = URL.createObjectURL(file);
             setPreviewSrc(avatarObjectUrl);
@@ -171,24 +182,19 @@
 
         continueBtn?.addEventListener("click", async () => {
             clearError();
-            setBusy(continueBtn, true);
 
             try {
                 const hasFile = Boolean(fileInput?.files?.[0]);
-                if (!hasFile && !selectedPresetUrl) {
+                if (!hasFile) {
                     goToNextStep();
                     return;
                 }
 
+                setBusy(continueBtn, true, "Uploading...");
                 const formData = new FormData();
                 formData.append("csrf_token", config.csrfToken);
                 formData.append("_hp_url", "");
-
-                if (hasFile) {
-                    formData.append("avatar", fileInput.files[0]);
-                } else {
-                    formData.append("preset_avatar_url", selectedPresetUrl);
-                }
+                formData.append("avatar", fileInput.files[0]);
 
                 const response = await fetch(config.urls.avatar, {
                     method: "POST",
@@ -220,7 +226,6 @@
 
         continueBtn?.addEventListener("click", async () => {
             clearError();
-            setBusy(continueBtn, true);
 
             try {
                 const bio = bioInput?.value?.trim() ?? "";
@@ -229,6 +234,7 @@
                     return;
                 }
 
+                setBusy(continueBtn, true);
                 const response = await fetch(config.urls.bio, {
                     method: "POST",
                     headers: {
@@ -276,7 +282,6 @@
 
         continueBtn?.addEventListener("click", async () => {
             clearError();
-            setBusy(continueBtn, true);
 
             try {
                 const selected = Array.from(
@@ -290,6 +295,7 @@
                     return;
                 }
 
+                setBusy(continueBtn, true);
                 const response = await fetch(config.urls.interests, {
                     method: "POST",
                     headers: {
@@ -316,19 +322,45 @@
 
     if (config.step === "suggestions") {
         const finishBtn = document.getElementById("onboarding-suggestions-finish");
+        const followButtons = document.querySelectorAll(".onboarding-suggestion-follow");
+
+        const setSuggestionFollowState = (button, following) => {
+            button.classList.toggle("is-selected", following);
+            button.setAttribute("aria-pressed", following ? "true" : "false");
+        };
+
+        followButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                const following = !button.classList.contains("is-selected");
+                setSuggestionFollowState(button, following);
+            });
+        });
 
         finishBtn?.addEventListener("click", async () => {
             clearError();
-            setBusy(finishBtn, true);
+            setBusy(finishBtn, true, "Finishing...");
 
             try {
-                const selected = Array.from(
-                    document.querySelectorAll(
-                        '.onboarding-suggestion-follow input[type="checkbox"]:checked:not(:disabled)'
-                    )
-                ).map((input) => Number(input.value));
+                const followUserIds = [];
+                const unfollowUserIds = [];
 
-                if (selected.length > 0) {
+                followButtons.forEach((button) => {
+                    const userId = Number(button.dataset.userId || 0);
+                    if (userId < 1) {
+                        return;
+                    }
+
+                    const followedOnLoad = button.dataset.followedOnLoad === "1";
+                    const selected = button.classList.contains("is-selected");
+
+                    if (selected && !followedOnLoad) {
+                        followUserIds.push(userId);
+                    } else if (!selected && followedOnLoad) {
+                        unfollowUserIds.push(userId);
+                    }
+                });
+
+                if (followUserIds.length > 0 || unfollowUserIds.length > 0) {
                     const followResponse = await fetch(config.urls.follow, {
                         method: "POST",
                         headers: {
@@ -337,12 +369,13 @@
                         },
                         body: JSON.stringify({
                             csrf_token: config.csrfToken,
-                            user_ids: selected,
+                            user_ids: followUserIds,
+                            unfollow_user_ids: unfollowUserIds,
                         }),
                     });
                     const followData = await followResponse.json().catch(() => ({}));
                     if (!followResponse.ok || !followData.ok) {
-                        throw new Error(followData.error || "Unable to follow accounts.");
+                        throw new Error(followData.error || "Unable to update follows.");
                     }
                 }
 

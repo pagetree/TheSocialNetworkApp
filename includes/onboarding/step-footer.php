@@ -31,7 +31,10 @@ $onboardingPrimaryHref = $onboardingPrimaryHref ?? null;
             type="button"
             class="onboarding-btn onboarding-btn--primary"
             id="<?php echo htmlspecialchars($onboardingPrimaryId, ENT_QUOTES, 'UTF-8'); ?>"
-        ><?php echo htmlspecialchars($onboardingPrimaryLabel, ENT_QUOTES, 'UTF-8'); ?></button>
+        >
+            <span class="onboarding-btn-spinner" aria-hidden="true" hidden></span>
+            <span class="onboarding-btn-label"><?php echo htmlspecialchars($onboardingPrimaryLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+        </button>
         <?php endif; ?>
     </footer>
 </section>

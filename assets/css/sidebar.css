@@ -5,31 +5,51 @@
     padding: var(--element-padding);
     display: grid;
     gap: 12px;
-    text-align: center;
+    text-align: left;
     background: var(--elements-bg);
     color: var(--light);
 }
 
+.profile-card-header {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+}
+
 .profile-card-avatar {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     display: block;
     object-fit: cover;
+    flex-shrink: 0;
+}
+
+.profile-card-identity {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
 }
 
 .profile-card-name {
     margin: 0;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 700;
     line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .profile-card-handle {
     margin: 0;
-    color: color-mix(in srgb, var(--light) 80%, transparent);
-    font-size: 15px;
+    color: color-mix(in srgb, var(--light) 72%, transparent);
+    font-size: 14px;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .profile-card-location {
@@ -39,23 +59,29 @@
 }
 
 .profile-card-bio {
-    margin: 16px auto 24px;
-    max-width: 24ch;
+    margin: 4px 0 12px;
+    max-width: none;
     font-size: 14px;
     line-height: 1.5;
     color: color-mix(in srgb, var(--light) 90%, transparent);
 }
 
 .profile-card-stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 16px;
 }
 
 .profile-card-stat {
-    display: grid;
-    gap: 2px;
-    justify-items: center;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+}
+
+.profile-card-stat + .profile-card-stat {
+    padding-left: 16px;
+    border-left: 1px solid color-mix(in srgb, var(--light) 22%, transparent);
 }
 
 .profile-card-stat-label {
@@ -64,7 +90,7 @@
 }
 
 .profile-card-stat-value {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--light);
 }

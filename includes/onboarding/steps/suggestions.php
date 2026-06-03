@@ -30,10 +30,17 @@ require dirname(__DIR__) . '/step-shell-start.php';
                         <?php if ($bio !== '') : ?><p class="onboarding-suggestion-bio"><?php echo htmlspecialchars($bio, ENT_QUOTES, 'UTF-8'); ?></p><?php endif; ?>
                         <?php if ($sharedCount > 0) : ?><p class="onboarding-suggestion-meta"><?php echo $sharedCount; ?> shared interest<?php echo $sharedCount === 1 ? '' : 's'; ?></p><?php endif; ?>
                     </div>
-                    <label class="onboarding-suggestion-follow">
-                        <input type="checkbox" name="suggestion_user_ids[]" value="<?php echo $suggestionId; ?>" <?php echo $isFollowed ? 'checked disabled' : ''; ?>>
-                        <span><?php echo $isFollowed ? 'Following' : 'Follow'; ?></span>
-                    </label>
+                    <button
+                        type="button"
+                        class="onboarding-interest-chip onboarding-suggestion-follow<?php echo $isFollowed ? ' is-selected' : ''; ?>"
+                        data-user-id="<?php echo $suggestionId; ?>"
+                        data-followed-on-load="<?php echo $isFollowed ? '1' : '0'; ?>"
+                        aria-pressed="<?php echo $isFollowed ? 'true' : 'false'; ?>"
+                    >
+                        <span class="onboarding-suggestion-follow-label onboarding-suggestion-follow-label--follow">Follow</span>
+                        <span class="onboarding-suggestion-follow-label onboarding-suggestion-follow-label--following">Following</span>
+                        <span class="onboarding-suggestion-follow-label onboarding-suggestion-follow-label--unfollow">Unfollow</span>
+                    </button>
                 </li>
                 <?php endforeach; ?>
             </ul>
