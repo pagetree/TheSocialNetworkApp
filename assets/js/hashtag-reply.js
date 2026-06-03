@@ -1,9 +1,11 @@
 (() => {
     const feed = document.getElementById("hashtag-post-feed");
-    const replyUrl = window.APP_POST_REPLY_URL;
-    if (!feed || !replyUrl) {
+    if (!feed) {
         return;
     }
+
+    const TAG_PATTERN = /^[a-z0-9_]{1,50}$/;
+    const TAG_EXTRACT = /#([a-z0-9_]{1,50})/gi;
 
     const resolveHashtagBase = (card) => {
         const postUrl = card?.dataset?.postUrl
@@ -31,12 +33,15 @@
         return "";
     };
 
+    const normalizeTag = (raw) => {
+        const tag = String(raw ?? "").toLowerCase().replace(/[._!?,]+$/g, "");
+        return TAG_PATTERN.test(tag) ? tag : "";
+    };
+
     const hashtagHref = (tag, card) => {
         const base = resolveHashtagBase(card);
         return base ? `${base}/hashtag/${tag}` : `/hashtag/${tag}`;
     };
-
-    let activeCard = null;
 
     const escapeHtml = (value) => {
         const el = document.createElement("div");
@@ -50,19 +55,18 @@
             return "";
         }
 
-        const pattern = /#([\p{L}\p{N}_]{1,50})/gu;
         let html = "";
         let lastIndex = 0;
         let match;
 
-        while ((match = pattern.exec(text)) !== null) {
+        TAG_EXTRACT.lastIndex = 0;
+        while ((match = TAG_EXTRACT.exec(text)) !== null) {
             const start = match.index;
             if (start > lastIndex) {
                 html += escapeHtml(text.slice(lastIndex, start));
             }
 
-            const rawTag = match[1];
-            const tag = rawTag.toLowerCase().replace(/[.,!?]+$/g, "");
+            const tag = normalizeTag(match[1]);
             if (tag !== "") {
                 const href = escapeHtml(hashtagHref(tag, card));
                 html += `<a href="${href}" class="post-hashtag">#${escapeHtml(tag)}</a>`;
@@ -70,7 +74,7 @@
                 html += escapeHtml(match[0]);
             }
 
-            lastIndex = pattern.lastIndex;
+            lastIndex = TAG_EXTRACT.lastIndex;
         }
 
         if (lastIndex < text.length) {
@@ -225,44 +229,13 @@
         card.querySelector(".hashtag-post-replies")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     };
 
-    feed.addEventListener(
-        "click",
-        (event) => {
-            const replyBtn = event.target.closest(".post-action-reply");
-            if (!replyBtn) {
-                return;
-            }
-
-            const card = replyBtn.closest(".post-card.post-card--linkable");
-            if (card && feed.contains(card)) {
-                activeCard = card;
-            }
-        },
-        true
-    );
-
-    const nativeFetch = window.fetch.bind(window);
-
-    window.fetch = async (input, init) => {
-        const response = await nativeFetch(input, init);
-
-        const requestUrl = typeof input === "string" ? input : String(input?.url || "");
-        const method = String(init?.method || "GET").toUpperCase();
-        const isReplyPost = method === "POST" && requestUrl.includes(replyUrl);
-
-        if (!isReplyPost || !activeCard) {
-            return response;
+    document.addEventListener("feed-reply:posted", (event) => {
+        const card = event.detail?.card;
+        const reply = event.detail?.reply;
+        if (!(card instanceof HTMLElement) || !feed.contains(card) || !reply) {
+            return;
         }
 
-        try {
-            const data = await response.clone().json();
-            if (response.ok && data.ok && data.reply) {
-                showReplyOnCard(activeCard, data.reply);
-            }
-        } catch {
-            // feed-reply-modal handles errors
-        }
-
-        return response;
-    };
+        showReplyOnCard(card, reply);
+    });
 })();

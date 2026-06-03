@@ -289,6 +289,19 @@
             if (activeCard) {
                 incrementReplyCount(activeCard);
             }
+
+            if (activeCard && data.reply) {
+                document.dispatchEvent(
+                    new CustomEvent("feed-reply:posted", {
+                        bubbles: true,
+                        detail: {
+                            card: activeCard,
+                            reply: data.reply,
+                        },
+                    })
+                );
+            }
+
             closeModal();
         } catch {
             showError("Unable to post reply right now.");

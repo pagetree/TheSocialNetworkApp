@@ -5,6 +5,14 @@ declare(strict_types=1);
 const HASHTAG_TAG_MAX_LENGTH = 50;
 const HASHTAG_MAX_PER_CONTENT = 5;
 
+/** URL-safe slug: lowercase letters, digits, underscore only. */
+const HASHTAG_TAG_REGEX = '[a-z0-9_]{1,' . HASHTAG_TAG_MAX_LENGTH . '}';
+
+function hashtagTagIsValid(string $tag): bool
+{
+    return $tag !== '' && preg_match('/^' . HASHTAG_TAG_REGEX . '$/', $tag) === 1;
+}
+
 function hashtagsAreAvailable(): bool
 {
     static $available = null;
@@ -31,15 +39,11 @@ function normalizeHashtagTag(string $raw): string
         return '';
     }
 
-    if (mb_strlen($tag) > HASHTAG_TAG_MAX_LENGTH) {
-        $tag = mb_substr($tag, 0, HASHTAG_TAG_MAX_LENGTH);
+    if (strlen($tag) > HASHTAG_TAG_MAX_LENGTH) {
+        $tag = substr($tag, 0, HASHTAG_TAG_MAX_LENGTH);
     }
 
-    if (!preg_match('/^[\p{L}\p{N}_]+$/u', $tag)) {
-        return '';
-    }
-
-    return $tag;
+    return hashtagTagIsValid($tag) ? $tag : '';
 }
 
 /**
@@ -51,7 +55,8 @@ function extractHashtagTags(string $body): array
         return [];
     }
 
-    if (!preg_match_all('/#([\p{L}\p{N}_]{1,' . HASHTAG_TAG_MAX_LENGTH . '})/u', $body, $matches)) {
+    $pattern = '/#(' . HASHTAG_TAG_REGEX . ')/i';
+    if (!preg_match_all($pattern, $body, $matches)) {
         return [];
     }
 
@@ -73,7 +78,9 @@ function extractHashtagTags(string $body): array
 
 function hashtagUrlPath(string $tag): string
 {
-    return '/hashtag/' . $tag;
+    $tag = normalizeHashtagTag($tag);
+
+    return $tag === '' ? '' : '/hashtag/' . $tag;
 }
 
 function formatPostBodyHtml(string $body, callable $url): string
@@ -82,7 +89,7 @@ function formatPostBodyHtml(string $body, callable $url): string
         return '';
     }
 
-    $pattern = '/#([\p{L}\p{N}_]{1,' . HASHTAG_TAG_MAX_LENGTH . '})/u';
+    $pattern = '/#(' . HASHTAG_TAG_REGEX . ')/i';
     if (!preg_match_all($pattern, $body, $matches, PREG_OFFSET_CAPTURE)) {
         return htmlspecialchars($body, ENT_QUOTES, 'UTF-8');
     }
@@ -99,10 +106,11 @@ function formatPostBodyHtml(string $body, callable $url): string
         }
 
         $tag = normalizeHashtagTag((string) $matches[1][$index][0]);
-        if ($tag === '') {
+        $path = $tag !== '' ? hashtagUrlPath($tag) : '';
+        if ($path === '') {
             $html .= htmlspecialchars($matchBytes, ENT_QUOTES, 'UTF-8');
         } else {
-            $href = htmlspecialchars($url(hashtagUrlPath($tag)), ENT_QUOTES, 'UTF-8');
+            $href = htmlspecialchars($url($path), ENT_QUOTES, 'UTF-8');
             $label = htmlspecialchars('#' . $tag, ENT_QUOTES, 'UTF-8');
             $html .= '<a href="' . $href . '" class="post-hashtag">' . $label . '</a>';
         }
@@ -123,6 +131,7 @@ function formatPostBodyHtml(string $body, callable $url): string
  */
 function upsertHashtagIds(array $tags, ?PDO $pdo = null): array
 {
+    $tags = array_values(array_filter($tags, static fn (string $tag): bool => hashtagTagIsValid($tag)));
     if ($tags === []) {
         return [];
     }
@@ -195,6 +204,12 @@ function fetchHashtagIdsForPost(int $postId): array
         : [];
 }
 
+function logHashtagSyncFailure(string $operation, Throwable $exception, array $context = []): void
+{
+    $contextJson = $context === [] ? '' : ' ' . json_encode($context, JSON_UNESCAPED_SLASHES);
+    error_log('Hashtag ' . $operation . ' failed: ' . $exception->getMessage() . $contextJson);
+}
+
 function syncPostHashtags(int $postId, ?string $body): void
 {
     if ($postId < 1 || !hashtagsAreAvailable()) {
@@ -230,49 +245,12 @@ function syncPostHashtags(int $postId, ?string $body): void
 
         $pdo->commit();
         recomputeHashtagPostCounts(array_merge($previousIds, $newIds));
-    } catch (Throwable) {
+    } catch (Throwable $exception) {
         if (isset($pdo) && $pdo->inTransaction()) {
             $pdo->rollBack();
         }
-    }
-}
 
-function syncPostReplyHashtags(int $replyId, string $body): void
-{
-    if ($replyId < 1 || !hashtagsAreAvailable()) {
-        return;
-    }
-
-    $tags = extractHashtagTags($body);
-
-    try {
-        $pdo = createPdoConnection();
-        $pdo->beginTransaction();
-
-        $delete = $pdo->prepare('DELETE FROM post_reply_hashtags WHERE post_reply_id = :post_reply_id');
-        $delete->execute(['post_reply_id' => $replyId]);
-
-        if ($tags !== []) {
-            $hashtagIds = upsertHashtagIds($tags, $pdo);
-            $link = $pdo->prepare(
-                'INSERT INTO post_reply_hashtags (post_reply_id, hashtag_id)
-                 VALUES (:post_reply_id, :hashtag_id)
-                 ON CONFLICT DO NOTHING'
-            );
-
-            foreach ($hashtagIds as $hashtagId) {
-                $link->execute([
-                    'post_reply_id' => $replyId,
-                    'hashtag_id' => $hashtagId,
-                ]);
-            }
-        }
-
-        $pdo->commit();
-    } catch (Throwable) {
-        if (isset($pdo) && $pdo->inTransaction()) {
-            $pdo->rollBack();
-        }
+        logHashtagSyncFailure('syncPostHashtags', $exception, ['post_id' => $postId]);
     }
 }
 
@@ -302,13 +280,10 @@ function fetchHashtagByTag(string $tag): ?array
 
     return [
         'tag' => (string) $row['tag'],
-        'post_count' => (int) $row['post_count'],
+        'post_count' => max(0, (int) $row['post_count']),
     ];
 }
 
-/**
- * @return list<array<string, mixed>>
- */
 /**
  * @param list<array<string, mixed>> $replies
  */
@@ -356,4 +331,12 @@ function fetchPostsByHashtag(string $tag, int $limit = POST_FEED_DEFAULT_LIMIT):
     $rows = $stmt->fetchAll();
 
     return is_array($rows) ? hydrateFeedPostsWithMedia($rows) : [];
+}
+
+/**
+ * Parse a URL path segment from /hashtag/{segment}.
+ */
+function parseHashtagTagFromUrl(string $segment): string
+{
+    return normalizeHashtagTag(strtolower($segment));
 }

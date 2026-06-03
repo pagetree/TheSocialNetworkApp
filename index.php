@@ -239,8 +239,8 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
     return;
 }
 
-if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#', $path, $hashtagRouteMatch)) {
-    $hashtagTag = normalizeHashtagTag((string) $hashtagRouteMatch[1]);
+if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) {
+    $hashtagTag = parseHashtagTagFromUrl((string) $hashtagRouteMatch[1]);
     if ($hashtagTag === '') {
         http_response_code(404);
         header('Content-Type: text/html; charset=utf-8');
@@ -262,7 +262,9 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#', $path, $hashtagRouteMatch)) {
 
     $hashtagMeta = fetchHashtagByTag($hashtagTag);
     $hashtagPosts = fetchPostsByHashtag($hashtagTag);
-    $hashtagPostCount = (int) ($hashtagMeta['post_count'] ?? count($hashtagPosts));
+    $hashtagPostCount = $hashtagMeta !== null
+        ? (int) $hashtagMeta['post_count']
+        : count($hashtagPosts);
     $hashtagRepliesByPost = fetchPostRepliesGroupedByConversationIds(
         array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $hashtagPosts)
     );
