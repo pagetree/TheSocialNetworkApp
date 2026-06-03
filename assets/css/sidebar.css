@@ -8,6 +8,7 @@
     text-align: left;
     background: var(--elements-bg);
     color: var(--light);
+    border: 1px solid color-mix(in srgb, var(--light) 10%, transparent);
 }
 
 .profile-card-header {
@@ -87,6 +88,7 @@
     padding: var(--element-padding);
     background: var(--elements-bg);
     color: var(--light);
+    border: 1px solid color-mix(in srgb, var(--light) 10%, transparent);
 }
 
 .who-to-follow-card-title {

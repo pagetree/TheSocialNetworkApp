@@ -15,9 +15,6 @@ $authorAvatar = (string) ($post['author']['avatar_url'] ?? '');
 $postBody = (string) ($post['body'] ?? '');
 $detailDateLabel = (string) ($post['detail_date_label'] ?? '');
 $createdAt = (string) ($post['created_at'] ?? '');
-$replyCount = formatEngagementCount((int) ($post['reply_count'] ?? 0));
-$repostCount = formatEngagementCount((int) ($post['repost_count'] ?? 0));
-$likeCount = formatEngagementCount((int) ($post['like_count'] ?? 0));
 $viewCount = formatEngagementCount((int) ($post['view_count'] ?? 0));
 $interactionCount = formatEngagementCount((int) ($post['interaction_count'] ?? 0));
 $postUserId = (int) ($post['user_id'] ?? 0);
@@ -25,8 +22,6 @@ $trackStats = $currentUserId > 0 && $postUserId !== $currentUserId;
 $postMediaItems = is_array($post['media'] ?? null) ? $post['media'] : [];
 $hasMedia = count($postMediaItems) > 0;
 $replies = $replies ?? [];
-$viewerLiked = (bool) ($post['viewer_liked'] ?? false);
-$likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-like';
 ?>
                     <article
                         class="post-detail"
@@ -86,27 +81,6 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                                 <span><span class="post-detail-view-count"><?php echo htmlspecialchars($viewCount, ENT_QUOTES, 'UTF-8'); ?></span> Views</span>
                             </button>
                             <span class="post-stat-interactions" hidden aria-hidden="true"><?php echo htmlspecialchars($interactionCount, ENT_QUOTES, 'UTF-8'); ?></span>
-                        </footer>
-
-                        <footer class="post-actions post-detail-actions" aria-label="Post engagement">
-                            <button type="button" class="post-action post-detail-reply-count"><i data-lucide="message-circle" aria-hidden="true"></i><span><?php echo htmlspecialchars($replyCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
-                            <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span><?php echo htmlspecialchars($repostCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
-                            <button
-                                type="button"
-                                class="post-action<?php echo $likeActionClass; ?>"
-                                aria-label="<?php echo $viewerLiked ? 'Unlike post' : 'Like post'; ?>"
-                                aria-pressed="<?php echo $viewerLiked ? 'true' : 'false'; ?>"
-                                data-liked="<?php echo $viewerLiked ? '1' : '0'; ?>"
-                            ><i data-lucide="heart" aria-hidden="true"></i><span><?php echo htmlspecialchars($likeCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
-                            <button
-                                type="button"
-                                class="post-action post-action-stat-views"
-                                aria-label="View post stats"
-                                data-post-id="<?php echo (int) ($post['id'] ?? 0); ?>"
-                            >
-                                <i data-lucide="bar-chart-2" aria-hidden="true"></i>
-                                <span class="post-detail-view-count"><?php echo htmlspecialchars($viewCount, ENT_QUOTES, 'UTF-8'); ?></span>
-                            </button>
                         </footer>
                     </article>
 
