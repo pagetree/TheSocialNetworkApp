@@ -1,6 +1,10 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    RewriteRule ^(?:includes|config|vendor|sql)(?:/|$) - [F,L]
+    RewriteRule ^auth/.+\.php$ - [F,L]
+    RewriteRule ^composer\.(json|lock)$ - [F,L]
+
     # Route profile through index.php (profile.php is a view, not a public endpoint)
     RewriteRule ^profile\.php$ index.php [L]
     RewriteRule ^profile/?$ index.php [L]

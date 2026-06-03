@@ -55,14 +55,20 @@ if (!$isLoggedIn) {
                             <span>Profile</span>
                         </a>
                     </nav>
-                    <?php if ($isLoggedIn) : ?>
-                    <a
-                        href="<?php echo htmlspecialchars($url('/logout'), ENT_QUOTES, 'UTF-8'); ?>"
-                        class="topbar-link topbar-link--logout"
+                    <?php if ($isLoggedIn) :
+                        $logoutCsrfToken = createCsrfToken('logout');
+                    ?>
+                    <form
+                        method="post"
+                        action="<?php echo htmlspecialchars($url('/logout'), ENT_QUOTES, 'UTF-8'); ?>"
+                        class="topbar-logout-form"
                     >
-                        <i data-lucide="log-out" aria-hidden="true"></i>
-                        <span>Logout</span>
-                    </a>
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($logoutCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                        <button type="submit" class="topbar-link topbar-link--logout">
+                            <i data-lucide="log-out" aria-hidden="true"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
                     <?php endif; ?>
                 </div>
                 <?php if ($layoutHasRightSidebar) : ?>

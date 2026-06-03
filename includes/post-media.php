@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+const PROFILE_IMAGE_MAX_BYTES = 5_242_880; // 5 MB
 const POST_IMAGE_MAX_BYTES = 15_728_640; // 15 MB
 const POST_VIDEO_MAX_BYTES = 52_428_800; // 50 MB
 const POST_MAX_IMAGES = 4;
@@ -9,7 +10,12 @@ const POST_MAX_VIDEOS = 1;
 
 /** @var list<string> */
 const POST_IMAGE_EXTENSIONS = [
-    'avif', 'bmp', 'gif', 'heic', 'heif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'tif', 'tiff', 'webp',
+    'avif', 'bmp', 'gif', 'heic', 'heif', 'ico', 'jpeg', 'jpg', 'png', 'tif', 'tiff', 'webp',
+];
+
+/** @var list<string> */
+const PROFILE_IMAGE_EXTENSIONS = [
+    'avif', 'bmp', 'gif', 'heic', 'heif', 'jpeg', 'jpg', 'png', 'webp',
 ];
 
 /** @var list<string> */
@@ -26,7 +32,6 @@ const POST_IMAGE_MIME_TYPES = [
     'image/heif',
     'image/jpeg',
     'image/png',
-    'image/svg+xml',
     'image/tiff',
     'image/webp',
     'image/x-icon',
@@ -180,7 +185,6 @@ function postMediaContentTypeForUpload(string $mediaType, string $mime, string $
         'webp' => 'image/webp',
         'bmp' => 'image/bmp',
         'tif', 'tiff' => 'image/tiff',
-        'svg' => 'image/svg+xml',
         'avif' => 'image/avif',
         'heic' => 'image/heic',
         'heif' => 'image/heif',
@@ -357,4 +361,74 @@ function validatePostMediaUpload(string $fieldName): array
     }
 
     return $result['files'][0];
+}
+
+/**
+ * @return array{
+ *     ok: true,
+ *     content_type: string,
+ *     extension: string,
+ *     tmp_path: string,
+ *     original_filename: string
+ * }|array{ok: false, error: string}
+ */
+function validateProfileImageUpload(string $fieldName): array
+{
+    if (!isset($_FILES[$fieldName]) || !is_array($_FILES[$fieldName])) {
+        return ['ok' => false, 'error' => 'No file uploaded.'];
+    }
+
+    $file = $_FILES[$fieldName];
+    $errorCode = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
+
+    if ($errorCode === UPLOAD_ERR_NO_FILE) {
+        return ['ok' => false, 'error' => 'No file uploaded.'];
+    }
+
+    if ($errorCode === UPLOAD_ERR_INI_SIZE || $errorCode === UPLOAD_ERR_FORM_SIZE) {
+        return ['ok' => false, 'error' => 'Image is too large.'];
+    }
+
+    if ($errorCode !== UPLOAD_ERR_OK) {
+        return ['ok' => false, 'error' => 'Image upload failed.'];
+    }
+
+    $tmpPath = (string) ($file['tmp_name'] ?? '');
+    if ($tmpPath === '' || !is_uploaded_file($tmpPath)) {
+        return ['ok' => false, 'error' => 'Invalid upload.'];
+    }
+
+    $originalFilename = (string) ($file['name'] ?? 'upload.bin');
+    $extension = postMediaExtensionFromFilename($originalFilename);
+    if ($extension === '' || !in_array($extension, PROFILE_IMAGE_EXTENSIONS, true)) {
+        return ['ok' => false, 'error' => 'Unsupported image type.'];
+    }
+
+    $size = filesize($tmpPath);
+    if ($size === false || $size < 1) {
+        return ['ok' => false, 'error' => 'Invalid image file.'];
+    }
+
+    if ($size > PROFILE_IMAGE_MAX_BYTES) {
+        return ['ok' => false, 'error' => 'Image must be 5 MB or smaller.'];
+    }
+
+    $mime = postMediaDetectMimeType($tmpPath);
+
+    if ($extension === 'gif') {
+        if ($mime !== 'image/gif' && $mime !== 'application/octet-stream') {
+            return ['ok' => false, 'error' => 'Image type does not match file contents.'];
+        }
+    } elseif (postMediaTypeForMimeAndExtension($mime, $extension) !== 'image'
+        || !postMediaMimeAllowedForType('image', $mime, $extension)) {
+        return ['ok' => false, 'error' => 'Image type does not match file contents.'];
+    }
+
+    return [
+        'ok' => true,
+        'content_type' => postMediaContentTypeForUpload($extension === 'gif' ? 'gif' : 'image', $mime, $extension),
+        'extension' => $extension,
+        'tmp_path' => $tmpPath,
+        'original_filename' => $originalFilename,
+    ];
 }

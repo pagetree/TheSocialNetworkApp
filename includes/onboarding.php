@@ -520,7 +520,6 @@ function onboardingRedirectUrlIfNeeded(string $path, callable $url): ?string
         str_starts_with($path, '/auth/')
         || $path === '/health'
         || $path === '/favicon.ico'
-        || $path === '/db-check'
     ) {
         return null;
     }

@@ -8,6 +8,7 @@ function startAppSession(): void
         session_start([
             'cookie_httponly' => true,
             'cookie_samesite' => 'Lax',
+            'cookie_secure' => isHttpsRequest(),
         ]);
     }
 }
@@ -31,7 +32,8 @@ function isLoggedIn(): bool
 function loginUser(array $user): void
 {
     startAppSession();
-    unset($user['password_hash']);
+    session_regenerate_id(true);
+    unset($user['password_hash'], $user['email']);
     $_SESSION['user_id'] = (int) $user['id'];
     $_SESSION['user'] = $user;
 }

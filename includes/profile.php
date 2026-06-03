@@ -17,7 +17,6 @@ function userSessionColumns(): array
         'username',
         'display_name',
         'handle',
-        'email',
         'avatar_url',
         'cover_url',
         'bio',

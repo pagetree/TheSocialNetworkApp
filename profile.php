@@ -15,8 +15,10 @@ declare(strict_types=1);
 /** @var array<int, int> $profileLikedPostIds */
 /** @var int $currentUserId */
 /** @var bool $showFeedReplyModal */
+/** @var bool $profileIsPrivate */
 
 $profileUser = $profileUser ?? null;
+$profileIsPrivate = $profileIsPrivate ?? false;
 $profileCsrfToken = $profileCsrfToken ?? '';
 $isOwnProfile = $isOwnProfile ?? false;
 $viewerFollowsProfile = $viewerFollowsProfile ?? false;
@@ -28,7 +30,8 @@ $currentUserId = $currentUserId ?? 0;
 $showFeedReplyModal = $showFeedReplyModal ?? false;
 
 $hasProfileUser = is_array($profileUser);
-$showProfileActions = $isLoggedIn && $hasProfileUser && !$isOwnProfile;
+$showProfileActions = $isLoggedIn && $hasProfileUser && !$isOwnProfile && !$profileIsPrivate;
+$showProfileDetails = !$profileIsPrivate || $isOwnProfile;
 $displayName = $hasProfileUser ? (string) $profileUser['display_name'] : 'User Name';
 $handle = $hasProfileUser ? (string) $profileUser['handle'] : '@username';
 $bio = $hasProfileUser
@@ -131,6 +134,7 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                             <div class="profile-hero-details">
                                 <h1 id="profile-display-name" class="profile-hero-name"><?php echo htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8'); ?></h1>
                                 <p class="profile-hero-handle"><?php echo htmlspecialchars($handle, ENT_QUOTES, 'UTF-8'); ?></p>
+                                <?php if ($showProfileDetails) : ?>
                                 <p id="profile-display-bio" class="profile-hero-bio"><?php echo htmlspecialchars($bio, ENT_QUOTES, 'UTF-8'); ?></p>
                                 <div class="profile-hero-meta">
                                     <?php if ($showLocation) : ?>
@@ -165,7 +169,8 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                         <span id="profile-display-joined"><?php echo htmlspecialchars($joinedLabel, ENT_QUOTES, 'UTF-8'); ?></span>
                                     </p>
                                 </div>
-                                <?php if ($hasProfileUser) : ?>
+                                <?php endif; ?>
+                                <?php if ($hasProfileUser && $showProfileDetails) : ?>
                                 <div class="profile-hero-social-stats" aria-label="Follow stats">
                                     <p class="profile-hero-social-stat">
                                         <span class="profile-hero-social-stat-value" id="profile-following-count"><?php echo htmlspecialchars($profileFollowingLabel, ENT_QUOTES, 'UTF-8'); ?></span>
@@ -189,7 +194,9 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                     </nav>
 
                     <div class="profile-feed" id="profile-post-feed">
-<?php if ($profilePosts === []) : ?>
+<?php if ($profileIsPrivate) : ?>
+                        <p class="profile-feed-empty">This profile is private.</p>
+<?php elseif ($profilePosts === []) : ?>
                         <p class="profile-feed-empty"><?php echo $isOwnProfile ? 'You have not posted yet.' : 'No posts yet.'; ?></p>
 <?php else :
     foreach ($profilePosts as $profilePost) {

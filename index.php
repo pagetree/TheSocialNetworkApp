@@ -30,8 +30,22 @@ if ($path === '/health') {
 
 startAppSession();
 
-if ($path === '/logout') {
+if ($path === '/logout' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    $payload = authPayloadFromRequest();
+    if (!validateCsrfToken(extractCsrfToken($payload), 'logout')) {
+        http_response_code(403);
+        header('Content-Type: text/html; charset=utf-8');
+        echo 'Session expired. Refresh the page and try again.';
+        exit;
+    }
+
+    consumeCsrfToken(extractCsrfToken($payload), 'logout');
     logoutUser();
+    header('Location: ' . $url('/'));
+    exit;
+}
+
+if ($path === '/logout') {
     header('Location: ' . $url('/'));
     exit;
 }
@@ -155,6 +169,7 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
     $isOwnProfile = false;
     $viewerFollowsProfile = false;
     $profileSlug = isset($profileRouteMatch[1]) ? normalizeUsername((string) $profileRouteMatch[1]) : '';
+    $profileIsPrivate = false;
 
     if ($profileSlug === '') {
         if (!$isLoggedIn) {
@@ -170,6 +185,7 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
             $profileUser = $currentUser;
         }
         $isOwnProfile = true;
+        $profileIsPrivate = false;
         $profileCsrfToken = createCsrfToken('profile_edit');
         $postStatsCsrfToken = createCsrfToken('post_stats');
         $currentUserId = (int) $currentUser['id'];
@@ -199,12 +215,16 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
             exit;
         }
 
+        $profileIsPrivate = !userProfileIsVisible($profileUser);
+
         if ($isLoggedIn) {
             $postStatsCsrfToken = createCsrfToken('post_stats');
             $currentUserId = (int) $currentUser['id'];
-            $profileFollowCsrfToken = createCsrfToken('profile_follow');
-            $profileFollowUserId = $profileUserId;
-            $viewerFollowsProfile = isUserFollowedBy($currentUserId, $profileUserId);
+            if (!$profileIsPrivate) {
+                $profileFollowCsrfToken = createCsrfToken('profile_follow');
+                $profileFollowUserId = $profileUserId;
+                $viewerFollowsProfile = isUserFollowedBy($currentUserId, $profileUserId);
+            }
         } else {
             $postStatsCsrfToken = '';
             $currentUserId = 0;
@@ -217,7 +237,7 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
     $replyCsrfToken = '';
     $showFeedReplyModal = false;
 
-    if (is_array($profileUser)) {
+    if (is_array($profileUser) && !$profileIsPrivate) {
         $profilePosts = fetchPostsByUserId((int) ($profileUser['id'] ?? 0));
 
         if ($isLoggedIn) {
@@ -349,25 +369,6 @@ if (preg_match('#^/post/(\d+)/?$#', $path, $postRouteMatch)) {
     http_response_code(200);
     header('Content-Type: text/html; charset=utf-8');
     require __DIR__ . '/post.php';
-    return;
-}
-
-if ($path === '/db-check') {
-    try {
-        $pdo = createPdoConnection();
-        $result = $pdo->query('SELECT NOW() AS server_time')->fetch();
-        jsonResponse([
-            'status' => 'ok',
-            'database' => 'connected',
-            'server_time' => $result['server_time'] ?? null,
-        ]);
-    } catch (Throwable $exception) {
-        jsonResponse([
-            'status' => 'error',
-            'database' => 'unreachable',
-            'message' => $exception->getMessage(),
-        ], 500);
-    }
     return;
 }
 

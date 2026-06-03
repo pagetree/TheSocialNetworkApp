@@ -61,6 +61,12 @@
 
     const getReplyDepth = (element) => Number(element?.dataset.replyDepth || 0);
 
+    const escapeHtml = (value) => {
+        const el = document.createElement("div");
+        el.textContent = String(value ?? "");
+        return el.innerHTML;
+    };
+
     const buildReplyActionsHtml = (replyCount = "0", likeCount = "0") => `
         <footer class="post-actions post-reply-actions" aria-label="Reply engagement">
             <button type="button" class="post-action post-reply-action-reply" aria-label="Reply to this reply">
@@ -150,15 +156,15 @@
 
         article.innerHTML = `
             <div class="post-reply-avatar-col">
-                <img class="post-reply-avatar" src="${reply.author?.avatar_url ?? ""}" alt="${authorName} avatar">
+                <img class="post-reply-avatar" src="${escapeHtml(reply.author?.avatar_url ?? "")}" alt="${escapeHtml(`${authorName} avatar`)}">
                 <span class="post-reply-thread-line" aria-hidden="true"></span>
             </div>
             <div class="post-reply-body">
                 <header class="post-reply-header">
                     <p class="post-reply-meta-line">
-                        <span class="post-reply-author">${authorName}</span>
-                        <span class="post-reply-handle">${authorHandle}</span>
-                        <time class="post-reply-time" datetime="${reply.created_at ?? ""}">${reply.time_label ?? "just now"}</time>
+                        <span class="post-reply-author">${escapeHtml(authorName)}</span>
+                        <span class="post-reply-handle">${escapeHtml(authorHandle)}</span>
+                        <time class="post-reply-time" datetime="${escapeHtml(reply.created_at ?? "")}">${escapeHtml(reply.time_label ?? "just now")}</time>
                     </p>
                 </header>
                 ${replyBody !== "" ? '<p class="post-reply-text"></p>' : ""}

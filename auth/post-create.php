@@ -150,6 +150,8 @@ if ($bodyForDb !== null) {
     syncPostHashtags($postId, $bodyForDb);
 }
 
+consumeCsrfToken(extractCsrfToken($payload), 'post_create');
+
 $appPaths = appPaths();
 jsonResponse([
     'ok' => true,

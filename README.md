@@ -5,7 +5,6 @@ PHP scaffold prepared for Railway deployment with PostgreSQL.
 ## Endpoints
 
 - `/health` - app health check
-- `/db-check` - validates PostgreSQL connection
 
 ## Railway
 

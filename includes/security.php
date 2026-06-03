@@ -30,17 +30,32 @@ function rateLimitConfig(string $action): array
     };
 }
 
-function clientIpAddress(): string
+function isHttpsRequest(): bool
 {
-    $forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
-    if ($forwarded !== '') {
-        $parts = array_map('trim', explode(',', $forwarded));
-        $first = $parts[0] ?? '';
-        if (filter_var($first, FILTER_VALIDATE_IP)) {
-            return $first;
-        }
+    if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+        return true;
     }
 
+    return strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https';
+}
+
+function sendSecurityHeaders(): void
+{
+    if (headers_sent()) {
+        return;
+    }
+
+    header('X-Frame-Options: SAMEORIGIN');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+
+    if (isHttpsRequest()) {
+        header('Strict-Transport-Security: max-age=31536000');
+    }
+}
+
+function clientIpAddress(): string
+{
     $remote = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
     return filter_var($remote, FILTER_VALIDATE_IP) ? $remote : '0.0.0.0';
@@ -303,6 +318,34 @@ function validateCsrfToken(string $token, string $purpose): bool
     }
 
     return true;
+}
+
+function consumeCsrfToken(string $token, string $purpose): void
+{
+    if ($token === '') {
+        return;
+    }
+
+    startAppSession();
+    $sessionId = session_id();
+    if ($sessionId === '') {
+        return;
+    }
+
+    $tokenHash = hash('sha256', $token);
+    $pdo = createPdoConnection();
+    $pdo->prepare(
+        'UPDATE csrf_tokens
+         SET used_at = NOW()
+         WHERE token_hash = :token_hash
+           AND session_id = :session_id
+           AND purpose = :purpose
+           AND used_at IS NULL'
+    )->execute([
+        'token_hash' => $tokenHash,
+        'session_id' => $sessionId,
+        'purpose' => $purpose,
+    ]);
 }
 
 function invalidateCsrfTokens(string $purpose): void

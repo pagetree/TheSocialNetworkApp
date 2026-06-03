@@ -1,5 +1,5 @@
 (() => {
-    const imageAccept = "image/avif,image/bmp,image/gif,image/heic,image/heif,image/jpeg,image/png,image/svg+xml,image/tiff,image/webp,image/x-icon,.avif,.bmp,.gif,.heic,.heif,.ico,.jpeg,.jpg,.png,.svg,.tif,.tiff,.webp";
+    const imageAccept = "image/avif,image/bmp,image/gif,image/heic,image/heif,image/jpeg,image/png,image/tiff,image/webp,image/x-icon,.avif,.bmp,.gif,.heic,.heif,.ico,.jpeg,.jpg,.png,.tif,.tiff,.webp";
     const videoAccept = "video/3gpp,video/3gpp2,video/mp4,video/mpeg,video/ogg,video/quicktime,video/webm,video/x-matroska,video/x-msvideo,.3gp,.3g2,.avi,.m4v,.mkv,.mov,.mp4,.mpeg,.mpg,.ogv,.webm";
 
     const defaultLimits = {

@@ -82,11 +82,29 @@
     opacity: 1;
 }
 
+.topbar-logout-form {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.topbar-logout-form button {
+    font: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0;
+}
+
 .topbar-link--logout {
     margin-left: auto;
     flex-shrink: 0;
     color: #f4212e;
     opacity: 1;
+}
+
+.topbar-logout-form .topbar-link--logout {
+    margin-left: 0;
 }
 
 .topbar-link--logout:hover {

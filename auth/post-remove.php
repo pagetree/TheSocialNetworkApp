@@ -43,6 +43,7 @@ if ($postId > 0) {
         return;
     }
 
+    consumeCsrfToken(extractCsrfToken($payload), 'post_remove');
     jsonResponse([
         'ok' => true,
         'removed' => 'post',
@@ -61,6 +62,7 @@ if ($replyId > 0) {
         return;
     }
 
+    consumeCsrfToken(extractCsrfToken($payload), 'post_remove');
     jsonResponse([
         'ok' => true,
         'removed' => 'reply',

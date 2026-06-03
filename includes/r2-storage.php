@@ -208,12 +208,13 @@ function r2UploadUserFile(int $userId, string $fieldName): array
         return ['ok' => false, 'error' => 'Image upload failed.'];
     }
 
-    $tmpPath = (string) ($file['tmp_name'] ?? '');
-    if ($tmpPath === '' || !is_uploaded_file($tmpPath)) {
-        return ['ok' => false, 'error' => 'Invalid upload.'];
+    $validated = validateProfileImageUpload($fieldName);
+    if (!$validated['ok']) {
+        return $validated;
     }
 
-    $originalFilename = (string) ($file['name'] ?? 'upload.bin');
+    $tmpPath = $validated['tmp_path'];
+    $originalFilename = $validated['original_filename'];
     $objectKey = r2BuildObjectKey($userId, $originalFilename);
     $body = file_get_contents($tmpPath);
 
@@ -221,8 +222,7 @@ function r2UploadUserFile(int $userId, string $fieldName): array
         return ['ok' => false, 'error' => 'Unable to read uploaded file.'];
     }
 
-    $extension = strtolower(pathinfo($objectKey, PATHINFO_EXTENSION));
-    $contentType = r2MimeTypeForExtension($extension);
+    $contentType = $validated['content_type'];
     $config = r2Config();
     $canonicalUri = r2EncodeUriPath($config['bucket'] . '/' . $objectKey);
 
