@@ -5,9 +5,9 @@
     const closeBtn = document.getElementById("post-stats-modal-close");
     const titleEl = document.getElementById("post-stats-modal-title");
     const subtitleEl = document.getElementById("post-stats-modal-subtitle");
-    const contentEl = document.getElementById("post-stats-modal-content");
-    const heroEl = document.getElementById("post-stats-modal-hero");
-    const insightsGridEl = document.getElementById("post-stats-modal-insights-grid");
+    const panelEl = document.getElementById("post-stats-modal-panel");
+    const engageEl = document.getElementById("post-stats-modal-engage");
+    const listEl = document.getElementById("post-stats-modal-list");
     const statusEl = document.getElementById("post-stats-modal-status");
 
     if (
@@ -17,104 +17,94 @@
         || !closeBtn
         || !titleEl
         || !subtitleEl
-        || !contentEl
-        || !heroEl
-        || !insightsGridEl
+        || !panelEl
+        || !engageEl
+        || !listEl
         || !statusEl
     ) {
         return;
     }
 
-    const HERO_ORDER = ["likes", "reposts", "replies"];
-    const INSIGHT_ORDER = ["views", "interactions", "score"];
+    const ENGAGE_ORDER = ["likes", "reposts", "replies"];
+    const LIST_ORDER = ["views", "interactions", "score"];
 
     let activeTrigger = null;
     let fetchController = null;
 
     const setStatus = (message, isError = false) => {
-        contentEl.hidden = true;
+        panelEl.hidden = true;
         statusEl.textContent = message;
         statusEl.hidden = false;
         statusEl.classList.toggle("is-error", isError);
     };
 
-    const clearMetrics = () => {
-        heroEl.replaceChildren();
-        insightsGridEl.replaceChildren();
-        heroEl.hidden = true;
-        contentEl.hidden = true;
+    const clearPanel = () => {
+        engageEl.replaceChildren();
+        listEl.replaceChildren();
+        engageEl.hidden = true;
+        panelEl.hidden = true;
     };
 
-    const createHeroItem = (metric) => {
+    const createEngageItem = (metric) => {
         const item = document.createElement("div");
-        item.className = "post-stats-hero-item";
+        item.className = "post-stats-engage-item";
 
-        const iconWrap = document.createElement("span");
-        iconWrap.className = "post-stats-hero-icon";
-        iconWrap.innerHTML = `<i data-lucide="${metric.icon || "bar-chart-2"}" aria-hidden="true"></i>`;
+        const icon = document.createElement("span");
+        icon.className = "post-stats-engage-icon";
+        icon.innerHTML = `<i data-lucide="${metric.icon || "bar-chart-2"}" aria-hidden="true"></i>`;
 
-        const value = document.createElement("p");
-        value.className = "post-stats-hero-value";
+        const value = document.createElement("span");
+        value.className = "post-stats-engage-value";
         value.textContent = String(metric.value || "0");
 
-        const label = document.createElement("p");
-        label.className = "post-stats-hero-label";
+        const label = document.createElement("span");
+        label.className = "post-stats-engage-label";
         label.textContent = String(metric.label || "");
 
-        item.append(iconWrap, value, label);
+        item.append(icon, value, label);
         return item;
     };
 
-    const createInsightRow = (metric) => {
+    const createListRow = (metric) => {
         const row = document.createElement("div");
-        row.className = "post-stats-insight-row";
+        row.className = "post-stats-list-row";
 
-        const iconWrap = document.createElement("span");
-        iconWrap.className = "post-stats-insight-icon";
-        iconWrap.innerHTML = `<i data-lucide="${metric.icon || "bar-chart-2"}" aria-hidden="true"></i>`;
+        const term = document.createElement("dt");
+        term.textContent = String(metric.label || "");
 
-        const copy = document.createElement("div");
-        copy.className = "post-stats-insight-copy";
+        const detail = document.createElement("dd");
+        detail.textContent = String(metric.value || "0");
 
-        const label = document.createElement("p");
-        label.className = "post-stats-insight-label";
-        label.textContent = String(metric.label || "");
-
-        const value = document.createElement("p");
-        value.className = "post-stats-insight-value";
-        value.textContent = String(metric.value || "0");
-
-        copy.append(label, value);
-        row.append(iconWrap, copy);
+        row.append(term, detail);
         return row;
     };
 
     const renderMetrics = (metrics) => {
-        clearMetrics();
+        clearPanel();
 
-        const metricByKey = new Map(metrics.map((metric) => [String(metric.key || ""), metric]));
-        const heroMetrics = HERO_ORDER.map((key) => metricByKey.get(key)).filter(Boolean);
-        const insightMetrics = INSIGHT_ORDER.map((key) => metricByKey.get(key)).filter(Boolean);
+        const byKey = new Map(metrics.map((metric) => [String(metric.key || ""), metric]));
+        const engageMetrics = ENGAGE_ORDER.map((key) => byKey.get(key)).filter(Boolean);
+        const listMetrics = LIST_ORDER.map((key) => byKey.get(key)).filter(Boolean);
 
-        if (heroMetrics.length === 0 && insightMetrics.length === 0) {
+        if (engageMetrics.length === 0 && listMetrics.length === 0) {
             setStatus("No stats available yet.");
             return;
         }
 
         statusEl.hidden = true;
         statusEl.classList.remove("is-error");
-        contentEl.hidden = false;
+        panelEl.hidden = false;
 
-        if (heroMetrics.length > 0) {
-            heroEl.hidden = false;
-            heroEl.dataset.count = String(heroMetrics.length);
-            heroMetrics.forEach((metric) => {
-                heroEl.append(createHeroItem(metric));
+        if (engageMetrics.length > 0) {
+            engageEl.hidden = false;
+            engageEl.dataset.count = String(engageMetrics.length);
+            engageMetrics.forEach((metric) => {
+                engageEl.append(createEngageItem(metric));
             });
         }
 
-        insightMetrics.forEach((metric) => {
-            insightsGridEl.append(createInsightRow(metric));
+        listMetrics.forEach((metric) => {
+            listEl.append(createListRow(metric));
         });
 
         window.lucide?.createIcons?.();
@@ -127,7 +117,7 @@
         document.body.classList.remove("post-stats-modal-open");
         activeTrigger?.classList.remove("is-active");
         activeTrigger = null;
-        clearMetrics();
+        clearPanel();
         setStatus("Loading…");
     };
 
@@ -144,7 +134,7 @@
         titleEl.textContent = "Stats";
         subtitleEl.textContent = "";
         subtitleEl.hidden = true;
-        clearMetrics();
+        clearPanel();
         setStatus("Loading…");
 
         try {
@@ -173,12 +163,8 @@
             }
 
             titleEl.textContent = String(data.title || "Stats");
-            if (data.is_owner) {
-                subtitleEl.textContent = "Your content";
-                subtitleEl.hidden = false;
-            } else {
-                subtitleEl.hidden = true;
-            }
+            subtitleEl.textContent = data.is_owner ? "Your content" : "";
+            subtitleEl.hidden = !data.is_owner;
 
             renderMetrics(Array.isArray(data.metrics) ? data.metrics : []);
         } catch (error) {
@@ -190,16 +176,11 @@
         }
     };
 
-    const findStatsTrigger = (target) => {
-        if (!(target instanceof Element)) {
-            return null;
-        }
-
-        return target.closest(".post-action-stat-views, .post-detail-meta-views-btn");
-    };
-
     document.addEventListener("click", (event) => {
-        const trigger = findStatsTrigger(event.target);
+        const trigger = event.target instanceof Element
+            ? event.target.closest(".post-action-stat-views, .post-detail-meta-views-btn")
+            : null;
+
         if (!trigger) {
             return;
         }

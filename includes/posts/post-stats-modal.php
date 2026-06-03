@@ -17,9 +17,9 @@ declare(strict_types=1);
             <p class="post-stats-modal-subtitle" id="post-stats-modal-subtitle" hidden></p>
         </header>
         <div class="post-stats-modal-body" id="post-stats-modal-body">
-            <div class="post-stats-modal-content" id="post-stats-modal-content" hidden>
-                <div class="post-stats-hero-card" id="post-stats-modal-hero"></div>
-                <div class="post-stats-insights-grid" id="post-stats-modal-insights-grid"></div>
+            <div class="post-stats-modal-panel" id="post-stats-modal-panel" hidden>
+                <div class="post-stats-engage" id="post-stats-modal-engage"></div>
+                <dl class="post-stats-list" id="post-stats-modal-list"></dl>
             </div>
             <p class="post-stats-modal-status" id="post-stats-modal-status">Loading…</p>
         </div>
