@@ -9,11 +9,19 @@ PHP scaffold prepared for Railway deployment with PostgreSQL.
 
 ## Railway
 
-This project includes:
+**Web service** (default):
 
-- `railway.json` with start command
-- `router.php` for PHP built-in server routing
-- PostgreSQL connection via `DATABASE_URL` or `PG*` vars
+- Config file: `railway.json`
+- Root directory: leave empty (project root — must include `composer.json`, `includes/`, etc.)
+- Start: `php -S 0.0.0.0:$PORT router.php`
+
+**Score worker** (cron):
+
+- Config file: `railway.worker.json` (set full path in service settings if needed)
+- Root directory: leave empty — do **not** set `/workers` (that folder has no `composer.json` and cannot reach `includes/`)
+- Start: `php workers/compute-post-scores.php` (every 5 minutes via `cronSchedule` in config)
+
+Shared: `router.php`, PostgreSQL via `DATABASE_URL` or `PG*` vars
 
 ## Environment Variables
 
