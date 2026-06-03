@@ -75,6 +75,17 @@
     cursor: wait;
 }
 
+.post-menu-option--placeholder {
+    color: color-mix(in srgb, var(--light) 55%, transparent);
+    cursor: default;
+    font-weight: 500;
+}
+
+.post-menu-option--placeholder:hover,
+.post-menu-option--placeholder:focus-visible {
+    background: transparent;
+}
+
 .post-card--linkable .post-menu,
 .post-card--linkable .post-menu-dropdown,
 .post-card--linkable .post-menu-btn,

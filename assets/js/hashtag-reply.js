@@ -103,18 +103,23 @@
         const replyUserId = Number(reply.author?.user_id || reply.user_id || 0);
         const currentUserId = Number(window.APP_CURRENT_USER_ID || 0);
         const conversationId = Number(card?.dataset?.postId || 0);
+        const isOwn = currentUserId > 0 && replyUserId === currentUserId;
 
-        if (replyId < 1 || replyUserId < 1 || currentUserId < 1 || replyUserId !== currentUserId) {
+        if (replyId < 1 || currentUserId < 1) {
             return "";
         }
 
+        const menuOption = isOwn
+            ? '<button type="button" class="post-menu-option post-menu-option--remove" role="menuitem">Remove reply</button>'
+            : '<span class="post-menu-option post-menu-option--placeholder" role="menuitem" aria-disabled="true">In progress</span>';
+
         return `
-                    <div class="post-menu" data-menu-kind="reply" data-target-id="${replyId}" data-conversation-id="${conversationId}">
+                    <div class="post-menu" data-menu-kind="reply" data-target-id="${replyId}" data-is-own="${isOwn ? "1" : "0"}" data-conversation-id="${conversationId}">
                         <button type="button" class="post-menu-btn" aria-haspopup="menu" aria-expanded="false" aria-label="Reply options">
                             <i data-lucide="ellipsis" aria-hidden="true"></i>
                         </button>
                         <div class="post-menu-dropdown" role="menu" hidden>
-                            <button type="button" class="post-menu-option post-menu-option--remove" role="menuitem">Remove reply</button>
+                            ${menuOption}
                         </div>
                     </div>`;
     };

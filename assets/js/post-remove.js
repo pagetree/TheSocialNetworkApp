@@ -1,10 +1,7 @@
 (() => {
     const removeUrl = window.APP_POST_REMOVE_URL;
     const csrfToken = window.APP_POST_REMOVE_CSRF_TOKEN;
-
-    if (!removeUrl || !csrfToken) {
-        return;
-    }
+    const canRemove = Boolean(removeUrl && csrfToken);
 
     const closeAllMenus = (exceptMenu = null) => {
         document.querySelectorAll(".post-menu").forEach((menu) => {
@@ -137,6 +134,12 @@
             return;
         }
 
+        if (event.target.closest(".post-menu-option--placeholder")) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
+
         const removeBtn = event.target.closest(".post-menu-option--remove");
         if (!removeBtn) {
             if (!event.target.closest(".post-menu")) {
@@ -148,8 +151,12 @@
         event.preventDefault();
         event.stopPropagation();
 
+        if (!canRemove) {
+            return;
+        }
+
         const menu = removeBtn.closest(".post-menu");
-        if (!menu || removeBtn.disabled) {
+        if (!menu || removeBtn.disabled || menu.dataset.isOwn !== "1") {
             return;
         }
 
