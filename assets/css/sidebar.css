@@ -52,12 +52,6 @@
     white-space: nowrap;
 }
 
-.profile-card-location {
-    margin: 0;
-    color: color-mix(in srgb, var(--light) 80%, transparent);
-    font-size: 15px;
-}
-
 .profile-card-bio {
     margin: 4px 0 12px;
     max-width: none;

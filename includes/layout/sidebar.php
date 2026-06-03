@@ -7,7 +7,6 @@ declare(strict_types=1);
 $sidebarUser = getCurrentUser();
 $sidebarName = is_array($sidebarUser) ? (string) $sidebarUser['display_name'] : 'User Name';
 $sidebarHandle = is_array($sidebarUser) ? (string) $sidebarUser['handle'] : '@username';
-$sidebarLocation = is_array($sidebarUser) ? trim((string) ($sidebarUser['location'] ?? '')) : 'Croatia';
 $sidebarBio = is_array($sidebarUser)
     ? trim((string) ($sidebarUser['bio'] ?? ''))
     : 'UI, UX Designer and Web Developer from Croatia';
@@ -27,7 +26,6 @@ $sidebarAvatar = userMediaUrl($sidebarUser, 'avatar_url', $url);
                                 <p class="profile-card-handle"><?php echo htmlspecialchars($sidebarHandle, ENT_QUOTES, 'UTF-8'); ?></p>
                             </div>
                         </header>
-                        <p id="profile-sidebar-location" class="profile-card-location"><?php echo htmlspecialchars($sidebarLocation, ENT_QUOTES, 'UTF-8'); ?></p>
                         <p id="profile-sidebar-bio" class="profile-card-bio"><?php echo htmlspecialchars($sidebarBio, ENT_QUOTES, 'UTF-8'); ?></p>
                         <div class="profile-card-stats" aria-label="Profile stats">
                             <span class="profile-card-stat">

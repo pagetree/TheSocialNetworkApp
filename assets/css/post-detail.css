@@ -6,7 +6,7 @@
 .post-detail {
     background: var(--elements-bg);
     border-radius: var(--container-radius);
-    padding: var(--element-padding);
+    padding: 0;
     display: grid;
     gap: var(--post-gap);
 }
