@@ -80,33 +80,25 @@
         return html;
     };
 
-    const getRepliesRoot = (card) => {
+    const ensureRepliesSection = (card) => {
         let section = card.querySelector(".hashtag-post-replies");
         if (!section) {
             section = document.createElement("section");
             section.className = "hashtag-post-replies post-replies";
             section.setAttribute("aria-label", "Replies to this post");
-            const thread = document.createElement("div");
-            thread.className = "post-reply-thread";
-            section.appendChild(thread);
             card.appendChild(section);
         }
 
         section.hidden = false;
-        let thread = section.querySelector(".post-reply-thread");
-        if (!thread) {
-            thread = document.createElement("div");
-            thread.className = "post-reply-thread";
-            section.appendChild(thread);
-        }
 
-        return thread;
+        return section;
     };
 
     const buildReplyElement = (reply, card) => {
         const article = document.createElement("article");
         const body = String(reply.body ?? "").trim();
-        const bodyHtml = formatReplyBodyHtml(body, card);
+        const serverHtml = typeof reply.body_html === "string" ? reply.body_html.trim() : "";
+        const bodyHtml = serverHtml !== "" ? serverHtml : formatReplyBodyHtml(body, card);
         const authorName = reply.author?.display_name ?? "User";
         const authorHandle = reply.author?.handle ?? "@user";
         const avatarUrl = reply.author?.avatar_url ?? "";
@@ -213,10 +205,18 @@
             return;
         }
 
-        const thread = getRepliesRoot(card);
+        const replyId = Number(reply.id || 0);
+        if (replyId > 0 && card.querySelector(`[data-reply-id="${replyId}"]`)) {
+            return;
+        }
+
+        const section = ensureRepliesSection(card);
+        const thread = document.createElement("div");
+        thread.className = "post-reply-thread";
         const article = buildReplyElement(reply, card);
         appendMedia(article, reply.media);
         thread.appendChild(article);
+        section.appendChild(thread);
 
         if (typeof window.refreshLucideIcons === "function") {
             window.refreshLucideIcons();

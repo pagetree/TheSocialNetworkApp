@@ -263,6 +263,9 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#', $path, $hashtagRouteMatch)) {
     $hashtagMeta = fetchHashtagByTag($hashtagTag);
     $hashtagPosts = fetchPostsByHashtag($hashtagTag);
     $hashtagPostCount = (int) ($hashtagMeta['post_count'] ?? count($hashtagPosts));
+    $hashtagRepliesByPost = fetchPostRepliesGroupedByConversationIds(
+        array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $hashtagPosts)
+    );
 
     $currentUser = getCurrentUser();
     $isLoggedIn = $currentUser !== null;

@@ -309,6 +309,23 @@ function fetchHashtagByTag(string $tag): ?array
 /**
  * @return list<array<string, mixed>>
  */
+/**
+ * @param list<array<string, mixed>> $replies
+ */
+function renderHashtagPostCardReplies(array $replies, callable $url): void
+{
+    if ($replies === []) {
+        return;
+    }
+    ?>
+                        <section class="hashtag-post-replies post-replies" aria-label="Replies to this post">
+<?php
+    renderPostReplyTree($replies, $url);
+    ?>
+                        </section>
+<?php
+}
+
 function fetchPostsByHashtag(string $tag, int $limit = POST_FEED_DEFAULT_LIMIT): array
 {
     $tag = normalizeHashtagTag($tag);

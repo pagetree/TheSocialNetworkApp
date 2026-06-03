@@ -137,6 +137,58 @@ function fetchPostReplies(int $conversationId): array
 }
 
 /**
+ * @param list<int> $conversationIds
+ * @return array<int, list<array<string, mixed>>>
+ */
+function fetchPostRepliesGroupedByConversationIds(array $conversationIds): array
+{
+    $conversationIds = array_values(array_unique(array_filter(
+        array_map('intval', $conversationIds),
+        static fn (int $id): bool => $id > 0
+    )));
+
+    if ($conversationIds === []) {
+        return [];
+    }
+
+    $placeholders = implode(', ', array_fill(0, count($conversationIds), '?'));
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT r.id, r.conversation_id, r.user_id, r.parent_reply_id, r.body, r.like_count, r.reply_count, r.created_at,
+                u.display_name, u.handle, u.avatar_url
+         FROM post_replies r
+         INNER JOIN users u ON u.id = r.user_id
+         WHERE r.conversation_id IN (' . $placeholders . ')
+           AND r.is_deleted = FALSE
+         ORDER BY r.conversation_id ASC, r.created_at ASC'
+    );
+    $stmt->execute($conversationIds);
+    $rows = $stmt->fetchAll();
+
+    if (!is_array($rows)) {
+        return [];
+    }
+
+    $rows = hydratePostRepliesWithMedia($rows);
+    $grouped = [];
+
+    foreach ($rows as $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+
+        $conversationId = (int) ($row['conversation_id'] ?? 0);
+        if ($conversationId < 1) {
+            continue;
+        }
+
+        $grouped[$conversationId][] = $row;
+    }
+
+    return $grouped;
+}
+
+/**
  * @return array<string, mixed>|null
  */
 function fetchPostReplyById(int $replyId, int $conversationId): ?array
@@ -276,12 +328,15 @@ function postReplyPayload(array $row, callable $url): array
         'avatar_url' => (string) ($row['avatar_url'] ?? ''),
     ];
 
+    $body = (string) ($row['body'] ?? '');
+
     return [
         'id' => (int) ($row['id'] ?? 0),
         'parent_reply_id' => isset($row['parent_reply_id']) && $row['parent_reply_id'] !== null
             ? (int) $row['parent_reply_id']
             : null,
-        'body' => (string) ($row['body'] ?? ''),
+        'body' => $body,
+        'body_html' => $body !== '' ? formatPostBodyHtml($body, $url) : '',
         'media' => postMediaPayloadItems($row),
         'like_count' => (int) ($row['like_count'] ?? 0),
         'reply_count' => (int) ($row['reply_count'] ?? 0),
