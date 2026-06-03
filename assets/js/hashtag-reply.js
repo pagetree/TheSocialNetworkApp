@@ -5,12 +5,24 @@
         return;
     }
 
-    const resolveHashtagBase = () => {
-        const backLink = document.querySelector(".hashtag-page .hashtag-page-back");
+    const resolveHashtagBase = (card) => {
+        const postUrl = card?.dataset?.postUrl
+            || feed.querySelector(".post-card[data-post-url]")?.dataset?.postUrl
+            || "";
+        const postMarker = "/post/";
+        const postIdx = postUrl.indexOf(postMarker);
+        if (postIdx >= 0) {
+            return postUrl.slice(0, postIdx);
+        }
+
+        const backLink = document.querySelector(".hashtag-page-back");
         if (backLink instanceof HTMLAnchorElement && backLink.href) {
             try {
                 const parsed = new URL(backLink.href, window.location.origin);
-                return parsed.pathname.replace(/\/$/, "");
+                const path = parsed.pathname.replace(/\/$/, "");
+                if (path && path !== "/") {
+                    return path;
+                }
             } catch {
                 return "";
             }
@@ -19,7 +31,10 @@
         return "";
     };
 
-    const hashtagBase = resolveHashtagBase();
+    const hashtagHref = (tag, card) => {
+        const base = resolveHashtagBase(card);
+        return base ? `${base}/hashtag/${tag}` : `/hashtag/${tag}`;
+    };
 
     let activeCard = null;
 
@@ -29,7 +44,7 @@
         return el.innerHTML;
     };
 
-    const formatReplyBodyHtml = (body) => {
+    const formatReplyBodyHtml = (body, card) => {
         const text = String(body ?? "").trim();
         if (text === "") {
             return "";
@@ -47,9 +62,9 @@
             }
 
             const rawTag = match[1];
-            const tag = rawTag.toLowerCase().replace(/[.,!?_]+$/g, "").replace(/^_+|_+$/g, "");
-            if (tag !== "" && hashtagBase !== "") {
-                const href = escapeHtml(`${hashtagBase}/hashtag/${tag}`);
+            const tag = rawTag.toLowerCase().replace(/[.,!?]+$/g, "");
+            if (tag !== "") {
+                const href = escapeHtml(hashtagHref(tag, card));
                 html += `<a href="${href}" class="post-hashtag">#${escapeHtml(tag)}</a>`;
             } else {
                 html += escapeHtml(match[0]);
@@ -88,10 +103,10 @@
         return thread;
     };
 
-    const buildReplyElement = (reply) => {
+    const buildReplyElement = (reply, card) => {
         const article = document.createElement("article");
         const body = String(reply.body ?? "").trim();
-        const bodyHtml = formatReplyBodyHtml(body);
+        const bodyHtml = formatReplyBodyHtml(body, card);
         const authorName = reply.author?.display_name ?? "User";
         const authorHandle = reply.author?.handle ?? "@user";
         const avatarUrl = reply.author?.avatar_url ?? "";
@@ -199,7 +214,7 @@
         }
 
         const thread = getRepliesRoot(card);
-        const article = buildReplyElement(reply);
+        const article = buildReplyElement(reply, card);
         appendMedia(article, reply.media);
         thread.appendChild(article);
 
