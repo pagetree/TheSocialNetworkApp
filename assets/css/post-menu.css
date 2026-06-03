@@ -84,15 +84,29 @@
     cursor: wait;
 }
 
-.post-menu-option--placeholder {
-    color: color-mix(in srgb, var(--light) 55%, transparent);
-    cursor: default;
+.post-menu-option--report,
+.post-menu-option--remove {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.post-menu-option--report {
+    color: var(--light);
     font-weight: 500;
 }
 
-.post-menu-option--placeholder:hover,
-.post-menu-option--placeholder:focus-visible {
-    background: transparent;
+.post-menu-option--report:hover,
+.post-menu-option--report:focus-visible {
+    background: color-mix(in srgb, var(--light) 8%, transparent);
+    color: var(--light);
+}
+
+.post-menu-option--report svg,
+.post-menu-option--remove svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
 }
 
 .post-card--linkable .post-menu,

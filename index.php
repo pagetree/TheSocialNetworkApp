@@ -125,6 +125,11 @@ if ($path === '/posts/remove' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') 
     return;
 }
 
+if ($path === '/content/report' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/content-report.php';
+    return;
+}
+
 if ($path === '/users/follow' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     require __DIR__ . '/auth/profile-follow.php';
     return;

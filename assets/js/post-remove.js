@@ -224,9 +224,24 @@
             return;
         }
 
-        if (event.target.closest(".post-menu-option--placeholder")) {
+        if (event.target.closest(".post-menu-option--report")) {
             event.preventDefault();
             event.stopPropagation();
+            closeAllMenus();
+
+            const reportBtn = event.target.closest(".post-menu-option--report");
+            const menu = reportBtn ? findMenuFromDropdownTarget(reportBtn) : null;
+            if (menu && typeof window.openContentReportModal === "function") {
+                const kind = menu.dataset.menuKind || "post";
+                const targetId = Number(menu.dataset.targetId || 0);
+                if (targetId > 0) {
+                    window.openContentReportModal({
+                        targetType: kind === "reply" ? "reply" : "post",
+                        targetId,
+                    });
+                }
+            }
+
             return;
         }
 

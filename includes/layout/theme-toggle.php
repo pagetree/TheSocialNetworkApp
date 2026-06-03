@@ -11,5 +11,4 @@ declare(strict_types=1);
 >
     <i data-lucide="sun" class="theme-toggle-icon theme-toggle-icon--to-light" aria-hidden="true"></i>
     <i data-lucide="moon" class="theme-toggle-icon theme-toggle-icon--to-dark" aria-hidden="true"></i>
-    <span class="theme-toggle-label">Light</span>
 </button>

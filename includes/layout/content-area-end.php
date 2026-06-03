@@ -31,6 +31,9 @@ if (!$onboardingLayout) : ?>
         require dirname(__DIR__) . '/posts/post-stats-modal.php';
     } ?>
     <?php if ($isLoggedIn && !$onboardingLayout) {
+        require dirname(__DIR__) . '/report-modal.php';
+    } ?>
+    <?php if ($isLoggedIn && !$onboardingLayout) {
         require __DIR__ . '/media-lightbox.php';
     } ?>
     <?php if ($isLoggedIn && $onboardingLayout) : ?>
@@ -84,6 +87,11 @@ if (!$onboardingLayout) : ?>
     </script>
     <?php endif; ?>
     <?php if ($isLoggedIn && !$onboardingLayout) : ?>
+    <script>
+        window.APP_CONTENT_REPORT_URL = <?php echo json_encode($url('/content/report'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_CONTENT_REPORT_CSRF_TOKEN = <?php echo json_encode(createCsrfToken('content_report'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_CONTENT_REPORT_DETAILS_MAX_LENGTH = <?php echo json_encode(CONTENT_REPORT_DETAILS_MAX_LENGTH, JSON_THROW_ON_ERROR); ?>;
+    </script>
     <script>
         window.APP_POST_REMOVE_URL = <?php echo json_encode($url('/posts/remove'), JSON_THROW_ON_ERROR); ?>;
         window.APP_POST_REMOVE_CSRF_TOKEN = <?php echo json_encode(createCsrfToken('post_remove'), JSON_THROW_ON_ERROR); ?>;
@@ -140,6 +148,7 @@ if (!$onboardingLayout) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-stats-modal.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endif; ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-likes.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/content-report.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-remove.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php else : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/login.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>

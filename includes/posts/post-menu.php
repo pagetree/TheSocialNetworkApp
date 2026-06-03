@@ -20,7 +20,6 @@ if ($currentUserId < 1 || $menuTargetId < 1) {
 
 $isOwn = $currentUserId > 0 && $menuOwnerUserId === $currentUserId;
 $menuAriaLabel = $menuKind === 'reply' ? 'Reply options' : 'Post options';
-$removeLabel = $menuKind === 'reply' ? 'Remove reply' : 'Remove post';
 ?>
                             <div
                                 class="post-menu"
@@ -46,13 +45,19 @@ $removeLabel = $menuKind === 'reply' ? 'Remove reply' : 'Remove post';
                                         type="button"
                                         class="post-menu-option post-menu-option--remove"
                                         role="menuitem"
-                                    ><?php echo htmlspecialchars($removeLabel, ENT_QUOTES, 'UTF-8'); ?></button>
+                                    >
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                        <span>Remove</span>
+                                    </button>
                                     <?php else : ?>
-                                    <span
-                                        class="post-menu-option post-menu-option--placeholder"
+                                    <button
+                                        type="button"
+                                        class="post-menu-option post-menu-option--report"
                                         role="menuitem"
-                                        aria-disabled="true"
-                                    >In progress</span>
+                                    >
+                                        <i data-lucide="flag" aria-hidden="true"></i>
+                                        <span>Report</span>
+                                    </button>
                                     <?php endif; ?>
                                 </div>
                             </div>

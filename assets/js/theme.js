@@ -27,11 +27,6 @@
             "aria-label",
             isLight ? "Switch to dark theme" : "Switch to light theme"
         );
-
-        const label = button.querySelector(".theme-toggle-label");
-        if (label) {
-            label.textContent = isLight ? "Dark" : "Light";
-        }
     };
 
     const init = () => {

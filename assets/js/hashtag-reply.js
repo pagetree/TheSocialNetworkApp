@@ -110,8 +110,8 @@
         }
 
         const menuOption = isOwn
-            ? '<button type="button" class="post-menu-option post-menu-option--remove" role="menuitem">Remove reply</button>'
-            : '<span class="post-menu-option post-menu-option--placeholder" role="menuitem" aria-disabled="true">In progress</span>';
+            ? '<button type="button" class="post-menu-option post-menu-option--remove" role="menuitem"><i data-lucide="trash-2" aria-hidden="true"></i><span>Remove</span></button>'
+            : '<button type="button" class="post-menu-option post-menu-option--report" role="menuitem"><i data-lucide="flag" aria-hidden="true"></i><span>Report</span></button>';
 
         return `
                     <div class="post-menu" data-menu-kind="reply" data-target-id="${replyId}" data-is-own="${isOwn ? "1" : "0"}" data-conversation-id="${conversationId}">

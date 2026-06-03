@@ -71,6 +71,7 @@ $pageScripts = [];
 if ($isOwnProfile) {
     $pageScripts[] = '/assets/js/edit-profile.js';
 } elseif ($showProfileActions && $profileFollowUserId > 0) {
+    $pageScripts[] = '/assets/js/profile-menu.js';
     $pageScripts[] = '/assets/js/profile-follow.js';
 }
 if ($showFeedReplyModal) {
@@ -110,6 +111,11 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                         <span>Edit profile</span>
                                     </button>
                                     <?php elseif ($showProfileActions) : ?>
+                                    <?php
+                                        $profileMenuUserId = $profileFollowUserId;
+                                        $profileMenuUserName = $displayName;
+                                        require __DIR__ . '/includes/profile/profile-menu.php';
+                                    ?>
                                     <button
                                         type="button"
                                         class="profile-chat-btn"

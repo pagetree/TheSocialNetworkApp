@@ -25,6 +25,7 @@ function appStylesheetPaths(): array
         '/assets/css/onboarding.css',
         '/assets/css/hashtag.css',
         '/assets/css/post-stats-modal.css',
+        '/assets/css/content-report-modal.css',
     ];
 }
 
