@@ -7,11 +7,28 @@ declare(strict_types=1);
 /** @var string $loginCsrfToken */
 /** @var array<string, mixed>|null $profileUser */
 /** @var string $profileCsrfToken */
+/** @var bool $isOwnProfile */
+/** @var bool $viewerFollowsProfile */
+/** @var string $profileFollowCsrfToken */
+/** @var int $profileFollowUserId */
+/** @var list<array<string, mixed>> $profilePosts */
+/** @var array<int, int> $profileLikedPostIds */
+/** @var int $currentUserId */
+/** @var bool $showFeedReplyModal */
 
 $profileUser = $profileUser ?? null;
 $profileCsrfToken = $profileCsrfToken ?? '';
+$isOwnProfile = $isOwnProfile ?? false;
+$viewerFollowsProfile = $viewerFollowsProfile ?? false;
+$profileFollowCsrfToken = $profileFollowCsrfToken ?? '';
+$profileFollowUserId = $profileFollowUserId ?? 0;
+$profilePosts = $profilePosts ?? [];
+$profileLikedPostIds = $profileLikedPostIds ?? [];
+$currentUserId = $currentUserId ?? 0;
+$showFeedReplyModal = $showFeedReplyModal ?? false;
 
 $hasProfileUser = is_array($profileUser);
+$showProfileActions = $isLoggedIn && $hasProfileUser && !$isOwnProfile;
 $displayName = $hasProfileUser ? (string) $profileUser['display_name'] : 'User Name';
 $handle = $hasProfileUser ? (string) $profileUser['handle'] : '@username';
 $bio = $hasProfileUser
@@ -32,11 +49,31 @@ $dobLabel = formatProfileBirthdayLabel($dateOfBirth);
 $showLocation = $location !== '';
 $showWebsite = $websiteUrl !== '';
 $showDob = $dobLabel !== '';
+$profileFollowingCount = 0;
+$profileFollowersCount = 0;
+if ($hasProfileUser) {
+    $followCounts = fetchUserFollowCounts((int) ($profileUser['id'] ?? 0));
+    $profileFollowingCount = $followCounts['following'];
+    $profileFollowersCount = $followCounts['followers'];
+}
+$profileFollowingLabel = formatEngagementCount($profileFollowingCount);
+$profileFollowersLabel = formatEngagementCount($profileFollowersCount);
 
-$pageTitle = 'Profile — TheSocialNetworkApp';
+$pageTitle = $hasProfileUser
+    ? (string) ($profileUser['display_name'] ?? 'Profile') . ' — TheSocialNetworkApp'
+    : 'Profile — TheSocialNetworkApp';
 $activeNav = 'profile';
 $mainClass = 'profile-page';
-$pageScripts = $isLoggedIn ? ['/assets/js/edit-profile.js'] : [];
+$pageScripts = [];
+if ($isOwnProfile) {
+    $pageScripts[] = '/assets/js/edit-profile.js';
+} elseif ($showProfileActions && $profileFollowUserId > 0) {
+    $pageScripts[] = '/assets/js/profile-follow.js';
+}
+if ($showFeedReplyModal) {
+    $pageScripts[] = '/assets/js/reply-media-picker.js';
+    $pageScripts[] = '/assets/js/feed-reply-modal.js';
+}
 
 require __DIR__ . '/includes/layout/head.php';
 require __DIR__ . '/includes/layout/content-area-start.php';
@@ -59,10 +96,29 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                     alt="<?php echo htmlspecialchars($displayName . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
                                 >
                                 <div class="profile-hero-actions">
-                                    <?php if ($isLoggedIn) : ?>
+                                    <?php if ($isOwnProfile) : ?>
                                     <button type="button" class="profile-edit-btn" id="profile-edit-open">
                                         <i data-lucide="square-pen" aria-hidden="true"></i>
                                         <span>Edit profile</span>
+                                    </button>
+                                    <?php elseif ($showProfileActions) : ?>
+                                    <button
+                                        type="button"
+                                        class="profile-chat-btn"
+                                        aria-label="Message user (coming soon)"
+                                        title="Coming soon"
+                                    >
+                                        <i data-lucide="message-circle" aria-hidden="true"></i>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="profile-follow-btn<?php echo $viewerFollowsProfile ? ' is-following' : ''; ?>"
+                                        id="profile-follow-btn"
+                                        data-user-id="<?php echo $profileFollowUserId; ?>"
+                                        data-following="<?php echo $viewerFollowsProfile ? '1' : '0'; ?>"
+                                        aria-pressed="<?php echo $viewerFollowsProfile ? 'true' : 'false'; ?>"
+                                    >
+                                        <span class="profile-follow-btn-label"><?php echo $viewerFollowsProfile ? 'Following' : 'Follow'; ?></span>
                                     </button>
                                     <?php endif; ?>
                                 </div>
@@ -104,6 +160,18 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                         <span id="profile-display-joined"><?php echo htmlspecialchars($joinedLabel, ENT_QUOTES, 'UTF-8'); ?></span>
                                     </p>
                                 </div>
+                                <?php if ($hasProfileUser) : ?>
+                                <div class="profile-hero-social-stats" aria-label="Follow stats">
+                                    <p class="profile-hero-social-stat">
+                                        <span class="profile-hero-social-stat-value" id="profile-following-count"><?php echo htmlspecialchars($profileFollowingLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                                        <span class="profile-hero-social-stat-label">Following</span>
+                                    </p>
+                                    <p class="profile-hero-social-stat">
+                                        <span class="profile-hero-social-stat-value" id="profile-followers-count"><?php echo htmlspecialchars($profileFollowersLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                                        <span class="profile-hero-social-stat-label">Followers</span>
+                                    </p>
+                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </section>
@@ -115,93 +183,20 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                         <a href="#" class="profile-tab">Likes</a>
                     </nav>
 
-                    <div class="profile-feed">
-                        <article class="post-card">
-                            <header class="post-header">
-                                <img
-                                    class="post-avatar"
-                                    src="<?php echo htmlspecialchars($avatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                                    alt="<?php echo htmlspecialchars($displayName . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
-                                >
-                                <div class="post-meta">
-                                    <p class="post-meta-line">
-                                        <span class="post-author"><?php echo htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8'); ?></span>
-                                        <span class="post-handle"><?php echo htmlspecialchars($handle, ENT_QUOTES, 'UTF-8'); ?></span>
-                                        <time class="post-time" datetime="2026-03-15">Mar 15</time>
-                                    </p>
-                                </div>
-                                <button type="button" class="post-menu-btn" aria-label="Post options">
-                                    <i data-lucide="ellipsis" aria-hidden="true"></i>
-                                </button>
-                            </header>
-                            <p class="post-text">Just shipped a new profile layout. Clean, dark, and ready for real data next.</p>
-                            <footer class="post-actions" aria-label="Post engagement">
-                                <button type="button" class="post-action"><i data-lucide="message-circle" aria-hidden="true"></i><span>12</span></button>
-                                <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span>4</span></button>
-                                <button type="button" class="post-action"><i data-lucide="heart" aria-hidden="true"></i><span>28</span></button>
-                                <button type="button" class="post-action"><i data-lucide="bar-chart-2" aria-hidden="true"></i><span>1.2K</span></button>
-                            </footer>
-                        </article>
-
-                        <article class="post-card">
-                            <header class="post-header">
-                                <img
-                                    class="post-avatar"
-                                    src="<?php echo htmlspecialchars($avatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                                    alt="<?php echo htmlspecialchars($displayName . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
-                                >
-                                <div class="post-meta">
-                                    <p class="post-meta-line">
-                                        <span class="post-author"><?php echo htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8'); ?></span>
-                                        <span class="post-handle"><?php echo htmlspecialchars($handle, ENT_QUOTES, 'UTF-8'); ?></span>
-                                        <time class="post-time" datetime="2026-03-10">Mar 10</time>
-                                    </p>
-                                </div>
-                                <button type="button" class="post-menu-btn" aria-label="Post options">
-                                    <i data-lucide="ellipsis" aria-hidden="true"></i>
-                                </button>
-                            </header>
-                            <p class="post-text">Working on some UI flows for the social feed. Loving this color palette.</p>
-                            <img
-                                class="post-media"
-                                src="https://placehold.co/900x500/1a2a38/d9d9d9?text=Design+WIP"
-                                alt="Design work in progress"
-                            >
-                            <footer class="post-actions" aria-label="Post engagement">
-                                <button type="button" class="post-action"><i data-lucide="message-circle" aria-hidden="true"></i><span>8</span></button>
-                                <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span>2</span></button>
-                                <button type="button" class="post-action"><i data-lucide="heart" aria-hidden="true"></i><span>41</span></button>
-                                <button type="button" class="post-action"><i data-lucide="bar-chart-2" aria-hidden="true"></i><span>890</span></button>
-                            </footer>
-                        </article>
-
-                        <article class="post-card">
-                            <header class="post-header">
-                                <img
-                                    class="post-avatar"
-                                    src="<?php echo htmlspecialchars($avatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                                    alt="<?php echo htmlspecialchars($displayName . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
-                                >
-                                <div class="post-meta">
-                                    <p class="post-meta-line">
-                                        <span class="post-author"><?php echo htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8'); ?></span>
-                                        <span class="post-handle"><?php echo htmlspecialchars($handle, ENT_QUOTES, 'UTF-8'); ?></span>
-                                        <time class="post-time" datetime="2026-02-28">Feb 28</time>
-                                    </p>
-                                </div>
-                                <button type="button" class="post-menu-btn" aria-label="Post options">
-                                    <i data-lucide="ellipsis" aria-hidden="true"></i>
-                                </button>
-                            </header>
-                            <p class="post-text">Coffee, code, repeat. Building something fun from Croatia.</p>
-                            <footer class="post-actions" aria-label="Post engagement">
-                                <button type="button" class="post-action"><i data-lucide="message-circle" aria-hidden="true"></i><span>3</span></button>
-                                <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span>1</span></button>
-                                <button type="button" class="post-action"><i data-lucide="heart" aria-hidden="true"></i><span>15</span></button>
-                                <button type="button" class="post-action"><i data-lucide="bar-chart-2" aria-hidden="true"></i><span>320</span></button>
-                            </footer>
-                        </article>
+                    <div class="profile-feed" id="profile-post-feed">
+<?php if ($profilePosts === []) : ?>
+                        <p class="profile-feed-empty"><?php echo $isOwnProfile ? 'You have not posted yet.' : 'No posts yet.'; ?></p>
+<?php else :
+    foreach ($profilePosts as $profilePost) {
+        renderPostCard(
+            $profilePost,
+            $url,
+            $currentUserId,
+            isset($profileLikedPostIds[(int) ($profilePost['id'] ?? 0)])
+        );
+    }
+endif; ?>
                     </div>
 <?php
-$showProfileEditModal = $isLoggedIn;
+$showProfileEditModal = $isOwnProfile;
 require __DIR__ . '/includes/layout/content-area-end.php';

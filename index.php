@@ -70,6 +70,11 @@ if ($path === '/posts/like' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     return;
 }
 
+if ($path === '/users/follow' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/profile-follow.php';
+    return;
+}
+
 if ($path === '/register') {
     if (isLoggedIn()) {
         header('Location: ' . $url('/'));
@@ -84,14 +89,24 @@ if ($path === '/profile.php') {
     exit;
 }
 
-if ($path === '/profile') {
+if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) {
     $currentUser = getCurrentUser();
     $isLoggedIn = $currentUser !== null;
     $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
     $profileUser = null;
     $profileCsrfToken = '';
+    $profileFollowCsrfToken = '';
+    $profileFollowUserId = 0;
+    $isOwnProfile = false;
+    $viewerFollowsProfile = false;
+    $profileSlug = isset($profileRouteMatch[1]) ? normalizeUsername((string) $profileRouteMatch[1]) : '';
 
-    if ($isLoggedIn) {
+    if ($profileSlug === '') {
+        if (!$isLoggedIn) {
+            header('Location: ' . $url('/'));
+            exit;
+        }
+
         $freshUser = fetchUserById((int) $currentUser['id']);
         if ($freshUser !== null) {
             loginUser($freshUser);
@@ -99,8 +114,74 @@ if ($path === '/profile') {
         } else {
             $profileUser = $currentUser;
         }
+        $isOwnProfile = true;
         $profileCsrfToken = createCsrfToken('profile_edit');
+        $postStatsCsrfToken = createCsrfToken('post_stats');
+        $currentUserId = (int) $currentUser['id'];
+    } else {
+        $profileUser = fetchUserByUsername($profileSlug);
+        if ($profileUser === null) {
+            http_response_code(404);
+            header('Content-Type: text/html; charset=utf-8');
+            $pageTitle = 'Profile not found — TheSocialNetworkApp';
+            $activeNav = 'profile';
+            $mainClass = 'profile-page';
+            $postStatsCsrfToken = $isLoggedIn ? createCsrfToken('post_stats') : '';
+            $currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
+            $pageScripts = [];
+
+            require __DIR__ . '/includes/layout/head.php';
+            require __DIR__ . '/includes/layout/content-area-start.php';
+            echo '<p class="profile-not-found">This profile could not be found.</p>';
+            require __DIR__ . '/includes/layout/content-area-end.php';
+            return;
+        }
+
+        $profileUserId = (int) ($profileUser['id'] ?? 0);
+        $isOwnProfile = $isLoggedIn && $profileUserId === (int) $currentUser['id'];
+        if ($isOwnProfile) {
+            header('Location: ' . $url('/profile'));
+            exit;
+        }
+
+        if ($isLoggedIn) {
+            $postStatsCsrfToken = createCsrfToken('post_stats');
+            $currentUserId = (int) $currentUser['id'];
+            $profileFollowCsrfToken = createCsrfToken('profile_follow');
+            $profileFollowUserId = $profileUserId;
+            $viewerFollowsProfile = isUserFollowedBy($currentUserId, $profileUserId);
+        } else {
+            $postStatsCsrfToken = '';
+            $currentUserId = 0;
+        }
     }
+
+    $profilePosts = [];
+    $profileLikedPostIds = [];
+    $postLikeCsrfToken = '';
+    $replyCsrfToken = '';
+    $showFeedReplyModal = false;
+
+    if (is_array($profileUser)) {
+        $profilePosts = fetchPostsByUserId((int) ($profileUser['id'] ?? 0));
+
+        if ($isLoggedIn) {
+            $postLikeCsrfToken = createCsrfToken('post_like');
+            $replyCsrfToken = createCsrfToken('post_reply');
+            $showFeedReplyModal = true;
+
+            if ($profilePosts !== []) {
+                $profileLikedPostIds = array_flip(fetchLikedPostIdsForUser(
+                    $currentUserId,
+                    array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $profilePosts)
+                ));
+            }
+        }
+    }
+
+    $composerAvatarUrl = $isLoggedIn && is_array($currentUser)
+        ? userMediaUrl($currentUser, 'avatar_url', $url)
+        : 'https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/romeo-leaupepe-su-a-70gb9CHBX4g-unsplash.jpg';
 
     http_response_code(200);
     header('Content-Type: text/html; charset=utf-8');
@@ -171,6 +252,8 @@ $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
 $postCsrfToken = $isLoggedIn ? createCsrfToken('post_create') : '';
 $postStatsCsrfToken = $isLoggedIn ? createCsrfToken('post_stats') : '';
 $postLikeCsrfToken = $isLoggedIn ? createCsrfToken('post_like') : '';
+$replyCsrfToken = $isLoggedIn ? createCsrfToken('post_reply') : '';
+$showFeedReplyModal = $isLoggedIn;
 $currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
 $feedPosts = fetchFeedPosts();
 $likedPostIds = [];
@@ -191,6 +274,10 @@ $pageTitle = 'TheSocialNetworkApp';
 $activeNav = 'explore';
 $mainClass = 'app-content';
 $pageScripts = ['/assets/js/post-composer.js'];
+if ($showFeedReplyModal) {
+    $pageScripts[] = '/assets/js/reply-media-picker.js';
+    $pageScripts[] = '/assets/js/feed-reply-modal.js';
+}
 
 require __DIR__ . '/includes/layout/head.php';
 require __DIR__ . '/includes/layout/content-area-start.php';

@@ -6,17 +6,109 @@ const POST_REPLY_MAX_LENGTH = 300;
 
 function validatePostReplyBody(string $body): ?string
 {
+    return validatePostReplyForCreate($body, false);
+}
+
+function validatePostReplyForCreate(string $body, bool $hasMedia): ?string
+{
     $body = sanitizePostText($body);
 
-    if ($body === '') {
-        return 'Write a reply before posting.';
+    if ($body === '' && !$hasMedia) {
+        return 'Write a reply or add media before posting.';
     }
 
-    if (mb_strlen($body) > POST_REPLY_MAX_LENGTH) {
+    if ($body !== '' && mb_strlen($body) > POST_REPLY_MAX_LENGTH) {
         return 'Reply must be ' . POST_REPLY_MAX_LENGTH . ' characters or less.';
     }
 
     return null;
+}
+
+/**
+ * @param list<array{url: string, media_type: string}> $mediaRecords
+ */
+function attachPostReplyMediaRecords(int $replyId, array $mediaRecords): void
+{
+    if ($mediaRecords === []) {
+        return;
+    }
+
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'INSERT INTO post_reply_media (reply_id, media_url, media_type, sort_order)
+         VALUES (:reply_id, :media_url, :media_type, :sort_order)'
+    );
+
+    foreach ($mediaRecords as $sortOrder => $record) {
+        $stmt->execute([
+            'reply_id' => $replyId,
+            'media_url' => $record['url'],
+            'media_type' => $record['media_type'],
+            'sort_order' => $sortOrder,
+        ]);
+    }
+}
+
+/**
+ * @param list<int> $replyIds
+ * @return array<int, list<array<string, mixed>>>
+ */
+function fetchPostReplyMediaGroupedByReplyIds(array $replyIds): array
+{
+    $replyIds = array_values(array_unique(array_filter(array_map('intval', $replyIds), static fn (int $id): bool => $id > 0)));
+    if ($replyIds === []) {
+        return [];
+    }
+
+    $placeholders = implode(', ', array_fill(0, count($replyIds), '?'));
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT id, reply_id, media_url, media_type, sort_order, created_at
+         FROM post_reply_media
+         WHERE reply_id IN (' . $placeholders . ')
+         ORDER BY reply_id ASC, sort_order ASC, id ASC'
+    );
+    $stmt->execute($replyIds);
+
+    $grouped = [];
+    while ($row = $stmt->fetch()) {
+        $replyId = (int) $row['reply_id'];
+        $grouped[$replyId][] = $row;
+    }
+
+    return $grouped;
+}
+
+/**
+ * @param list<array<string, mixed>> $rows
+ * @return list<array<string, mixed>>
+ */
+function hydratePostRepliesWithMedia(array $rows): array
+{
+    $replyIds = array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $rows);
+    $grouped = fetchPostReplyMediaGroupedByReplyIds($replyIds);
+
+    foreach ($rows as &$row) {
+        $replyId = (int) ($row['id'] ?? 0);
+        $row['media_items'] = $grouped[$replyId] ?? [];
+    }
+    unset($row);
+
+    return $rows;
+}
+
+function deletePostReplyForUser(int $replyId, int $userId): void
+{
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'DELETE FROM post_replies
+         WHERE id = :id
+           AND user_id = :user_id'
+    );
+    $stmt->execute([
+        'id' => $replyId,
+        'user_id' => $userId,
+    ]);
 }
 
 /**
@@ -41,7 +133,7 @@ function fetchPostReplies(int $conversationId): array
     $stmt->execute(['conversation_id' => $conversationId]);
     $rows = $stmt->fetchAll();
 
-    return is_array($rows) ? $rows : [];
+    return is_array($rows) ? hydratePostRepliesWithMedia($rows) : [];
 }
 
 /**
@@ -190,6 +282,7 @@ function postReplyPayload(array $row, callable $url): array
             ? (int) $row['parent_reply_id']
             : null,
         'body' => (string) ($row['body'] ?? ''),
+        'media' => postMediaPayloadItems($row),
         'like_count' => (int) ($row['like_count'] ?? 0),
         'reply_count' => (int) ($row['reply_count'] ?? 0),
         'created_at' => (string) ($row['created_at'] ?? ''),
@@ -210,20 +303,24 @@ function renderPostReplyTree(array $rows, callable $url): void
     $children = [];
 
     foreach ($rows as $row) {
-        $parentKey = isset($row['parent_reply_id']) && $row['parent_reply_id'] !== null
-            ? (string) $row['parent_reply_id']
-            : 'root';
+        $parentId = isset($row['parent_reply_id']) ? (int) $row['parent_reply_id'] : 0;
+        $parentKey = $parentId > 0 ? (string) $parentId : 'root';
         $children[$parentKey][] = $row;
     }
 
-    $renderBranch = static function (string $parentKey, int $depth) use (&$renderBranch, $children, $url): void {
-        foreach ($children[$parentKey] ?? [] as $row) {
-            renderPostReplyItem($row, $url, $depth);
-            $renderBranch((string) ($row['id'] ?? ''), $depth + 1);
+    $renderSubtree = static function (array $row, int $depth) use (&$renderSubtree, $children, $url): void {
+        renderPostReplyItem($row, $url, $depth);
+
+        foreach ($children[(string) ($row['id'] ?? '')] ?? [] as $childRow) {
+            $renderSubtree($childRow, $depth + 1);
         }
     };
 
-    $renderBranch('root', 0);
+    foreach ($children['root'] ?? [] as $rootRow) {
+        echo '<div class="post-reply-thread">';
+        $renderSubtree($rootRow, 0);
+        echo '</div>';
+    }
 }
 
 /**

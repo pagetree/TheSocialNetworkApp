@@ -248,3 +248,20 @@ function websiteDisplayLabel(?string $websiteUrl): string
 
     return (string) preg_replace('#^https?://#i', '', $websiteUrl);
 }
+
+/**
+ * @param array<string, mixed>|null $user
+ */
+function profileUrlForUser(?array $user, callable $url): string
+{
+    if (!is_array($user)) {
+        return $url('/profile');
+    }
+
+    $username = (string) ($user['username'] ?? '');
+    if ($username === '') {
+        return $url('/profile');
+    }
+
+    return $url('/profile/' . rawurlencode($username));
+}

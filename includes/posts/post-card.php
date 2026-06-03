@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 $authorName = (string) ($post['author']['display_name'] ?? 'User');
 $authorHandle = (string) ($post['author']['handle'] ?? '@user');
+$authorProfileUrl = (string) ($post['author']['profile_url'] ?? '');
 $authorAvatar = (string) ($post['author']['avatar_url'] ?? '');
 $postBody = (string) ($post['body'] ?? '');
 $postMediaItems = is_array($post['media'] ?? null) ? $post['media'] : [];
@@ -46,7 +47,11 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                             >
                             <div class="post-meta">
                                 <p class="post-meta-line">
+                                    <?php if ($authorProfileUrl !== '') : ?>
+                                    <a class="post-author-link" href="<?php echo htmlspecialchars($authorProfileUrl, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($authorName, ENT_QUOTES, 'UTF-8'); ?></a>
+                                    <?php else : ?>
                                     <span class="post-author"><?php echo htmlspecialchars($authorName, ENT_QUOTES, 'UTF-8'); ?></span>
+                                    <?php endif; ?>
                                     <span class="post-handle"><?php echo htmlspecialchars($authorHandle, ENT_QUOTES, 'UTF-8'); ?></span>
                                     <?php if ($postTimeLabel !== '') : ?>
                                     <time class="post-time" datetime="<?php echo htmlspecialchars($createdAt, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($postTimeLabel, ENT_QUOTES, 'UTF-8'); ?></time>
@@ -64,7 +69,7 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                             require __DIR__ . '/post-media-gallery.php';
                         } ?>
                         <footer class="post-actions" aria-label="Post engagement">
-                            <button type="button" class="post-action"><i data-lucide="message-circle" aria-hidden="true"></i><span><?php echo htmlspecialchars($replyCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
+                            <button type="button" class="post-action post-action-reply" aria-label="Reply to post"><i data-lucide="message-circle" aria-hidden="true"></i><span><?php echo htmlspecialchars($replyCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span><?php echo htmlspecialchars($repostCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button
                                 type="button"

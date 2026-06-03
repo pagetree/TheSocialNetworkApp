@@ -36,7 +36,19 @@ declare(strict_types=1);
                 aria-describedby="reply-modal-char-counter reply-modal-error"
             ></textarea>
             <p class="post-composer-error reply-modal-error" id="reply-modal-error" hidden></p>
+<?php
+    $replyMediaPrefix = 'reply-modal';
+    require __DIR__ . '/reply-composer-media.php';
+?>
             <div class="reply-modal-footer-row">
+                <div class="post-composer-tools reply-modal-tools" aria-label="Reply tools">
+                    <button type="button" class="post-tool-btn" id="reply-modal-image-btn" aria-label="Add image">
+                        <i data-lucide="image" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="post-tool-btn" id="reply-modal-video-btn" aria-label="Add video">
+                        <i data-lucide="film" aria-hidden="true"></i>
+                    </button>
+                </div>
                 <div
                     class="post-char-counter reply-modal-char-counter"
                     id="reply-modal-char-counter"

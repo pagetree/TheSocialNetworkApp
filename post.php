@@ -13,7 +13,7 @@ declare(strict_types=1);
 $pageTitle = 'Post — TheSocialNetworkApp';
 $activeNav = 'explore';
 $mainClass = 'app-content post-detail-page';
-$pageScripts = ['/assets/js/post-reply-composer.js'];
+$pageScripts = ['/assets/js/reply-media-picker.js', '/assets/js/post-reply-composer.js'];
 
 require __DIR__ . '/includes/layout/head.php';
 require __DIR__ . '/includes/layout/content-area-start.php';

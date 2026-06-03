@@ -82,15 +82,13 @@
         pendingRequests.add(pendingKey);
 
         const finishSuccess = (data) => {
-            if (data?.recorded) {
-                dedupeSet.add(postId);
-            }
+            dedupeSet.add(postId);
             updateCardCounts(postId, data);
         };
 
         try {
             if (options.preferBeacon && sendStatBeacon(postId, eventType)) {
-                finishSuccess({ recorded: true });
+                dedupeSet.add(postId);
                 return;
             }
 
@@ -118,20 +116,27 @@
         }
     };
 
-    const isPostCentered = (card) => {
+    const VIEW_VISIBILITY_RATIO = 0.45;
+
+    const visibleRatioForCard = (card) => {
         const rect = card.getBoundingClientRect();
-        if (rect.bottom <= 0 || rect.top >= window.innerHeight) {
-            return false;
+        const visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
+        if (visibleHeight <= 0 || rect.height <= 0) {
+            return 0;
         }
 
-        const postCenter = rect.top + rect.height / 2;
-        const viewportCenter = window.innerHeight / 2;
-        const tolerance = Math.max(96, Math.min(rect.height * 0.45, window.innerHeight * 0.28));
-
-        return Math.abs(postCenter - viewportCenter) <= tolerance;
+        return visibleHeight / rect.height;
     };
 
-    const checkCenteredPosts = () => {
+    const isPostViewable = (card, entry) => {
+        if (entry && entry.isIntersecting) {
+            return entry.intersectionRatio >= VIEW_VISIBILITY_RATIO;
+        }
+
+        return visibleRatioForCard(card) >= VIEW_VISIBILITY_RATIO;
+    };
+
+    const checkVisiblePosts = () => {
         document.querySelectorAll(".post-card[data-post-id], .post-detail[data-post-id]").forEach((card) => {
             if (!isTrackableCard(card)) {
                 return;
@@ -142,7 +147,7 @@
                 return;
             }
 
-            if (isPostCentered(card)) {
+            if (isPostViewable(card)) {
                 recordStat(postId, "view");
             }
         });
@@ -157,7 +162,7 @@
 
         scrollFrame = window.requestAnimationFrame(() => {
             scrollFrame = null;
-            checkCenteredPosts();
+            checkVisiblePosts();
         });
     };
 
@@ -180,14 +185,14 @@
                         return;
                     }
 
-                    if (isPostCentered(card)) {
+                    if (isPostViewable(card, entry)) {
                         recordStat(postId, "view");
                     }
                 });
             },
             {
                 root: null,
-                threshold: [0, 0.25, 0.5, 0.75, 1],
+                threshold: [0, 0.45, 0.6, 0.75, 1],
             }
         );
 

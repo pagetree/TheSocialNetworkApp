@@ -19,6 +19,7 @@ function rateLimitConfig(string $action): array
         'posts.stats' => ['max' => 120, 'window_seconds' => 900],
         'posts.reply' => ['max' => 30, 'window_seconds' => 900],
         'posts.like' => ['max' => 60, 'window_seconds' => 900],
+        'users.follow' => ['max' => 60, 'window_seconds' => 900],
         default => ['max' => 30, 'window_seconds' => 60],
     };
 }

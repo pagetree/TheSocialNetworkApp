@@ -43,7 +43,16 @@ $nestedStyle = $depth > 0 ? ' style="--reply-depth: ' . (int) $depth . ';"' : ''
                                         <?php endif; ?>
                                     </p>
                                 </header>
+                                <?php if ($replyBody !== '') : ?>
                                 <p class="post-reply-text"><?php echo htmlspecialchars($replyBody, ENT_QUOTES, 'UTF-8'); ?></p>
+                                <?php endif; ?>
+                                <?php
+                                $replyMedia = is_array($reply['media'] ?? null) ? $reply['media'] : [];
+                                if ($replyMedia !== []) {
+                                    $post = ['media' => $replyMedia];
+                                    require __DIR__ . '/post-media-gallery.php';
+                                }
+                                ?>
                                 <footer class="post-actions post-reply-actions" aria-label="Reply engagement">
                                     <button type="button" class="post-action post-reply-action-reply" aria-label="Reply to this reply">
                                         <i data-lucide="message-circle" aria-hidden="true"></i>

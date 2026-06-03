@@ -27,13 +27,10 @@ $postId = (int) ($post['id'] ?? 0);
                                     aria-describedby="post-reply-char-counter-label post-reply-form-error"
                                 ></textarea>
                                 <p class="post-composer-error post-reply-form-error" id="post-reply-form-error" hidden></p>
-                                <input
-                                    type="file"
-                                    id="post-reply-media-input"
-                                    class="post-reply-media-input"
-                                    hidden
-                                    multiple
-                                >
+<?php
+    $replyMediaPrefix = 'post-reply';
+    require __DIR__ . '/reply-composer-media.php';
+?>
                                 <div class="post-composer-actions">
                                     <div class="post-composer-tools" aria-label="Reply tools">
                                         <button type="button" class="post-tool-btn" id="post-reply-image-btn" aria-label="Add image">

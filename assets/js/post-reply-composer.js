@@ -78,10 +78,62 @@
         </footer>
     `;
 
+    const appendReplyMedia = (container, mediaItems) => {
+        const items = Array.isArray(mediaItems) ? mediaItems : [];
+        if (items.length === 0 || !container) {
+            return;
+        }
+
+        let galleryClass = "post-media-gallery";
+        if (items.length === 1) {
+            galleryClass += " post-media-gallery--1";
+        } else if (items.length === 2) {
+            galleryClass += " post-media-gallery--2";
+        } else if (items.length === 3) {
+            galleryClass += " post-media-gallery--3";
+        } else if (items.length >= 4) {
+            galleryClass += " post-media-gallery--4";
+        }
+
+        const gallery = document.createElement("div");
+        gallery.className = galleryClass;
+
+        items.forEach((mediaItem) => {
+            const mediaUrl = mediaItem?.url || "";
+            const mediaType = mediaItem?.type || "";
+            if (!mediaUrl) {
+                return;
+            }
+
+            if (mediaType === "video") {
+                const video = document.createElement("video");
+                video.className = "post-media post-media--video";
+                video.controls = true;
+                video.preload = "metadata";
+                video.playsInline = true;
+                video.src = mediaUrl;
+                gallery.appendChild(video);
+                return;
+            }
+
+            const img = document.createElement("img");
+            img.className = "post-media post-media--zoomable";
+            img.src = mediaUrl;
+            img.alt = "";
+            gallery.appendChild(img);
+        });
+
+        if (gallery.childElementCount > 0) {
+            container.appendChild(gallery);
+        }
+    };
+
     const buildReplyArticle = (reply, depth = 0) => {
         const article = document.createElement("article");
         const nestedClass = depth > 0 ? " post-reply-item--nested" : "";
         const parentReplyId = Number(reply.parent_reply_id || 0);
+        const replyBody = (reply.body ?? "").trim();
+        const mediaItems = Array.isArray(reply.media) ? reply.media : [];
 
         article.className = `post-reply-item${nestedClass}`;
         article.dataset.replyId = String(reply.id ?? "");
@@ -109,13 +161,44 @@
                         <time class="post-reply-time" datetime="${reply.created_at ?? ""}">${reply.time_label ?? "just now"}</time>
                     </p>
                 </header>
-                <p class="post-reply-text"></p>
+                ${replyBody !== "" ? '<p class="post-reply-text"></p>' : ""}
+                <div class="post-reply-media-slot"></div>
                 ${buildReplyActionsHtml(replyCount, likeCount)}
             </div>
         `;
-        article.querySelector(".post-reply-text").textContent = reply.body ?? "";
+
+        if (replyBody !== "") {
+            article.querySelector(".post-reply-text").textContent = replyBody;
+        }
+
+        const mediaSlot = article.querySelector(".post-reply-media-slot");
+        appendReplyMedia(mediaSlot, mediaItems);
+        if (mediaSlot && mediaSlot.childElementCount === 0) {
+            mediaSlot.remove();
+        }
 
         return article;
+    };
+
+    const findReplyThread = (replyEl) => replyEl?.closest(".post-reply-thread") ?? null;
+
+    const insertReplyInThread = (thread, replyEl, parentEl) => {
+        const parentDepth = getReplyDepth(parentEl);
+        let cursor = replyEl.nextElementSibling;
+
+        while (
+            cursor &&
+            cursor.classList.contains("post-reply-item") &&
+            getReplyDepth(cursor) > parentDepth
+        ) {
+            cursor = cursor.nextElementSibling;
+        }
+
+        if (cursor) {
+            thread.insertBefore(replyEl, cursor);
+        } else {
+            thread.appendChild(replyEl);
+        }
     };
 
     const insertReplyInTree = (reply) => {
@@ -124,77 +207,89 @@
         }
 
         const parentId = Number(reply.parent_reply_id || 0);
-        let depth = 0;
 
-        if (parentId > 0) {
-            const parentEl = repliesList.querySelector(`[data-reply-id="${parentId}"]`);
-            if (!parentEl) {
-                repliesList.appendChild(buildReplyArticle(reply, 0));
-                refreshIcons();
-                return;
-            }
-
-            depth = getReplyDepth(parentEl) + 1;
-            const newEl = buildReplyArticle(reply, depth);
-            const parentDepth = getReplyDepth(parentEl);
-            let cursor = parentEl.nextElementSibling;
-
-            while (
-                cursor &&
-                cursor.classList.contains("post-reply-item") &&
-                getReplyDepth(cursor) > parentDepth
-            ) {
-                cursor = cursor.nextElementSibling;
-            }
-
-            if (cursor) {
-                repliesList.insertBefore(newEl, cursor);
-            } else {
-                repliesList.appendChild(newEl);
-            }
-
+        if (parentId <= 0) {
+            const thread = document.createElement("div");
+            thread.className = "post-reply-thread";
+            thread.appendChild(buildReplyArticle(reply, 0));
+            repliesList.appendChild(thread);
             refreshIcons();
             return;
         }
 
-        repliesList.appendChild(buildReplyArticle(reply, depth));
+        const parentEl = repliesList.querySelector(`[data-reply-id="${parentId}"]`);
+        if (!parentEl) {
+            const thread = document.createElement("div");
+            thread.className = "post-reply-thread";
+            thread.appendChild(buildReplyArticle(reply, 0));
+            repliesList.appendChild(thread);
+            refreshIcons();
+            return;
+        }
+
+        const depth = getReplyDepth(parentEl) + 1;
+        const newEl = buildReplyArticle(reply, depth);
+        const thread = findReplyThread(parentEl);
+
+        if (!thread) {
+            repliesList.appendChild(newEl);
+            refreshIcons();
+            return;
+        }
+
+        insertReplyInThread(thread, newEl, parentEl);
         refreshIcons();
     };
 
-    const submitReply = async ({ body, parentReplyId = null, onSuccess, onError, setLoading }) => {
-        if (!body) {
+    const submitReply = async ({ body, parentReplyId = null, mediaPicker = null, onSuccess, onError, setLoading }) => {
+        const trimmedBody = body.trim();
+
+        if (mediaPicker && !mediaPicker.canSubmit(trimmedBody)) {
+            onError("Write a reply or add media before posting.");
+            return;
+        }
+
+        if (!mediaPicker && !trimmedBody) {
             onError("Write a reply before posting.");
             return;
         }
 
-        if (body.length > maxChars) {
+        if (trimmedBody.length > maxChars) {
             onError(`Reply must be ${maxChars} characters or less.`);
             return;
+        }
+
+        if (mediaPicker) {
+            const selectionError = mediaPicker.validateBeforeSubmit();
+            if (selectionError) {
+                onError(selectionError);
+                return;
+            }
         }
 
         setLoading(true);
 
         try {
-            const payload = {
-                post_id: postId,
-                body,
-                csrf_token: csrfToken,
-                _hp_url: "",
-            };
+            const formData = new FormData();
+            formData.append("post_id", String(postId));
+            formData.append("body", trimmedBody);
+            formData.append("csrf_token", csrfToken);
+            formData.append("_hp_url", "");
 
             const nestedParentId = Number(parentReplyId || 0);
             if (nestedParentId > 0) {
-                payload.parent_reply_id = nestedParentId;
+                formData.append("parent_reply_id", String(nestedParentId));
             }
+
+            mediaPicker?.appendToFormData(formData);
 
             const response = await fetch(replyUrl, {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
-                    "Content-Type": "application/json",
                     "X-CSRF-Token": csrfToken,
                 },
-                body: JSON.stringify(payload),
+                body: formData,
             });
 
             const data = await response.json().catch(() => ({}));
@@ -219,6 +314,16 @@
         const circumference = 2 * Math.PI * radius;
         progressCircle.style.strokeDasharray = String(circumference);
 
+        const composerMediaPicker = window.createReplyMediaPicker?.({
+            prefix: "post-reply",
+            textarea,
+            submitBtn,
+            errorEl,
+            imageBtn: document.getElementById("post-reply-image-btn"),
+            videoBtn: document.getElementById("post-reply-video-btn"),
+            onChange: () => updateComposerCounter(),
+        });
+
         const showComposerError = (message) => {
             if (!errorEl) {
                 return;
@@ -236,7 +341,10 @@
         };
 
         const setComposerLoading = (isLoading) => {
-            submitBtn.disabled = isLoading || textarea.value.trim() === "";
+            const canSend = composerMediaPicker
+                ? composerMediaPicker.canSubmit(textarea.value)
+                : textarea.value.trim() !== "";
+            submitBtn.disabled = isLoading || !canSend;
             submitBtn.classList.toggle("is-loading", isLoading);
             submitBtn.setAttribute("aria-busy", isLoading ? "true" : "false");
             submitBtn.textContent = isLoading ? "Replying..." : "Reply";
@@ -271,7 +379,10 @@
             }
 
             if (!submitBtn.classList.contains("is-loading")) {
-                submitBtn.disabled = textarea.value.trim() === "";
+                const canSend = composerMediaPicker
+                    ? composerMediaPicker.canSubmit(textarea.value)
+                    : textarea.value.trim() !== "";
+                submitBtn.disabled = !canSend;
             }
         };
 
@@ -280,21 +391,15 @@
             updateComposerCounter();
         });
 
-        document.getElementById("post-reply-image-btn")?.addEventListener("click", () => {
-            showComposerError("Image replies are not available yet.");
-        });
-
-        document.getElementById("post-reply-video-btn")?.addEventListener("click", () => {
-            showComposerError("Video replies are not available yet.");
-        });
-
         submitBtn.addEventListener("click", async () => {
             clearComposerError();
             await submitReply({
-                body: textarea.value.trim(),
+                body: textarea.value,
                 parentReplyId: null,
+                mediaPicker: composerMediaPicker,
                 onSuccess: () => {
                     textarea.value = "";
+                    composerMediaPicker?.clear();
                     updateComposerCounter();
                 },
                 onError: showComposerError,
@@ -315,6 +420,16 @@
     if (hasModal) {
         let modalCharCircumference = 0;
 
+        const modalMediaPicker = window.createReplyMediaPicker?.({
+            prefix: "reply-modal",
+            textarea: modalInput,
+            submitBtn: modalSubmit,
+            errorEl: modalError,
+            imageBtn: document.getElementById("reply-modal-image-btn"),
+            videoBtn: document.getElementById("reply-modal-video-btn"),
+            onChange: () => updateModalCounter(),
+        });
+
         if (modalCharProgress) {
             const modalRadius = 15.5;
             modalCharCircumference = 2 * Math.PI * modalRadius;
@@ -332,7 +447,10 @@
         };
 
         const setModalLoading = (isLoading) => {
-            modalSubmit.disabled = isLoading || modalInput.value.trim() === "";
+            const canSend = modalMediaPicker
+                ? modalMediaPicker.canSubmit(modalInput.value)
+                : modalInput.value.trim() !== "";
+            modalSubmit.disabled = isLoading || !canSend;
             modalSubmit.classList.toggle("is-loading", isLoading);
             modalSubmit.setAttribute("aria-busy", isLoading ? "true" : "false");
             modalSubmit.textContent = isLoading ? "Submitting..." : "Submit";
@@ -342,7 +460,10 @@
 
         const updateModalCounter = () => {
             if (!modalCharCounter || !modalCharProgress) {
-                modalSubmit.disabled = modalInput.value.trim() === "" || modalSubmit.classList.contains("is-loading");
+                const canSend = modalMediaPicker
+                    ? modalMediaPicker.canSubmit(modalInput.value)
+                    : modalInput.value.trim() !== "";
+                modalSubmit.disabled = !canSend || modalSubmit.classList.contains("is-loading");
                 return;
             }
 
@@ -356,7 +477,10 @@
             modalCharCounter.hidden = !isTyping;
 
             if (!modalSubmit.classList.contains("is-loading")) {
-                modalSubmit.disabled = modalInput.value.trim() === "";
+                const canSend = modalMediaPicker
+                    ? modalMediaPicker.canSubmit(modalInput.value)
+                    : modalInput.value.trim() !== "";
+                modalSubmit.disabled = !canSend;
             }
         };
 
@@ -365,6 +489,7 @@
             document.body.classList.remove("reply-modal-open");
             modalInput.value = "";
             modalParentId.value = "";
+            modalMediaPicker?.clear();
             clearModalError();
             updateModalCounter();
             modalInput.disabled = false;
@@ -404,8 +529,9 @@
             const parentReplyId = Number(modalParentId.value || 0);
 
             await submitReply({
-                body: modalInput.value.trim(),
+                body: modalInput.value,
                 parentReplyId: parentReplyId > 0 ? parentReplyId : null,
+                mediaPicker: modalMediaPicker,
                 onSuccess: closeModal,
                 onError: showModalError,
                 setLoading: setModalLoading,

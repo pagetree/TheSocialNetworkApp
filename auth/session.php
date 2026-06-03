@@ -218,6 +218,29 @@ function fetchUserById(int $userId): ?array
 }
 
 /**
+ * @return array<string, mixed>|null
+ */
+function fetchUserByUsername(string $username): ?array
+{
+    $normalized = normalizeUsername($username);
+    if ($normalized === '') {
+        return null;
+    }
+
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT ' . userSessionSelectSql() . '
+         FROM users
+         WHERE username = :username
+         LIMIT 1'
+    );
+    $stmt->execute(['username' => $normalized]);
+    $user = $stmt->fetch();
+
+    return $user === false ? null : $user;
+}
+
+/**
  * @param array{display_name: string, bio: ?string, location: ?string, website_url: ?string, date_of_birth: ?string, avatar_url: ?string, cover_url: ?string} $profile
  * @return array<string, mixed>|null
  */

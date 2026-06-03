@@ -80,6 +80,25 @@ function r2PostMediaPrefix(): string
     return trim((string) (getenv('R2_POST_MEDIA_PREFIX') ?: 'posts-media'), '/');
 }
 
+function r2ReplyMediaPrefix(): string
+{
+    return trim((string) (getenv('R2_REPLY_MEDIA_PREFIX') ?: 'replies-media'), '/');
+}
+
+function r2BuildReplyMediaFilename(int $userId, int $conversationId, int $replyId, string $originalFilename): string
+{
+    $uploadDate = (new DateTimeImmutable('now'))->format('Y-m-d');
+    $uniqueId = bin2hex(random_bytes(8));
+    $original = r2SanitizeOriginalFilename($originalFilename);
+
+    return $userId . '.' . $conversationId . '.' . $replyId . '.' . $uploadDate . '.' . $uniqueId . '.' . $original;
+}
+
+function r2BuildReplyMediaObjectKey(int $userId, int $conversationId, int $replyId, string $originalFilename): string
+{
+    return r2ReplyMediaPrefix() . '/' . r2BuildReplyMediaFilename($userId, $conversationId, $replyId, $originalFilename);
+}
+
 function r2SanitizeOriginalFilename(string $originalFilename): string
 {
     $original = basename(str_replace('\\', '/', $originalFilename));
@@ -286,6 +305,45 @@ function r2UploadPostMedia(int $userId, int $postId, string $fieldName): array
         'key' => $upload['key'],
         'media_type' => $upload['media_type'],
         'validated' => $validated,
+    ];
+}
+
+/**
+ * @param array{
+ *     media_type: string,
+ *     content_type: string,
+ *     tmp_path: string,
+ *     original_filename: string
+ * } $validatedMedia
+ * @return array{ok: true, url: string, key: string, media_type: string}|array{ok: false, error: string}
+ */
+function r2UploadPostReplyMediaFile(int $userId, int $conversationId, int $replyId, array $validatedMedia): array
+{
+    if (!r2IsConfigured()) {
+        return ['ok' => false, 'error' => 'File storage is not configured.'];
+    }
+
+    $objectKey = r2BuildReplyMediaObjectKey($userId, $conversationId, $replyId, $validatedMedia['original_filename']);
+    $body = file_get_contents($validatedMedia['tmp_path']);
+
+    if ($body === false) {
+        return ['ok' => false, 'error' => 'Unable to read uploaded file.'];
+    }
+
+    $config = r2Config();
+    $canonicalUri = r2EncodeUriPath($config['bucket'] . '/' . $objectKey);
+
+    try {
+        r2SignedRequest('PUT', $canonicalUri, $body, $validatedMedia['content_type']);
+    } catch (Throwable) {
+        return ['ok' => false, 'error' => 'Unable to upload media right now.'];
+    }
+
+    return [
+        'ok' => true,
+        'url' => r2PublicUrlForKey($objectKey),
+        'key' => $objectKey,
+        'media_type' => $validatedMedia['media_type'],
     ];
 }
 

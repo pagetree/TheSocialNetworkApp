@@ -185,7 +185,7 @@ function fetchFeedPosts(int $limit = POST_FEED_DEFAULT_LIMIT): array
     $stmt = $pdo->prepare(
         'SELECT p.id, p.user_id, p.body, p.location_label,
                 p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
-                u.display_name, u.handle, u.avatar_url
+                u.display_name, u.handle, u.username, u.avatar_url
          FROM posts p
          INNER JOIN users u ON u.id = p.user_id
          WHERE p.is_deleted = FALSE
@@ -193,6 +193,38 @@ function fetchFeedPosts(int $limit = POST_FEED_DEFAULT_LIMIT): array
          ORDER BY p.created_at DESC
          LIMIT :limit'
     );
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $rows = $stmt->fetchAll();
+
+    return is_array($rows) ? hydrateFeedPostsWithMedia($rows) : [];
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function fetchPostsByUserId(int $userId, int $limit = POST_FEED_DEFAULT_LIMIT): array
+{
+    if ($userId < 1) {
+        return [];
+    }
+
+    $limit = max(1, min($limit, 100));
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT p.id, p.user_id, p.body, p.location_label,
+                p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
+                u.display_name, u.handle, u.username, u.avatar_url
+         FROM posts p
+         INNER JOIN users u ON u.id = p.user_id
+         WHERE p.user_id = :user_id
+           AND p.is_deleted = FALSE
+           AND p.repost_of_post_id IS NULL
+         ORDER BY p.created_at DESC
+         LIMIT :limit'
+    );
+    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
     $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
     $stmt->execute();
 
@@ -214,7 +246,7 @@ function fetchPostById(int $postId): ?array
     $stmt = $pdo->prepare(
         'SELECT p.id, p.user_id, p.body, p.location_label,
                 p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
-                u.display_name, u.handle, u.avatar_url
+                u.display_name, u.handle, u.username, u.avatar_url
          FROM posts p
          INNER JOIN users u ON u.id = p.user_id
          WHERE p.id = :id
@@ -355,7 +387,11 @@ function postFeedPayload(array $row, callable $url): array
         'author' => [
             'display_name' => $user['display_name'],
             'handle' => $user['handle'],
+            'username' => (string) ($row['username'] ?? ''),
             'avatar_url' => userMediaUrl($user, 'avatar_url', $url),
+            'profile_url' => profileUrlForUser([
+                'username' => (string) ($row['username'] ?? ''),
+            ], $url),
         ],
     ];
 }

@@ -88,6 +88,10 @@ function recordPostStat(int $postId, int $viewerUserId, string $eventType): arra
 
         $pdo->commit();
 
+        if ($inserted) {
+            syncPostInteractionFromStatEvent($postId, $viewerUserId, $eventType);
+        }
+
         return [
             'ok' => true,
             'view_count' => (int) ($counts['view_count'] ?? $post['view_count']),
@@ -106,4 +110,34 @@ function recordPostStat(int $postId, int $viewerUserId, string $eventType): arra
 function formatPostStatCount(int $count): string
 {
     return formatEngagementCount($count);
+}
+
+function syncPostInteractionFromStatEvent(int $postId, int $userId, string $eventType): void
+{
+    $interactionType = $eventType === 'view' ? 'dwell' : 'profile_click';
+
+    try {
+        $pdo = createPdoConnection();
+        $stmt = $pdo->prepare(
+            'INSERT INTO post_interactions (user_id, post_id, type, value)
+             SELECT :user_id, :post_id, :type, 1
+             WHERE NOT EXISTS (
+                 SELECT 1
+                 FROM post_interactions pi
+                 WHERE pi.user_id = :user_id_check
+                   AND pi.post_id = :post_id_check
+                   AND pi.type = :type_check
+             )'
+        );
+        $stmt->execute([
+            'user_id' => $userId,
+            'post_id' => $postId,
+            'type' => $interactionType,
+            'user_id_check' => $userId,
+            'post_id_check' => $postId,
+            'type_check' => $interactionType,
+        ]);
+    } catch (Throwable) {
+        // post_interactions may not exist until migration 010 is applied.
+    }
 }
