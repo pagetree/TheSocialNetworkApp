@@ -8,26 +8,55 @@ declare(strict_types=1);
 /** @var list<string> $pageScripts */
 
 $pageScripts = $pageScripts ?? [];
+$onboardingLayout = !empty($onboardingLayout);
 ?>
+                    </div>
                 </main>
 <?php
-if (!empty($layoutHasRightSidebar)) {
+if (!$onboardingLayout && !empty($layoutHasRightSidebar)) {
     require __DIR__ . '/post-right-sidebar.php';
 }
-?>
+if (!$onboardingLayout) : ?>
             </div>
+<?php endif; ?>
         </div>
     </div>
-    <?php if (!empty($showProfileEditModal)) {
+    <?php if (!$onboardingLayout && !empty($showProfileEditModal)) {
         require dirname(__DIR__) . '/profile/edit-profile-modal.php';
     } ?>
-    <?php if (!empty($showFeedReplyModal)) {
+    <?php if (!$onboardingLayout && !empty($showFeedReplyModal)) {
         require dirname(__DIR__) . '/posts/feed-reply-modal.php';
     } ?>
-    <?php if ($isLoggedIn) {
+    <?php if ($isLoggedIn && !$onboardingLayout) {
         require __DIR__ . '/media-lightbox.php';
     } ?>
-    <?php if ($isLoggedIn) : ?>
+    <?php if ($isLoggedIn && $onboardingLayout) : ?>
+    <script>
+        window.APP_ONBOARDING = <?php echo json_encode([
+            'step' => $onboardingStep ?? 'welcome',
+            'csrfToken' => $onboardingCsrfToken ?? '',
+            'maxInterests' => ONBOARDING_MAX_INTERESTS,
+            'bioMaxLength' => PROFILE_BIO_MAX_LENGTH,
+            'urls' => [
+                'avatar' => $url('/auth/onboarding/avatar'),
+                'bio' => $url('/auth/onboarding/bio'),
+                'interests' => $url('/auth/onboarding/interests'),
+                'follow' => $url('/auth/onboarding/follow'),
+                'complete' => $url('/auth/onboarding/complete'),
+                'steps' => [
+                    'welcome' => $url('/onboarding/welcome'),
+                    'avatar' => $url('/onboarding/avatar'),
+                    'bio' => $url('/onboarding/bio'),
+                    'interests' => $url('/onboarding/interests'),
+                    'suggestions' => $url('/onboarding/suggestions'),
+                ],
+            ],
+        ], JSON_THROW_ON_ERROR); ?>;
+    </script>
+    <?php foreach ($pageScripts as $scriptPath) : ?>
+    <script src="<?php echo htmlspecialchars($url($scriptPath), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php endforeach; ?>
+    <?php elseif ($isLoggedIn) : ?>
     <?php if (!empty($showProfileEditModal)) : ?>
     <script>
         window.APP_PROFILE_UPDATE_URL = <?php echo json_encode($url('/auth/profile'), JSON_THROW_ON_ERROR); ?>;

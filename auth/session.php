@@ -81,7 +81,7 @@ function attemptLogin(string $identifier, string $password): ?array
         ]);
     }
 
-    return $user;
+    return fetchUserById((int) $user['id']) ?? $user;
 }
 
 function normalizeUsername(string $username): string
@@ -166,7 +166,7 @@ function registerUser(
     $stmt = $pdo->prepare(
         'INSERT INTO users (username, display_name, handle, email, password_hash)
          VALUES (:username, :display_name, :handle, :email, :password_hash)
-         RETURNING id, username, display_name, handle, email, avatar_url, cover_url, bio, location, website_url, date_of_birth, created_at'
+         RETURNING id, username, display_name, handle, email, avatar_url, cover_url, bio, location, website_url, date_of_birth, is_visible, onboarding_completed_at, created_at'
     );
     $stmt->execute([
         'username' => $username,

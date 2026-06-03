@@ -50,6 +50,31 @@ if ($path === '/auth/profile' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') 
     return;
 }
 
+if ($path === '/auth/onboarding/avatar' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/onboarding-avatar.php';
+    return;
+}
+
+if ($path === '/auth/onboarding/bio' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/onboarding-bio.php';
+    return;
+}
+
+if ($path === '/auth/onboarding/interests' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/onboarding-interests.php';
+    return;
+}
+
+if ($path === '/auth/onboarding/follow' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/onboarding-follow.php';
+    return;
+}
+
+if ($path === '/auth/onboarding/complete' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/onboarding-complete.php';
+    return;
+}
+
 if ($path === '/posts/create' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     require __DIR__ . '/auth/post-create.php';
     return;
@@ -77,11 +102,30 @@ if ($path === '/users/follow' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') 
 
 if ($path === '/register') {
     if (isLoggedIn()) {
-        header('Location: ' . $url('/'));
+        $registerUser = getCurrentUser();
+        $registerTarget = userNeedsOnboarding($registerUser)
+            ? $url('/onboarding/welcome')
+            : $url('/');
+        header('Location: ' . $registerTarget);
         exit;
     }
     require __DIR__ . '/auth/register-page.php';
     return;
+}
+
+if (preg_match('#^/onboarding(?:/(welcome|avatar|bio|interests|suggestions))?/?$#', $path, $onboardingRouteMatch)) {
+    $onboardingStep = $onboardingRouteMatch[1] ?? 'welcome';
+    require __DIR__ . '/includes/onboarding/page.php';
+    return;
+}
+
+$onboardingRedirect = onboardingRedirectUrlIfNeeded($path, $url);
+if (
+    $onboardingRedirect !== null
+    && strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'GET'
+) {
+    header('Location: ' . $onboardingRedirect);
+    exit;
 }
 
 if ($path === '/profile.php') {

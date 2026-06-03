@@ -111,7 +111,7 @@ renderAppStylesheets($url);
     <script>
         window.APP_REGISTER_URL = <?php echo json_encode($url('/auth/register'), JSON_THROW_ON_ERROR); ?>;
         window.APP_CHECK_USERNAME_URL = <?php echo json_encode($url('/auth/check-username'), JSON_THROW_ON_ERROR); ?>;
-        window.APP_HOME_URL = <?php echo json_encode($url('/'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_HOME_URL = <?php echo json_encode($url('/onboarding/welcome'), JSON_THROW_ON_ERROR); ?>;
         window.APP_CSRF_TOKEN = <?php echo json_encode($registerCsrfToken, JSON_THROW_ON_ERROR); ?>;
     </script>
     <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>

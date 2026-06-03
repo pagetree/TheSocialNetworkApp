@@ -25,6 +25,7 @@ function userSessionColumns(): array
         'website_url',
         'date_of_birth',
         'is_visible',
+        'onboarding_completed_at',
         'created_at',
     ];
 }

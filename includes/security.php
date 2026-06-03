@@ -20,6 +20,11 @@ function rateLimitConfig(string $action): array
         'posts.reply' => ['max' => 30, 'window_seconds' => 900],
         'posts.like' => ['max' => 60, 'window_seconds' => 900],
         'users.follow' => ['max' => 60, 'window_seconds' => 900],
+        'onboarding.avatar' => ['max' => 20, 'window_seconds' => 900],
+        'onboarding.bio' => ['max' => 20, 'window_seconds' => 900],
+        'onboarding.interests' => ['max' => 20, 'window_seconds' => 900],
+        'onboarding.follow' => ['max' => 10, 'window_seconds' => 900],
+        'onboarding.complete' => ['max' => 10, 'window_seconds' => 900],
         default => ['max' => 30, 'window_seconds' => 60],
     };
 }

@@ -20,6 +20,7 @@ function appStylesheetPaths(): array
         '/assets/css/profile.css',
         '/assets/css/auth.css',
         '/assets/css/register.css',
+        '/assets/css/onboarding.css',
     ];
 }
 

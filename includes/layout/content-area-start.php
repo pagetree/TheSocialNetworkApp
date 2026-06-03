@@ -8,6 +8,7 @@ declare(strict_types=1);
 /** @var string $mainClass */
 
 $activeNav = $activeNav ?? 'explore';
+$onboardingLayout = !empty($onboardingLayout);
 $layoutHasRightSidebar = !empty($layoutHasRightSidebar);
 $appTopbarClass = $layoutHasRightSidebar ? 'app-topbar app-topbar--with-right-sidebar' : 'app-topbar';
 $appMainClass = $layoutHasRightSidebar ? 'app-main app-main--with-right-sidebar' : 'app-main';
@@ -16,12 +17,19 @@ $navLinkClass = static function (string $item) use ($activeNav): string {
     return $item === $activeNav ? 'topbar-link is-active' : 'topbar-link';
 };
 ?>
-<body<?php echo $isLoggedIn ? '' : ' class="auth-locked"'; ?>>
+<body<?php
+if (!$isLoggedIn) {
+    echo ' class="auth-locked"';
+} elseif ($onboardingLayout) {
+    echo ' class="onboarding-page"';
+}
+?>>
     <?php if (!$isLoggedIn) {
         require dirname(__DIR__, 2) . '/auth/login-modal.php';
     } ?>
     <div class="glass-overlay"<?php echo $isLoggedIn ? '' : ' aria-hidden="true"'; ?>>
-        <div class="app-container">
+        <div class="app-container<?php echo $onboardingLayout ? ' app-container--onboarding' : ''; ?>">
+            <?php if (!$onboardingLayout) : ?>
             <header class="<?php echo htmlspecialchars($appTopbarClass, ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="topbar-sidebar">
                     <a href="<?php echo htmlspecialchars($url('/'), ENT_QUOTES, 'UTF-8'); ?>" class="topbar-logo" aria-label="TheSocialNetworkApp">
@@ -54,5 +62,10 @@ $navLinkClass = static function (string $item) use ($activeNav): string {
             </header>
 
             <div class="<?php echo htmlspecialchars($appMainClass, ENT_QUOTES, 'UTF-8'); ?>">
-<?php require __DIR__ . '/sidebar.php'; ?>
+                <?php require __DIR__ . '/sidebar.php'; ?>
+            <?php endif; ?>
                 <main class="<?php echo htmlspecialchars($mainClass, ENT_QUOTES, 'UTF-8'); ?>">
+            <?php if ($onboardingLayout) {
+                require __DIR__ . '/onboarding-chrome.php';
+            } ?>
+                    <div class="onboarding-content-card">
