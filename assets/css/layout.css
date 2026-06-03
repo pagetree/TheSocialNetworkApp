@@ -88,9 +88,6 @@
 }
 
 .topbar-logout-form button.topbar-link {
-    font: inherit;
-    font-family: inherit;
-    color: inherit;
     background: transparent;
     border: none;
     padding: 0;
