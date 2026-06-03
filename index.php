@@ -294,6 +294,7 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#', $path, $hashtagRouteMatch)) {
     if ($showFeedReplyModal) {
         $pageScripts[] = '/assets/js/reply-media-picker.js';
         $pageScripts[] = '/assets/js/feed-reply-modal.js';
+        $pageScripts[] = '/assets/js/hashtag-reply.js';
     }
 
     require __DIR__ . '/includes/layout/head.php';
