@@ -44,7 +44,7 @@ if (!$isLoggedIn) {
                         </a>
                         <a href="#" class="<?php echo $navLinkClass('messages'); ?>">
                             <i data-lucide="message-circle" aria-hidden="true"></i>
-                            <span>Messages</span>
+                            <span>Chat</span>
                         </a>
                         <a href="#" class="<?php echo $navLinkClass('notifications'); ?>">
                             <i data-lucide="bell" aria-hidden="true"></i>
@@ -55,6 +55,15 @@ if (!$isLoggedIn) {
                             <span>Profile</span>
                         </a>
                     </nav>
+                    <?php if ($isLoggedIn) : ?>
+                    <a
+                        href="<?php echo htmlspecialchars($url('/logout'), ENT_QUOTES, 'UTF-8'); ?>"
+                        class="topbar-link topbar-link--logout"
+                    >
+                        <i data-lucide="log-out" aria-hidden="true"></i>
+                        <span>Logout</span>
+                    </a>
+                    <?php endif; ?>
                 </div>
                 <?php if ($layoutHasRightSidebar) : ?>
                 <div class="topbar-aside" aria-hidden="true"></div>

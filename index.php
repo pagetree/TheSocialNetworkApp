@@ -30,6 +30,12 @@ if ($path === '/health') {
 
 startAppSession();
 
+if ($path === '/logout') {
+    logoutUser();
+    header('Location: ' . $url('/'));
+    exit;
+}
+
 if ($path === '/auth/login' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     require __DIR__ . '/auth/login.php';
     return;

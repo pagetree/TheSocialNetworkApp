@@ -26,6 +26,12 @@
     min-width: 0;
 }
 
+.topbar-content {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
 .topbar-sidebar {
     display: flex;
     align-items: center;
@@ -73,6 +79,18 @@
 .topbar-link:hover,
 .topbar-link.is-active {
     color: var(--accent);
+    opacity: 1;
+}
+
+.topbar-link--logout {
+    margin-left: auto;
+    flex-shrink: 0;
+    color: #f4212e;
+    opacity: 1;
+}
+
+.topbar-link--logout:hover {
+    color: color-mix(in srgb, #f4212e 82%, #fff);
     opacity: 1;
 }
 
