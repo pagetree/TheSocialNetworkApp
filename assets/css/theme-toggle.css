@@ -1,0 +1,30 @@
+.theme-toggle {
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font: inherit;
+}
+
+.theme-toggle-icon {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    flex-shrink: 0;
+}
+
+html[data-theme="dark"] .theme-toggle-icon--to-dark,
+html[data-theme="light"] .theme-toggle-icon--to-light {
+    display: none;
+}
+
+.topbar-end {
+    gap: 16px;
+}
+
+.register-form-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}

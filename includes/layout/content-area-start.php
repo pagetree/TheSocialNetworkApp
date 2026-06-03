@@ -57,6 +57,7 @@ if (!$isLoggedIn) {
                     </nav>
                 </div>
                 <div class="topbar-end">
+                    <?php require __DIR__ . '/theme-toggle.php'; ?>
                     <?php if ($isLoggedIn) :
                         $logoutCsrfToken = createCsrfToken('logout');
                     ?>

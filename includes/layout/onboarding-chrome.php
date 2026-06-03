@@ -27,6 +27,7 @@ foreach ($steps as $index => $step) {
                             alt=""
                         >
                     </a>
+                    <?php require __DIR__ . '/theme-toggle.php'; ?>
                 </div>
 
                 <nav class="onboarding-inline-steps" aria-label="Onboarding progress">

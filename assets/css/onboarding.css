@@ -24,7 +24,9 @@ body.onboarding-page .app-container--onboarding {
 
 .onboarding-chrome-top {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
 }
 
 .onboarding-chrome-logo-link {

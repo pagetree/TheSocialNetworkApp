@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 /** @var callable(string): string $url */
 $registerCsrfToken = createCsrfToken('register');
+$appTheme = resolveAppTheme();
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="<?php echo htmlspecialchars($appTheme, ENT_QUOTES, 'UTF-8'); ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php renderThemeHeadScript(); ?>
     <title>Create account — TheSocialNetworkApp</title>
     <link rel="icon" type="image/png" href="<?php echo htmlspecialchars($url('/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,6 +26,9 @@ renderAppStylesheets($url);
     <div class="register-layout">
         <section class="register-form-column">
             <div class="register-form-panel">
+                <div class="register-form-header">
+                    <?php require __DIR__ . '/../includes/layout/theme-toggle.php'; ?>
+                </div>
                 <h1 class="register-title">Create account</h1>
                 <p class="register-subtitle">Join TheSocialNetworkApp today.</p>
                 <form class="auth-form register-form" id="register-form" novalidate>
@@ -115,6 +120,7 @@ renderAppStylesheets($url);
         window.APP_CSRF_TOKEN = <?php echo json_encode($registerCsrfToken, JSON_THROW_ON_ERROR); ?>;
     </script>
     <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/theme.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script>
         lucide.createIcons();
     </script>

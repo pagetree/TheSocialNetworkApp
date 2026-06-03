@@ -1,4 +1,6 @@
-﻿:root {
+﻿:root,
+html[data-theme="dark"] {
+    color-scheme: dark;
     --body-bg: #06141D;
     --elements-bg: #091D2B;
     --accent: #03A9F4;
@@ -14,4 +16,12 @@
     --layout-gap: 35px;
     --element-padding: 2rem;
     --post-gap: 20px;
+}
+
+html[data-theme="light"] {
+    color-scheme: light;
+    --body-bg: #e4edf4;
+    --elements-bg: #ffffff;
+    --light: #142532;
+    --dark: #eef3f8;
 }
