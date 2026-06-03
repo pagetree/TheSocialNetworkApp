@@ -87,6 +87,7 @@ body.content-report-modal-open {
 }
 
 .content-report-reason-wrap {
+    position: relative;
     display: grid;
     gap: 8px;
 }
@@ -99,15 +100,52 @@ body.content-report-modal-open {
 
 .content-report-reason-select {
     width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     border: 1px solid color-mix(in srgb, var(--light) 16%, transparent);
     border-radius: 12px;
-    padding: 12px 14px;
-    background: color-mix(in srgb, var(--light) 3%, transparent);
+    padding: 12px 40px 12px 14px;
+    background-color: color-mix(in srgb, var(--light) 6%, var(--elements-bg));
     color: var(--light);
     font: inherit;
     font-size: 14px;
     line-height: 1.45;
     cursor: pointer;
+}
+
+html[data-theme="dark"] .content-report-reason-select {
+    color-scheme: dark;
+}
+
+html[data-theme="light"] .content-report-reason-select {
+    color-scheme: light;
+}
+
+.content-report-reason-select:invalid {
+    color: color-mix(in srgb, var(--light) 55%, transparent);
+}
+
+.content-report-reason-select option {
+    background-color: var(--elements-bg);
+    color: var(--light);
+}
+
+.content-report-reason-select option:disabled {
+    color: color-mix(in srgb, var(--light) 55%, transparent);
+}
+
+.content-report-reason-wrap::after {
+    content: "";
+    position: absolute;
+    right: 14px;
+    bottom: 16px;
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+    background-color: color-mix(in srgb, var(--light) 75%, transparent);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .content-report-reason-select:focus {
@@ -138,7 +176,7 @@ body.content-report-modal-open {
     border: 1px solid color-mix(in srgb, var(--light) 16%, transparent);
     border-radius: 12px;
     padding: 12px 14px;
-    background: color-mix(in srgb, var(--light) 3%, transparent);
+    background-color: color-mix(in srgb, var(--light) 6%, var(--elements-bg));
     color: var(--light);
     font: inherit;
     font-size: 14px;
