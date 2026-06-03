@@ -1,0 +1,113 @@
+﻿
+.app-container {
+    width: min(1440px, 100%);
+    margin-top: var(--app-margin-top);
+    padding: var(--app-container-padding);
+    background: var(--body-bg);
+    border-radius: var(--container-radius);
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 20px;
+}
+
+.app-topbar {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    gap: var(--layout-gap);
+    align-items: center;
+}
+
+.app-topbar--with-right-sidebar {
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--sidebar-width);
+}
+
+.topbar-sidebar,
+.topbar-content {
+    min-width: 0;
+}
+
+.topbar-sidebar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.topbar-logo {
+    display: inline-flex;
+    text-decoration: none;
+    align-items: center;
+}
+
+.topbar-link svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    flex-shrink: 0;
+}
+
+.topbar-logo img {
+    width: 60px;
+    display: block;
+    object-fit: contain;
+}
+
+.app-topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.topbar-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--light);
+    font-size: 16px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    opacity: 0.85;
+    text-decoration: none;
+    transition: color 140ms ease, opacity 140ms ease;
+}
+
+.topbar-link:hover,
+.topbar-link.is-active {
+    color: var(--accent);
+    opacity: 1;
+}
+
+.app-main {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    gap: var(--layout-gap);
+}
+
+.app-main--with-right-sidebar {
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--sidebar-width);
+}
+
+.app-sidebar,
+.app-content {
+    min-width: 0;
+}
+
+.app-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+}
+
+.app-sidebar--right {
+    align-items: flex-start;
+}
+
+.topbar-aside {
+    min-width: 0;
+}
+
+.app-content {
+    display: grid;
+    gap: 20px;
+    align-content: start;
+}

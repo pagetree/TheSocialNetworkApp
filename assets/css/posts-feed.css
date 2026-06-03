@@ -1,0 +1,80 @@
+﻿
+.post-card {
+    background: var(--elements-bg);
+    border-radius: var(--container-radius);
+    padding: var(--element-padding);
+    display: grid;
+    gap: var(--post-gap);
+}
+
+.post-composer {
+    grid-template-columns: 48px minmax(0, 1fr);
+    align-items: start;
+}
+
+.post-card:not(.post-composer) {
+    grid-template-columns: 48px minmax(0, 1fr);
+    align-items: start;
+}
+
+.post-card:not(.post-composer) .post-header {
+    grid-column: 1 / -1;
+}
+
+.post-card:not(.post-composer) .post-text,
+.post-card:not(.post-composer) .post-media-gallery,
+.post-card:not(.post-composer) .post-actions {
+    grid-column: 2;
+    text-align: left;
+}
+
+.post-card:not(.post-composer) > .post-text {
+    margin-top: calc(-1 * var(--post-gap));
+}
+
+.post-feed {
+    display: grid;
+    gap: var(--post-gap);
+}
+
+.post-card--linkable {
+    position: relative;
+}
+
+.post-card-cover-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+}
+
+.post-card--linkable > :not(.post-card-cover-link) {
+    pointer-events: none;
+}
+
+.post-card--linkable .post-actions,
+.post-card--linkable .post-header,
+.post-card--linkable .post-menu-btn,
+.post-card--linkable .post-media--zoomable,
+.post-card--linkable .post-media--video {
+    pointer-events: auto;
+    position: relative;
+    z-index: 2;
+}
+
+.post-card--linkable .post-card-cover-link {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.post-card--linkable .post-media--zoomable {
+    cursor: pointer;
+}
+
+.post-action-like.is-liked {
+    color: #f91880;
+}
+
+.post-action-like.is-liked svg {
+    fill: currentColor;
+}

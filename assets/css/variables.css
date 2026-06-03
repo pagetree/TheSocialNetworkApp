@@ -1,0 +1,17 @@
+﻿:root {
+    --body-bg: #06141D;
+    --elements-bg: #091D2B;
+    --accent: #03A9F4;
+    --warning: #ff9800;
+    --danger: #f44336;
+    --success: #4caf50;
+    --light: #D9D9D9;
+    --dark: #2d3436;
+    --container-radius: 20px;
+    --app-margin-top: 4rem;
+    --sidebar-width: 350px;
+    --app-container-padding: 4rem;
+    --layout-gap: 35px;
+    --element-padding: 2rem;
+    --post-gap: 20px;
+}

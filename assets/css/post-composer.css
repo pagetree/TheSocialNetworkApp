@@ -1,0 +1,209 @@
+﻿
+.post-composer-body {
+    min-width: 0;
+}
+
+.post-composer-box {
+    background: color-mix(in srgb, var(--light) 6%, transparent);
+    border-radius: calc(var(--container-radius) - 8px);
+    padding: 14px 16px;
+    display: grid;
+    gap: var(--post-gap);
+}
+
+.post-composer-input {
+    width: 100%;
+    min-height: 88px;
+    border: 0;
+    resize: vertical;
+    background: transparent;
+    color: var(--light);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 0;
+    outline: none;
+}
+
+.post-composer-input::placeholder {
+    color: color-mix(in srgb, var(--light) 55%, transparent);
+}
+
+.post-composer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--post-gap);
+}
+
+.post-composer-tools {
+    display: flex;
+    align-items: center;
+    gap: var(--post-gap);
+}
+
+.post-composer-submit-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.post-char-counter {
+    --counter-color: var(--accent);
+    position: relative;
+    width: 0;
+    height: 24px;
+    flex-shrink: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: width 160ms ease, opacity 160ms ease;
+}
+
+.post-char-counter.is-visible {
+    width: 24px;
+    opacity: 1;
+}
+
+.post-char-counter.is-warning {
+    --counter-color: var(--warning);
+}
+
+.post-char-counter.is-danger {
+    --counter-color: var(--danger);
+}
+
+.post-char-counter-ring {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.post-char-counter-track,
+.post-char-counter-progress {
+    fill: none;
+    stroke-width: 2.5;
+}
+
+.post-char-counter-track {
+    stroke: color-mix(in srgb, var(--light) 20%, transparent);
+}
+
+.post-char-counter-progress {
+    stroke: var(--counter-color);
+    stroke-linecap: round;
+    stroke-dasharray: 97.39;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 120ms ease, stroke 160ms ease;
+}
+
+.post-tool-btn,
+.post-menu-btn,
+.post-action {
+    border: 0;
+    background: transparent;
+    color: color-mix(in srgb, var(--light) 75%, transparent);
+    cursor: pointer;
+    padding: 0;
+}
+
+.post-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    transition: color 140ms ease, background 140ms ease;
+}
+
+.post-tool-btn:hover,
+.post-menu-btn:hover,
+.post-action:hover {
+    color: var(--accent);
+}
+
+.post-tool-btn svg,
+.post-menu-btn svg,
+.post-action svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+.post-submit-btn {
+    border: 0;
+    border-radius: 999px;
+    padding: 7px 14px;
+    min-height: 34px;
+    background: var(--accent);
+    color: var(--light);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: opacity 140ms ease, background 140ms ease;
+}
+
+.post-submit-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.post-composer-error {
+    margin: 0;
+    color: var(--danger);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.post-composer-media-preview {
+    border-radius: calc(var(--container-radius) - 12px);
+    overflow: hidden;
+}
+
+.post-composer-media-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.post-composer-media-item {
+    position: relative;
+    border-radius: calc(var(--container-radius) - 14px);
+    overflow: hidden;
+    background: color-mix(in srgb, var(--light) 4%, transparent);
+    min-height: 120px;
+}
+
+.post-composer-media-image,
+.post-composer-media-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 120px;
+    max-height: 220px;
+    object-fit: cover;
+}
+
+.post-composer-media-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--dark) 70%, transparent);
+    color: var(--light);
+    cursor: pointer;
+}
+
+.post-composer-media-remove svg {
+    width: 14px;
+    height: 14px;
+}

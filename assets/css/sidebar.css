@@ -1,0 +1,182 @@
+﻿
+.profile-card {
+    width: 100%;
+    border-radius: var(--container-radius);
+    padding: var(--element-padding);
+    display: grid;
+    gap: 12px;
+    text-align: center;
+    background: var(--elements-bg);
+    color: var(--light);
+}
+
+.profile-card-avatar {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    border-radius: 50%;
+    display: block;
+    object-fit: cover;
+}
+
+.profile-card-name {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.profile-card-handle {
+    margin: 0;
+    color: color-mix(in srgb, var(--light) 80%, transparent);
+    font-size: 15px;
+}
+
+.profile-card-location {
+    margin: 0;
+    color: color-mix(in srgb, var(--light) 80%, transparent);
+    font-size: 15px;
+}
+
+.profile-card-bio {
+    margin: 16px auto 24px;
+    max-width: 24ch;
+    font-size: 14px;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--light) 90%, transparent);
+}
+
+.profile-card-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.profile-card-stat {
+    display: grid;
+    gap: 2px;
+    justify-items: center;
+}
+
+.profile-card-stat-label {
+    color: color-mix(in srgb, var(--light) 72%, transparent);
+    font-size: 13px;
+}
+
+.profile-card-stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--light);
+}
+
+.post-participants-card {
+    text-align: left;
+}
+
+.post-participants-card-title {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: left;
+}
+
+.post-participants-empty {
+    margin: 8px 0 0;
+    font-size: 14px;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--light) 72%, transparent);
+    text-align: left;
+}
+
+.post-participants-list {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+}
+
+.post-participants-item {
+    margin: 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid color-mix(in srgb, var(--light) 10%, transparent);
+}
+
+.post-participants-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.post-participants-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: start;
+}
+
+.post-participants-identity {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 20px;
+    align-items: center;
+    align-content: start;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+    border-radius: 14px;
+    padding: 8px;
+    margin: -8px;
+    transition: background 140ms ease, color 140ms ease;
+}
+
+.post-participants-identity:has(.post-participants-bio) {
+    align-items: start;
+}
+
+a.post-participants-identity:hover,
+.post-participants-identity:hover {
+    background: color-mix(in srgb, var(--light) 6%, transparent);
+}
+
+.post-participants-follow-btn {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    min-width: 88px;
+    padding: 7px 14px;
+    font-size: 13px;
+    align-self: center;
+}
+
+.post-participants-bio {
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--light) 82%, transparent);
+}
+
+.post-participants-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.post-participants-meta {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.post-participants-name {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.post-participants-handle {
+    font-size: 13px;
+    color: color-mix(in srgb, var(--light) 75%, transparent);
+}

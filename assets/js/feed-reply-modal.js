@@ -298,7 +298,7 @@
         }
     });
 
-    document.getElementById("post-feed")?.addEventListener("click", (event) => {
+    const handleReplyClick = (event) => {
         const replyBtn = event.target.closest(".post-action-reply");
         if (!replyBtn) {
             return;
@@ -309,10 +309,17 @@
             return;
         }
 
+        if (!card.closest("#post-feed, #profile-post-feed")) {
+            return;
+        }
+
         event.preventDefault();
         event.stopPropagation();
         openModal(card);
-    });
+    };
+
+    document.getElementById("post-feed")?.addEventListener("click", handleReplyClick);
+    document.getElementById("profile-post-feed")?.addEventListener("click", handleReplyClick);
 
     updateCounter();
 })();

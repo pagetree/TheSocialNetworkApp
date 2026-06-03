@@ -1,0 +1,92 @@
+﻿
+.register-page {
+    min-height: 100vh;
+    background: var(--dark);
+}
+
+.register-layout {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.register-form-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--element-padding);
+    background: var(--dark);
+}
+
+.register-form-panel {
+    width: min(100%, 440px);
+}
+
+.register-brand-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--element-padding);
+    background: var(--light);
+}
+
+.register-logo {
+    width: min(88%, 480px);
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.register-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--light);
+}
+
+.register-subtitle {
+    margin: 8px 0 var(--post-gap);
+    color: color-mix(in srgb, var(--light) 75%, transparent);
+    font-size: 14px;
+}
+
+.register-name-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--post-gap);
+}
+
+.register-form {
+    gap: var(--post-gap);
+}
+
+.register-footer {
+    margin: var(--post-gap) 0 0;
+    font-size: 14px;
+    color: color-mix(in srgb, var(--light) 75%, transparent);
+}
+
+.register-footer a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+    .register-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .register-brand-column {
+        order: -1;
+        min-height: 220px;
+    }
+
+    .register-logo {
+        width: min(75%, 280px);
+    }
+}
