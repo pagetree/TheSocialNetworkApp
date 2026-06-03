@@ -20,6 +20,7 @@ require_once __DIR__ . '/post-media.php';
 require_once __DIR__ . '/post-stats.php';
 require_once __DIR__ . '/post-replies.php';
 require_once __DIR__ . '/post-likes.php';
+require_once __DIR__ . '/post-scores.php';
 require_once __DIR__ . '/r2-storage.php';
 
 function jsonResponse(array $payload, int $statusCode = 200): void
