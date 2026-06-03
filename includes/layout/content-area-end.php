@@ -53,9 +53,6 @@ if (!$onboardingLayout) : ?>
             ],
         ], JSON_THROW_ON_ERROR); ?>;
     </script>
-    <?php foreach ($pageScripts as $scriptPath) : ?>
-    <script src="<?php echo htmlspecialchars($url($scriptPath), ENT_QUOTES, 'UTF-8'); ?>"></script>
-    <?php endforeach; ?>
     <?php elseif ($isLoggedIn) : ?>
     <?php if (!empty($showProfileEditModal)) : ?>
     <script>
@@ -109,6 +106,19 @@ if (!$onboardingLayout) : ?>
         ], JSON_THROW_ON_ERROR); ?>;
     </script>
     <?php endif; ?>
+    <?php else : ?>
+    <script>
+        window.APP_LOGIN_URL = <?php echo json_encode($url('/auth/login'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_CSRF_TOKEN = <?php echo json_encode($loginCsrfToken, JSON_THROW_ON_ERROR); ?>;
+    </script>
+    <?php endif; ?>
+    <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/icons.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php if ($isLoggedIn && $onboardingLayout) : ?>
+    <?php foreach ($pageScripts as $scriptPath) : ?>
+    <script src="<?php echo htmlspecialchars($url($scriptPath), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php endforeach; ?>
+    <?php elseif ($isLoggedIn) : ?>
     <?php foreach ($pageScripts as $scriptPath) : ?>
     <script src="<?php echo htmlspecialchars($url($scriptPath), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endforeach; ?>
@@ -116,13 +126,7 @@ if (!$onboardingLayout) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-stats.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-likes.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php else : ?>
-    <script>
-        window.APP_LOGIN_URL = <?php echo json_encode($url('/auth/login'), JSON_THROW_ON_ERROR); ?>;
-        window.APP_CSRF_TOKEN = <?php echo json_encode($loginCsrfToken, JSON_THROW_ON_ERROR); ?>;
-    </script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/login.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endif; ?>
-    <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
-    <script src="<?php echo htmlspecialchars($url('/assets/js/icons.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
 </body>
 </html>

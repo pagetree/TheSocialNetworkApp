@@ -281,6 +281,10 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#', $path, $hashtagRouteMatch)) {
         ));
     }
 
+    $composerAvatarUrl = $isLoggedIn && is_array($currentUser)
+        ? userMediaUrl($currentUser, 'avatar_url', $url)
+        : 'https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/romeo-leaupepe-su-a-70gb9CHBX4g-unsplash.jpg';
+
     http_response_code(200);
     header('Content-Type: text/html; charset=utf-8');
     $pageTitle = '#' . $hashtagTag . ' — TheSocialNetworkApp';

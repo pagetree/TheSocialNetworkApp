@@ -9,9 +9,14 @@
 
     window.refreshLucideIcons = run;
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", run);
-    } else {
+    const schedule = () => {
         run();
+        window.addEventListener("load", run, { once: true });
+    };
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", schedule);
+    } else {
+        schedule();
     }
 })();

@@ -43,8 +43,8 @@
     });
 
     const refreshIcons = () => {
-        if (window.lucide && typeof window.lucide.createIcons === "function") {
-            window.lucide.createIcons();
+        if (typeof window.refreshLucideIcons === "function") {
+            window.refreshLucideIcons();
         }
     };
 
