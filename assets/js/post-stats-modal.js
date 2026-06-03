@@ -49,19 +49,23 @@
         const item = document.createElement("div");
         item.className = "post-stats-engage-item";
 
+        const head = document.createElement("div");
+        head.className = "post-stats-engage-head";
+
         const icon = document.createElement("span");
         icon.className = "post-stats-engage-icon";
         icon.innerHTML = `<i data-lucide="${metric.icon || "bar-chart-2"}" aria-hidden="true"></i>`;
-
-        const value = document.createElement("span");
-        value.className = "post-stats-engage-value";
-        value.textContent = String(metric.value || "0");
 
         const label = document.createElement("span");
         label.className = "post-stats-engage-label";
         label.textContent = String(metric.label || "");
 
-        item.append(icon, value, label);
+        const value = document.createElement("span");
+        value.className = "post-stats-engage-value";
+        value.textContent = String(metric.value || "0");
+
+        head.append(icon, label);
+        item.append(head, value);
         return item;
     };
 
@@ -103,9 +107,12 @@
             });
         }
 
-        listMetrics.forEach((metric) => {
-            listEl.append(createListRow(metric));
-        });
+        if (listMetrics.length > 0) {
+            listEl.dataset.count = String(listMetrics.length);
+            listMetrics.forEach((metric) => {
+                listEl.append(createListRow(metric));
+            });
+        }
 
         window.lucide?.createIcons?.();
     };
