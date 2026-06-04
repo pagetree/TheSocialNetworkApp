@@ -66,7 +66,11 @@ if (!$onboardingLayout) : ?>
         window.APP_PROFILE_CSRF_TOKEN = <?php echo json_encode($profileCsrfToken ?? '', JSON_THROW_ON_ERROR); ?>;
     </script>
     <?php endif; ?>
-    <?php if (!empty($profileFollowCsrfToken)) : ?>
+    <?php if ($isLoggedIn) :
+        if (empty($profileFollowCsrfToken)) {
+            $profileFollowCsrfToken = createCsrfToken('profile_follow');
+        }
+    ?>
     <script>
         window.APP_PROFILE_FOLLOW_URL = <?php echo json_encode($url('/users/follow'), JSON_THROW_ON_ERROR); ?>;
         window.APP_PROFILE_FOLLOW_CSRF_TOKEN = <?php echo json_encode($profileFollowCsrfToken, JSON_THROW_ON_ERROR); ?>;
@@ -150,6 +154,7 @@ if (!$onboardingLayout) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-likes.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/content-report.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-remove.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/profile-follow.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php else : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/login.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endif; ?>

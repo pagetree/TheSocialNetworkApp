@@ -72,7 +72,6 @@ if ($isOwnProfile) {
     $pageScripts[] = '/assets/js/edit-profile.js';
 } elseif ($showProfileActions && $profileFollowUserId > 0) {
     $pageScripts[] = '/assets/js/profile-menu.js';
-    $pageScripts[] = '/assets/js/profile-follow.js';
 }
 if ($showFeedReplyModal) {
     $pageScripts[] = '/assets/js/reply-media-picker.js';

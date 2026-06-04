@@ -13,7 +13,7 @@ declare(strict_types=1);
 $pageTitle = 'Post — TheSocialNetworkApp';
 $activeNav = 'explore';
 $mainClass = 'app-content post-detail-page';
-$pageScripts = ['/assets/js/reply-media-picker.js', '/assets/js/post-reply-composer.js', '/assets/js/who-to-follow.js'];
+$pageScripts = ['/assets/js/reply-media-picker.js', '/assets/js/post-reply-composer.js'];
 $postParticipants = fetchVisiblePostParticipants((int) ($post['id'] ?? 0), POST_PARTICIPANTS_LIMIT);
 $postParticipantFollowedIds = [];
 $profileFollowCsrfToken = '';
@@ -25,7 +25,6 @@ if ($isLoggedIn) {
             array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $postParticipants)
         );
     }
-    $pageScripts[] = '/assets/js/profile-follow.js';
 }
 $layoutHasRightSidebar = true;
 

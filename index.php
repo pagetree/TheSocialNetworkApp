@@ -330,7 +330,7 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) 
     $pageTitle = '#' . $hashtagTag . ' — TheSocialNetworkApp';
     $activeNav = 'explore';
     $mainClass = 'app-content hashtag-page';
-    $pageScripts = ['/assets/js/who-to-follow.js'];
+    $pageScripts = [];
     if ($showFeedReplyModal) {
         $pageScripts[] = '/assets/js/reply-media-picker.js';
         $pageScripts[] = '/assets/js/feed-reply-modal.js';
@@ -409,7 +409,7 @@ header('Content-Type: text/html; charset=utf-8');
 $pageTitle = 'TheSocialNetworkApp';
 $activeNav = 'explore';
 $mainClass = 'app-content';
-$pageScripts = ['/assets/js/post-composer.js', '/assets/js/who-to-follow.js'];
+$pageScripts = ['/assets/js/post-composer.js'];
 if ($showFeedReplyModal) {
     $pageScripts[] = '/assets/js/reply-media-picker.js';
     $pageScripts[] = '/assets/js/feed-reply-modal.js';

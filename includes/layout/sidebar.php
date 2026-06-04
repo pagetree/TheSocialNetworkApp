@@ -18,17 +18,17 @@ if (is_array($sidebarUser)) {
 $sidebarFollowersLabel = formatEngagementCount($sidebarFollowersCount);
 $sidebarFollowingLabel = formatEngagementCount($sidebarFollowingCount);
 
-const SIDEBAR_WHO_TO_FOLLOW_LIMIT = 4;
-
-/** @var list<array{display_name: string, handle: string}> $whoToFollowPlaceholders */
-$whoToFollowPlaceholders = [
-    ['display_name' => 'Maya Chen', 'handle' => '@mayachen'],
-    ['display_name' => 'Jordan Blake', 'handle' => '@jblake'],
-    ['display_name' => 'Sofia Ruiz', 'handle' => '@sofiaruiz'],
-    ['display_name' => 'Alex Kim', 'handle' => '@alexkim'],
-];
-$whoToFollowPlaceholders = array_slice($whoToFollowPlaceholders, 0, SIDEBAR_WHO_TO_FOLLOW_LIMIT);
-$whoToFollowAvatarUrl = userMediaUrl(null, 'avatar_url', $url);
+$sidebarViewerId = is_array($sidebarUser) ? (int) ($sidebarUser['id'] ?? 0) : 0;
+$whoToFollowSuggestions = $sidebarViewerId > 0
+    ? fetchWhoToFollowSuggestions($sidebarViewerId, SIDEBAR_WHO_TO_FOLLOW_LIMIT)
+    : [];
+$whoToFollowFollowedIds = [];
+if ($sidebarViewerId > 0 && $whoToFollowSuggestions !== []) {
+    $whoToFollowFollowedIds = fetchFollowedUserIdsAmong(
+        $sidebarViewerId,
+        array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $whoToFollowSuggestions)
+    );
+}
 ?>
                 <aside class="app-sidebar">
                     <article class="profile-card">
@@ -56,32 +56,45 @@ $whoToFollowAvatarUrl = userMediaUrl(null, 'avatar_url', $url);
                         </div>
                     </article>
 
+                    <?php if ($sidebarViewerId > 0) : ?>
                     <article class="who-to-follow-card">
                         <h2 class="who-to-follow-card-title">Who to follow</h2>
+                        <?php if ($whoToFollowSuggestions === []) : ?>
+                        <p class="who-to-follow-empty">No suggestions right now.</p>
+                        <?php else : ?>
                         <ul class="who-to-follow-list">
-                            <?php foreach ($whoToFollowPlaceholders as $suggestion) : ?>
+                            <?php foreach ($whoToFollowSuggestions as $suggestion) :
+                                $suggestionId = (int) ($suggestion['id'] ?? 0);
+                                $viewerFollows = isset($whoToFollowFollowedIds[$suggestionId]);
+                                $suggestionName = (string) ($suggestion['display_name'] ?? 'User');
+                                $suggestionHandle = (string) ($suggestion['handle'] ?? '@user');
+                                $suggestionAvatar = userMediaUrl($suggestion, 'avatar_url', $url);
+                                $suggestionProfileUrl = profileUrlForUser($suggestion, $url);
+                                ?>
                             <li class="who-to-follow-item">
                                 <div class="who-to-follow-row">
-                                    <div class="who-to-follow-identity">
+                                    <a class="who-to-follow-identity" href="<?php echo htmlspecialchars($suggestionProfileUrl, ENT_QUOTES, 'UTF-8'); ?>">
                                         <img
                                             class="who-to-follow-avatar"
-                                            src="<?php echo htmlspecialchars($whoToFollowAvatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                                            alt="<?php echo htmlspecialchars((string) $suggestion['display_name'] . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
+                                            src="<?php echo htmlspecialchars($suggestionAvatar, ENT_QUOTES, 'UTF-8'); ?>"
+                                            alt="<?php echo htmlspecialchars($suggestionName . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
                                             width="60"
                                             height="60"
                                             loading="lazy"
                                             decoding="async"
                                         >
                                         <div class="who-to-follow-meta">
-                                            <span class="who-to-follow-name"><?php echo htmlspecialchars((string) $suggestion['display_name'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                            <span class="who-to-follow-handle"><?php echo htmlspecialchars((string) $suggestion['handle'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <span class="who-to-follow-name"><?php echo htmlspecialchars($suggestionName, ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <span class="who-to-follow-handle"><?php echo htmlspecialchars($suggestionHandle, ENT_QUOTES, 'UTF-8'); ?></span>
                                         </div>
-                                    </div>
+                                    </a>
                                     <button
                                         type="button"
-                                        class="profile-follow-btn post-participants-follow-btn"
-                                        data-placeholder-follow
-                                        aria-pressed="false"
+                                        class="profile-follow-btn post-participants-follow-btn<?php echo $viewerFollows ? ' is-following' : ''; ?>"
+                                        data-user-id="<?php echo $suggestionId; ?>"
+                                        data-following="<?php echo $viewerFollows ? '1' : '0'; ?>"
+                                        aria-pressed="<?php echo $viewerFollows ? 'true' : 'false'; ?>"
+                                        aria-label="<?php echo $viewerFollows ? 'Unfollow ' : 'Follow '; ?><?php echo htmlspecialchars($suggestionName, ENT_QUOTES, 'UTF-8'); ?>"
                                     >
                                         <span class="profile-follow-btn-label profile-follow-btn-label--follow">Follow</span>
                                         <span class="profile-follow-btn-label profile-follow-btn-label--following">Following</span>
@@ -91,5 +104,7 @@ $whoToFollowAvatarUrl = userMediaUrl(null, 'avatar_url', $url);
                             </li>
                             <?php endforeach; ?>
                         </ul>
+                        <?php endif; ?>
                     </article>
+                    <?php endif; ?>
                 </aside>

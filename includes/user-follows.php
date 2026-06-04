@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+const SIDEBAR_WHO_TO_FOLLOW_LIMIT = 4;
+
 /**
  * @return array{following: int, followers: int}
  */
@@ -142,4 +144,62 @@ function fetchFollowedUserIdsAmong(int $followerId, array $targetUserIds): array
     }
 
     return $followed;
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function fetchWhoToFollowSuggestions(int $userId, int $limit = SIDEBAR_WHO_TO_FOLLOW_LIMIT): array
+{
+    if ($userId < 1) {
+        return [];
+    }
+
+    $limit = max(1, min($limit, SIDEBAR_WHO_TO_FOLLOW_LIMIT));
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT
+            u.id,
+            u.username,
+            u.display_name,
+            u.handle,
+            u.avatar_url,
+            COALESCE(shared.shared_count, 0) AS shared_interests,
+            COALESCE(followers.follower_count, 0) AS follower_count
+         FROM users u
+         LEFT JOIN LATERAL (
+             SELECT COUNT(*)::int AS shared_count
+             FROM user_interests ui_viewer
+             INNER JOIN user_interests ui_target
+                 ON ui_target.interest_id = ui_viewer.interest_id
+                AND ui_target.user_id = u.id
+             WHERE ui_viewer.user_id = :viewer_id
+         ) shared ON TRUE
+         LEFT JOIN LATERAL (
+             SELECT COUNT(*)::int AS follower_count
+             FROM user_follows uf
+             WHERE uf.following_id = u.id
+         ) followers ON TRUE
+         WHERE u.id <> :viewer_id
+           AND u.is_visible = TRUE
+           AND u.onboarding_completed_at IS NOT NULL
+           AND NOT EXISTS (
+               SELECT 1
+               FROM user_follows uf_self
+               WHERE uf_self.follower_id = :viewer_id
+                 AND uf_self.following_id = u.id
+           )
+         ORDER BY shared.shared_count DESC, followers.follower_count DESC, u.created_at DESC
+         LIMIT :limit'
+    );
+    $stmt->bindValue('viewer_id', $userId, PDO::PARAM_INT);
+    $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $suggestions = [];
+    while ($row = $stmt->fetch()) {
+        $suggestions[] = $row;
+    }
+
+    return $suggestions;
 }

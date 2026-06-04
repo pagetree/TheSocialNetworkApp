@@ -98,6 +98,13 @@
     line-height: 1.2;
 }
 
+.who-to-follow-empty {
+    margin: 0;
+    color: color-mix(in srgb, var(--light) 65%, transparent);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
 .who-to-follow-list {
     list-style: none;
     margin: 0;
@@ -123,6 +130,9 @@
     gap: 10px;
     align-items: center;
     flex: 1;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
     min-width: 0;
 }
 
