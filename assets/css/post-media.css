@@ -258,7 +258,7 @@ body.media-lightbox-open {
     align-items: center;
     justify-content: flex-start;
     gap: 6px;
-    font-size: 13px;
+    font-size: 12px;
     transition: color 140ms ease;
 }
 

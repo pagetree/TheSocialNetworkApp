@@ -14,8 +14,8 @@ html[data-theme="dark"] {
     --sidebar-width: 350px;
     --app-container-padding: 3rem;
     --layout-gap: 35px;
-    --element-padding: 2rem;
-    --post-gap: 20px;
+    --element-padding: 1rem;
+    --post-gap: 15px;
 }
 
 html[data-theme="light"] {
