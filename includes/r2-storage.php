@@ -133,6 +133,37 @@ function r2BuildPostMediaObjectKey(int $userId, int $postId, string $originalFil
     return r2PostMediaPrefix() . '/' . r2BuildPostMediaFilename($userId, $postId, $originalFilename);
 }
 
+/**
+ * @param array{
+ *     tmp_path: string,
+ *     extension?: string,
+ *     content_type: string,
+ *     original_filename: string,
+ *     media_type?: string
+ * } $validated
+ * @return array{ok: true, body: string, validated: array<string, mixed>}|array{ok: false, error: string}
+ */
+function r2CompressAndReadBody(array $validated, int $maxDimension): array
+{
+    $originalTmp = $validated['tmp_path'];
+    $validated = compressValidatedImageForUpload($validated, $maxDimension);
+    $body = file_get_contents($validated['tmp_path']);
+
+    if ($validated['tmp_path'] !== $originalTmp) {
+        @unlink($validated['tmp_path']);
+    }
+
+    if ($body === false) {
+        return ['ok' => false, 'error' => 'Unable to read uploaded file.'];
+    }
+
+    return [
+        'ok' => true,
+        'body' => $body,
+        'validated' => $validated,
+    ];
+}
+
 function r2MimeTypeForExtension(string $extension): string
 {
     return match (strtolower($extension)) {
@@ -213,15 +244,14 @@ function r2UploadUserFile(int $userId, string $fieldName): array
         return $validated;
     }
 
-    $tmpPath = $validated['tmp_path'];
-    $originalFilename = $validated['original_filename'];
-    $objectKey = r2BuildObjectKey($userId, $originalFilename);
-    $body = file_get_contents($tmpPath);
-
-    if ($body === false) {
-        return ['ok' => false, 'error' => 'Unable to read uploaded file.'];
+    $prepared = r2CompressAndReadBody($validated, IMAGE_COMPRESS_PROFILE_MAX_DIMENSION);
+    if (!$prepared['ok']) {
+        return $prepared;
     }
 
+    $validated = $prepared['validated'];
+    $body = $prepared['body'];
+    $objectKey = r2BuildObjectKey($userId, $validated['original_filename']);
     $contentType = $validated['content_type'];
     $config = r2Config();
     $canonicalUri = r2EncodeUriPath($config['bucket'] . '/' . $objectKey);
@@ -254,12 +284,14 @@ function r2UploadPostMediaFile(int $userId, int $postId, array $validatedMedia):
         return ['ok' => false, 'error' => 'File storage is not configured.'];
     }
 
-    $objectKey = r2BuildPostMediaObjectKey($userId, $postId, $validatedMedia['original_filename']);
-    $body = file_get_contents($validatedMedia['tmp_path']);
-
-    if ($body === false) {
-        return ['ok' => false, 'error' => 'Unable to read uploaded file.'];
+    $prepared = r2CompressAndReadBody($validatedMedia, IMAGE_COMPRESS_POST_MAX_DIMENSION);
+    if (!$prepared['ok']) {
+        return $prepared;
     }
+
+    $validatedMedia = $prepared['validated'];
+    $body = $prepared['body'];
+    $objectKey = r2BuildPostMediaObjectKey($userId, $postId, $validatedMedia['original_filename']);
 
     $config = r2Config();
     $canonicalUri = r2EncodeUriPath($config['bucket'] . '/' . $objectKey);
@@ -323,12 +355,14 @@ function r2UploadPostReplyMediaFile(int $userId, int $conversationId, int $reply
         return ['ok' => false, 'error' => 'File storage is not configured.'];
     }
 
-    $objectKey = r2BuildReplyMediaObjectKey($userId, $conversationId, $replyId, $validatedMedia['original_filename']);
-    $body = file_get_contents($validatedMedia['tmp_path']);
-
-    if ($body === false) {
-        return ['ok' => false, 'error' => 'Unable to read uploaded file.'];
+    $prepared = r2CompressAndReadBody($validatedMedia, IMAGE_COMPRESS_POST_MAX_DIMENSION);
+    if (!$prepared['ok']) {
+        return $prepared;
     }
+
+    $validatedMedia = $prepared['validated'];
+    $body = $prepared['body'];
+    $objectKey = r2BuildReplyMediaObjectKey($userId, $conversationId, $replyId, $validatedMedia['original_filename']);
 
     $config = r2Config();
     $canonicalUri = r2EncodeUriPath($config['bucket'] . '/' . $objectKey);

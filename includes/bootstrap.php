@@ -19,6 +19,7 @@ require_once __DIR__ . '/theme.php';
 require_once __DIR__ . '/profile.php';
 require_once __DIR__ . '/posts.php';
 require_once __DIR__ . '/post-media.php';
+require_once __DIR__ . '/image-compress.php';
 require_once __DIR__ . '/post-stats.php';
 require_once __DIR__ . '/post-replies.php';
 require_once __DIR__ . '/post-likes.php';
