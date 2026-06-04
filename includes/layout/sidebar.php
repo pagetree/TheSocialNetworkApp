@@ -19,9 +19,7 @@ $sidebarFollowersLabel = formatEngagementCount($sidebarFollowersCount);
 $sidebarFollowingLabel = formatEngagementCount($sidebarFollowingCount);
 
 $sidebarViewerId = is_array($sidebarUser) ? (int) ($sidebarUser['id'] ?? 0) : 0;
-$whoToFollowSuggestions = $sidebarViewerId > 0
-    ? fetchWhoToFollowSuggestions($sidebarViewerId, SIDEBAR_WHO_TO_FOLLOW_LIMIT)
-    : [];
+$whoToFollowSuggestions = fetchWhoToFollowSuggestions($sidebarViewerId, SIDEBAR_WHO_TO_FOLLOW_LIMIT);
 $whoToFollowFollowedIds = [];
 if ($sidebarViewerId > 0 && $whoToFollowSuggestions !== []) {
     $whoToFollowFollowedIds = fetchFollowedUserIdsAmong(
@@ -56,7 +54,6 @@ if ($sidebarViewerId > 0 && $whoToFollowSuggestions !== []) {
                         </div>
                     </article>
 
-                    <?php if ($sidebarViewerId > 0) : ?>
                     <article class="who-to-follow-card">
                         <h2 class="who-to-follow-card-title">Who to follow</h2>
                         <?php if ($whoToFollowSuggestions === []) : ?>
@@ -106,5 +103,4 @@ if ($sidebarViewerId > 0 && $whoToFollowSuggestions !== []) {
                         </ul>
                         <?php endif; ?>
                     </article>
-                    <?php endif; ?>
                 </aside>

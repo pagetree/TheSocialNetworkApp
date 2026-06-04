@@ -149,10 +149,47 @@ function fetchFollowedUserIdsAmong(int $followerId, array $targetUserIds): array
 /**
  * @return list<array<string, mixed>>
  */
+function fetchPublicWhoToFollowSuggestions(int $limit = SIDEBAR_WHO_TO_FOLLOW_LIMIT): array
+{
+    $limit = max(1, min($limit, SIDEBAR_WHO_TO_FOLLOW_LIMIT));
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT
+            u.id,
+            u.username,
+            u.display_name,
+            u.handle,
+            u.avatar_url,
+            COALESCE(followers.follower_count, 0) AS follower_count
+         FROM users u
+         LEFT JOIN LATERAL (
+             SELECT COUNT(*)::int AS follower_count
+             FROM user_follows uf
+             WHERE uf.following_id = u.id
+         ) followers ON TRUE
+         WHERE u.is_visible = TRUE
+           AND u.onboarding_completed_at IS NOT NULL
+         ORDER BY followers.follower_count DESC, u.created_at DESC
+         LIMIT :limit'
+    );
+    $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $suggestions = [];
+    while ($row = $stmt->fetch()) {
+        $suggestions[] = $row;
+    }
+
+    return $suggestions;
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
 function fetchWhoToFollowSuggestions(int $userId, int $limit = SIDEBAR_WHO_TO_FOLLOW_LIMIT): array
 {
     if ($userId < 1) {
-        return [];
+        return fetchPublicWhoToFollowSuggestions($limit);
     }
 
     $limit = max(1, min($limit, SIDEBAR_WHO_TO_FOLLOW_LIMIT));
