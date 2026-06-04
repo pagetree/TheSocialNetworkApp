@@ -207,3 +207,18 @@
     width: 14px;
     height: 14px;
 }
+
+.post-card.post-composer .post-composer-input {
+    min-height: 64px;
+    height: 64px;
+}
+
+.post-card.post-composer .post-tool-btn {
+    width: 40px;
+    height: 40px;
+}
+
+.post-card.post-composer .post-tool-btn svg {
+    width: 18px;
+    height: 18px;
+}
