@@ -5,12 +5,12 @@ declare(strict_types=1);
 /** @var list<array<string, mixed>> $onboardingSuggestions */
 /** @var array<int, true> $followedSuggestionIds */
 
-$stepTitle = 'Accounts you may like';
-$stepSubtitle = 'Follow a few people to fill your feed. You can change this anytime.';
+$stepTitle = __('onboarding.suggestions.title');
+$stepSubtitle = __('onboarding.suggestions.subtitle');
 require dirname(__DIR__) . '/step-shell-start.php';
 ?>
             <?php if ($onboardingSuggestions === []) : ?>
-            <p class="onboarding-empty-hint">No suggestions yet. Check back soon or skip to explore the app.</p>
+            <p class="onboarding-empty-hint"><?php echo __e('onboarding.suggestions.empty'); ?></p>
             <?php else : ?>
             <ul class="onboarding-suggestion-list">
                 <?php foreach ($onboardingSuggestions as $suggestion) :
@@ -28,7 +28,7 @@ require dirname(__DIR__) . '/step-shell-start.php';
                         <p class="onboarding-suggestion-name"><?php echo htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8'); ?></p>
                         <p class="onboarding-suggestion-handle"><?php echo htmlspecialchars($handle, ENT_QUOTES, 'UTF-8'); ?></p>
                         <?php if ($bio !== '') : ?><p class="onboarding-suggestion-bio"><?php echo htmlspecialchars($bio, ENT_QUOTES, 'UTF-8'); ?></p><?php endif; ?>
-                        <?php if ($sharedCount > 0) : ?><p class="onboarding-suggestion-meta"><?php echo $sharedCount; ?> shared interest<?php echo $sharedCount === 1 ? '' : 's'; ?></p><?php endif; ?>
+                        <?php if ($sharedCount > 0) : ?><p class="onboarding-suggestion-meta"><?php echo htmlspecialchars(__n('onboarding.suggestions.shared_interest', $sharedCount, ['count' => $sharedCount]), ENT_QUOTES, 'UTF-8'); ?></p><?php endif; ?>
                     </div>
                     <button
                         type="button"
@@ -37,9 +37,9 @@ require dirname(__DIR__) . '/step-shell-start.php';
                         data-followed-on-load="<?php echo $isFollowed ? '1' : '0'; ?>"
                         aria-pressed="<?php echo $isFollowed ? 'true' : 'false'; ?>"
                     >
-                        <span class="onboarding-suggestion-follow-label onboarding-suggestion-follow-label--follow">Follow</span>
-                        <span class="onboarding-suggestion-follow-label onboarding-suggestion-follow-label--following">Following</span>
-                        <span class="onboarding-suggestion-follow-label onboarding-suggestion-follow-label--unfollow">Unfollow</span>
+                        <span class="onboarding-suggestion-follow-label onboarding-suggestion-follow-label--follow"><?php echo __e('follow.follow'); ?></span>
+                        <span class="onboarding-suggestion-follow-label onboarding-suggestion-follow-label--following"><?php echo __e('follow.following'); ?></span>
+                        <span class="onboarding-suggestion-follow-label onboarding-suggestion-follow-label--unfollow"><?php echo __e('follow.unfollow'); ?></span>
                     </button>
                 </li>
                 <?php endforeach; ?>
@@ -49,5 +49,5 @@ require dirname(__DIR__) . '/step-shell-start.php';
 <?php
 require dirname(__DIR__) . '/step-shell-end.php';
 $onboardingPrimaryId = 'onboarding-suggestions-finish';
-$onboardingPrimaryLabel = 'Finish';
+$onboardingPrimaryLabel = __('onboarding.finish');
 require dirname(__DIR__) . '/step-footer.php';

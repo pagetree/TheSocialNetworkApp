@@ -13,7 +13,7 @@ $stepSectionClass = trim((string) ($stepSectionClass ?? 'onboarding-panel'));
 <section class="<?php echo htmlspecialchars($stepSectionClass, ENT_QUOTES, 'UTF-8'); ?>" data-onboarding-step="<?php echo htmlspecialchars($onboardingStep, ENT_QUOTES, 'UTF-8'); ?>">
     <?php if ($stepShowSkip) : ?>
     <div class="onboarding-step-skip-row">
-        <button type="button" class="onboarding-step-skip" data-onboarding-skip>Skip</button>
+        <button type="button" class="onboarding-step-skip" data-onboarding-skip><?php echo __e('onboarding.skip'); ?></button>
     </div>
     <?php endif; ?>
     <div class="onboarding-step-layout">

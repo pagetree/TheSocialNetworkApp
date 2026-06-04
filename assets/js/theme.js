@@ -20,12 +20,15 @@
         document.cookie = cookie;
     };
 
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
+
     const updateToggle = (button, theme) => {
         const isLight = theme === "light";
         button.setAttribute("aria-pressed", isLight ? "true" : "false");
         button.setAttribute(
             "aria-label",
-            isLight ? "Switch to dark theme" : "Switch to light theme"
+            isLight ? t("theme.switch_to_dark") : t("theme.switch_to_light")
         );
     };
 

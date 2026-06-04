@@ -19,7 +19,7 @@ if ($currentUserId < 1 || $menuTargetId < 1) {
 }
 
 $isOwn = $currentUserId > 0 && $menuOwnerUserId === $currentUserId;
-$menuAriaLabel = $menuKind === 'reply' ? 'Reply options' : 'Post options';
+$menuAriaLabel = $menuKind === 'reply' ? __('reply.options') : __('post.options');
 ?>
                             <div
                                 class="post-menu"
@@ -47,7 +47,7 @@ $menuAriaLabel = $menuKind === 'reply' ? 'Reply options' : 'Post options';
                                         role="menuitem"
                                     >
                                         <i data-lucide="trash-2" aria-hidden="true"></i>
-                                        <span>Remove</span>
+                                        <span><?php echo __e('post.remove'); ?></span>
                                     </button>
                                     <?php else : ?>
                                     <button
@@ -56,7 +56,7 @@ $menuAriaLabel = $menuKind === 'reply' ? 'Reply options' : 'Post options';
                                         role="menuitem"
                                     >
                                         <i data-lucide="flag" aria-hidden="true"></i>
-                                        <span>Report</span>
+                                        <span><?php echo __e('post.report'); ?></span>
                                     </button>
                                     <?php endif; ?>
                                 </div>

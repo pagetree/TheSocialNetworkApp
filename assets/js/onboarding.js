@@ -1,4 +1,7 @@
 (() => {
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
+
     const config = window.APP_ONBOARDING;
     if (!config?.urls?.steps) {
         return;
@@ -27,7 +30,7 @@
         errorEl.hidden = true;
     };
 
-    const setBusy = (button, busy, loadingLabel = "Saving...") => {
+    const setBusy = (button, busy, loadingLabel = t("onboarding.saving")) => {
         if (!button) {
             return;
         }
@@ -78,7 +81,7 @@
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok || !data.ok) {
-            throw new Error(data.error || "Unable to finish onboarding.");
+            throw new Error(data.error || t("api.finish_onboarding_failed"));
         }
         window.location.href = data.redirect_url || "/";
     };
@@ -190,7 +193,7 @@
                     return;
                 }
 
-                setBusy(continueBtn, true, "Uploading...");
+                setBusy(continueBtn, true, t("onboarding.uploading"));
                 const formData = new FormData();
                 formData.append("csrf_token", config.csrfToken);
                 formData.append("_hp_url", "");
@@ -202,12 +205,12 @@
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok || !data.ok) {
-                    throw new Error(data.error || "Unable to save profile photo.");
+                    throw new Error(data.error || t("api.save_avatar_failed"));
                 }
 
                 goToNextStep();
             } catch (error) {
-                showError(error.message || "Unable to save profile photo.");
+                showError(error.message || t("api.save_avatar_failed"));
                 setBusy(continueBtn, false);
             }
         });
@@ -248,12 +251,12 @@
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok || !data.ok) {
-                    throw new Error(data.error || "Unable to save bio.");
+                    throw new Error(data.error || t("api.save_bio_failed"));
                 }
 
                 goToNextStep();
             } catch (error) {
-                showError(error.message || "Unable to save bio.");
+                showError(error.message || t("api.save_bio_failed"));
                 setBusy(continueBtn, false);
             }
         });
@@ -272,7 +275,7 @@
                 ).length;
                 if (selectedCount > maxInterests) {
                     input.checked = false;
-                    showError(`Choose up to ${maxInterests} interests.`);
+                    showError(t("api.interests_max", { max: maxInterests }));
                     return;
                 }
                 clearError();
@@ -309,12 +312,12 @@
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok || !data.ok) {
-                    throw new Error(data.error || "Unable to save interests.");
+                    throw new Error(data.error || t("api.save_interests_failed"));
                 }
 
                 goToNextStep();
             } catch (error) {
-                showError(error.message || "Unable to save interests.");
+                showError(error.message || t("api.save_interests_failed"));
                 setBusy(continueBtn, false);
             }
         });
@@ -338,7 +341,7 @@
 
         finishBtn?.addEventListener("click", async () => {
             clearError();
-            setBusy(finishBtn, true, "Finishing...");
+            setBusy(finishBtn, true, t("onboarding.finishing"));
 
             try {
                 const followUserIds = [];
@@ -375,13 +378,13 @@
                     });
                     const followData = await followResponse.json().catch(() => ({}));
                     if (!followResponse.ok || !followData.ok) {
-                        throw new Error(followData.error || "Unable to update follows.");
+                        throw new Error(followData.error || t("api.update_follows_failed"));
                     }
                 }
 
                 await finishOnboarding();
             } catch (error) {
-                showError(error.message || "Unable to finish onboarding.");
+                showError(error.message || t("api.finish_onboarding_failed"));
                 setBusy(finishBtn, false);
             }
         });

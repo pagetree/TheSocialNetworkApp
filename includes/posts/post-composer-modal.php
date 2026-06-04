@@ -11,7 +11,7 @@ declare(strict_types=1);
                             id="post-composer-fab"
                             aria-controls="post-composer-modal-panel"
                             aria-expanded="false"
-                            aria-label="Create post"
+                            aria-label="<?php echo __e('composer.create_post'); ?>"
                         >
                             <i data-lucide="plus" aria-hidden="true"></i>
                         </button>
@@ -24,7 +24,7 @@ declare(strict_types=1);
                                 type="button"
                                 class="post-composer-modal-backdrop"
                                 id="post-composer-modal-backdrop"
-                                aria-label="Close"
+                                aria-label="<?php echo __e('composer.close'); ?>"
                                 tabindex="-1"
                             ></button>
                             <div
@@ -35,12 +35,12 @@ declare(strict_types=1);
                                 aria-labelledby="post-composer-modal-title"
                             >
                                 <header class="post-composer-modal-header">
-                                    <h2 id="post-composer-modal-title" class="post-composer-modal-title">Create post</h2>
+                                    <h2 id="post-composer-modal-title" class="post-composer-modal-title"><?php echo __e('composer.create_post'); ?></h2>
                                     <button
                                         type="button"
                                         class="post-composer-modal-close"
                                         id="post-composer-modal-close"
-                                        aria-label="Close"
+                                        aria-label="<?php echo __e('composer.close'); ?>"
                                     >
                                         <i data-lucide="x" aria-hidden="true"></i>
                                     </button>

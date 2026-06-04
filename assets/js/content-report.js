@@ -32,14 +32,11 @@
         return;
     }
 
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
+
     let activeTarget = null;
     let isSubmitting = false;
-
-    const subtitles = {
-        post: "Help us understand what's wrong with this post.",
-        reply: "Help us understand what's wrong with this reply.",
-        user: "Help us understand what's wrong with this profile.",
-    };
 
     const setError = (message) => {
         if (!message) {
@@ -78,7 +75,7 @@
         setSuccess("");
         submitBtn.disabled = true;
         submitBtn.classList.remove("is-loading");
-        submitBtn.textContent = "Submit report";
+        submitBtn.textContent = t("report.submit");
         isSubmitting = false;
     };
 
@@ -102,10 +99,10 @@
             targetId: normalizedId,
         };
 
-        titleEl.textContent = "Report";
-        const baseSubtitle = subtitles[normalizedType] || "Tell us what happened.";
+        titleEl.textContent = t("report.title");
+        const baseSubtitle = t(`report.subtitle.${normalizedType}`) || t("report.subtitle.default");
         subtitleEl.textContent = subjectLabel !== ""
-            ? `${baseSubtitle} Reporting ${subjectLabel}.`
+            ? `${baseSubtitle} ${t("report.reporting", { subject: subjectLabel })}`
             : baseSubtitle;
 
         resetForm();
@@ -125,24 +122,24 @@
         const details = detailsInput.value.trim();
 
         if (reasonCode === "") {
-            setError("Choose a reason for your report.");
+            setError(t("report.errors.reason_required"));
             return;
         }
 
         if (reasonCode === "other" && details === "") {
-            setError("Please describe the issue.");
+            setError(t("report.errors.details_required"));
             return;
         }
 
         if (details.length > detailsMaxLength) {
-            setError(`Additional details must be ${detailsMaxLength} characters or fewer.`);
+            setError(t("report.errors.details_too_long", { max: detailsMaxLength }));
             return;
         }
 
         isSubmitting = true;
         submitBtn.disabled = true;
         submitBtn.classList.add("is-loading");
-        submitBtn.textContent = "Submitting…";
+        submitBtn.textContent = t("report.submitting");
         setError("");
 
         try {
@@ -165,15 +162,15 @@
 
             const data = await response.json().catch(() => ({}));
             if (!response.ok || !data.ok) {
-                throw new Error(data.error || "Unable to submit report right now.");
+                throw new Error(data.error || t("api.report_failed"));
             }
 
             form.querySelectorAll("select, textarea, button").forEach((element) => {
                 element.disabled = true;
             });
             submitBtn.classList.remove("is-loading");
-            submitBtn.textContent = "Submitted";
-            setSuccess("Thanks. We received your report and will review it.");
+            submitBtn.textContent = t("report.submitted");
+            setSuccess(t("report.success"));
 
             window.setTimeout(() => {
                 closeModal();
@@ -184,9 +181,9 @@
         } catch (error) {
             isSubmitting = false;
             submitBtn.classList.remove("is-loading");
-            submitBtn.textContent = "Submit report";
+            submitBtn.textContent = t("report.submit");
             updateSubmitState();
-            setError(error instanceof Error ? error.message : "Unable to submit report right now.");
+            setError(error instanceof Error ? error.message : t("api.report_failed"));
         }
     };
 

@@ -10,6 +10,9 @@
         return;
     }
 
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
+
     const showError = (message) => {
         errorEl.textContent = message;
         errorEl.hidden = false;
@@ -29,7 +32,7 @@
         const password = String(formData.get("password") ?? "");
 
         if (!identifier || !password) {
-            showError("Email or username and password are required.");
+            showError(t("auth.errors.credentials_required"));
             return;
         }
 
@@ -53,13 +56,13 @@
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok || !data.ok) {
-                showError(data.error || "Unable to sign in.");
+                showError(data.error || t("auth.errors.sign_in_failed"));
                 return;
             }
 
             window.location.href = homeUrl || "/";
         } catch {
-            showError("Unable to sign in right now.");
+            showError(t("auth.errors.sign_in_unavailable"));
         } finally {
             submitBtn.disabled = false;
         }

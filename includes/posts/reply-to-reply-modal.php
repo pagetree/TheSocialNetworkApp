@@ -11,7 +11,7 @@ declare(strict_types=1);
         aria-modal="true"
         aria-labelledby="reply-modal-title"
     >
-        <span class="profile-edit-sr-only" id="reply-modal-title">Reply to post</span>
+        <span class="profile-edit-sr-only" id="reply-modal-title"><?php echo __e('reply.to_post'); ?></span>
 
         <header class="reply-modal-header">
             <img
@@ -32,7 +32,7 @@ declare(strict_types=1);
                 id="reply-modal-input"
                 rows="4"
                 maxlength="300"
-                placeholder="Post your reply"
+                placeholder="<?php echo __e('reply.placeholder'); ?>"
                 aria-describedby="reply-modal-char-counter reply-modal-error"
             ></textarea>
             <p class="post-composer-error reply-modal-error" id="reply-modal-error" hidden></p>
@@ -41,11 +41,11 @@ declare(strict_types=1);
     require __DIR__ . '/reply-composer-media.php';
 ?>
             <div class="reply-modal-footer-row">
-                <div class="post-composer-tools reply-modal-tools" aria-label="Reply tools">
-                    <button type="button" class="post-tool-btn" id="reply-modal-image-btn" aria-label="Add image">
+                <div class="post-composer-tools reply-modal-tools" aria-label="<?php echo __e('reply.tools'); ?>">
+                    <button type="button" class="post-tool-btn" id="reply-modal-image-btn" aria-label="<?php echo __e('composer.add_image'); ?>">
                         <i data-lucide="image" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="post-tool-btn" id="reply-modal-video-btn" aria-label="Add video">
+                    <button type="button" class="post-tool-btn" id="reply-modal-video-btn" aria-label="<?php echo __e('composer.add_video'); ?>">
                         <i data-lucide="film" aria-hidden="true"></i>
                     </button>
                 </div>
@@ -62,8 +62,8 @@ declare(strict_types=1);
                     </svg>
                 </div>
                 <div class="reply-modal-actions">
-                    <button type="button" class="profile-edit-cancel reply-modal-cancel" id="reply-modal-cancel">Cancel</button>
-                    <button type="button" class="profile-edit-save reply-modal-submit" id="reply-modal-submit" disabled>Submit</button>
+                    <button type="button" class="profile-edit-cancel reply-modal-cancel" id="reply-modal-cancel"><?php echo __e('common.cancel'); ?></button>
+                    <button type="button" class="profile-edit-save reply-modal-submit" id="reply-modal-submit" disabled><?php echo __e('reply.submit'); ?></button>
                 </div>
             </div>
         </div>

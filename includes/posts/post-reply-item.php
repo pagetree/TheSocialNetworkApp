@@ -66,23 +66,23 @@ $nestedStyle = $depth > 0 ? ' style="--reply-depth: ' . (int) $depth . ';"' : ''
                                     require __DIR__ . '/post-media-gallery.php';
                                 }
                                 ?>
-                                <footer class="post-actions post-reply-actions" aria-label="Reply engagement">
-                                    <button type="button" class="post-action post-reply-action-reply" aria-label="Reply to this reply">
+                                <footer class="post-actions post-reply-actions" aria-label="<?php echo __e('reply.engagement'); ?>">
+                                    <button type="button" class="post-action post-reply-action-reply" aria-label="<?php echo __e('reply.to_reply'); ?>">
                                         <i data-lucide="message-circle" aria-hidden="true"></i>
                                         <span><?php echo htmlspecialchars($replyCount, ENT_QUOTES, 'UTF-8'); ?></span>
                                     </button>
-                                    <button type="button" class="post-action" aria-label="Repost reply">
+                                    <button type="button" class="post-action" aria-label="<?php echo __e('reply.repost'); ?>">
                                         <i data-lucide="repeat-2" aria-hidden="true"></i>
                                         <span>0</span>
                                     </button>
-                                    <button type="button" class="post-action" aria-label="Like reply">
+                                    <button type="button" class="post-action" aria-label="<?php echo __e('reply.like'); ?>">
                                         <i data-lucide="heart" aria-hidden="true"></i>
                                         <span><?php echo htmlspecialchars($likeCount, ENT_QUOTES, 'UTF-8'); ?></span>
                                     </button>
                                     <button
                                         type="button"
                                         class="post-action post-action-stat-views"
-                                        aria-label="View reply stats"
+                                        aria-label="<?php echo __e('stats.view_reply'); ?>"
                                         data-reply-id="<?php echo $replyId; ?>"
                                     >
                                         <i data-lucide="bar-chart-2" aria-hidden="true"></i>

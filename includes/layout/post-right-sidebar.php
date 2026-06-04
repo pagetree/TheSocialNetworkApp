@@ -12,7 +12,7 @@ $postParticipants = $postParticipants ?? [];
 $postParticipantFollowedIds = $postParticipantFollowedIds ?? [];
 $currentUserId = $currentUserId ?? 0;
 ?>
-                <aside class="app-sidebar app-sidebar--right" aria-label="Post activity sidebar">
+                <aside class="app-sidebar app-sidebar--right" aria-label="<?php echo __e('profile.activity_sidebar'); ?>">
                     <article class="profile-card post-participants-card">
                         <h2 class="post-participants-card-title">Relevant people</h2>
                         <?php if ($postParticipants === []) : ?>
@@ -68,7 +68,9 @@ $currentUserId = $currentUserId ?? 0;
                                         data-user-id="<?php echo $participantId; ?>"
                                         data-following="<?php echo $viewerFollows ? '1' : '0'; ?>"
                                         aria-pressed="<?php echo $viewerFollows ? 'true' : 'false'; ?>"
-                                        aria-label="<?php echo $viewerFollows ? 'Unfollow ' : 'Follow '; ?><?php echo htmlspecialchars($participantName, ENT_QUOTES, 'UTF-8'); ?>"
+                                        aria-label="<?php echo $viewerFollows
+                                            ? __e('follow.unfollow_user', ['name' => $participantName])
+                                            : __e('follow.follow_user', ['name' => $participantName]); ?>"
                                     >
                                         <span class="profile-follow-btn-label profile-follow-btn-label--follow">Follow</span>
                                         <span class="profile-follow-btn-label profile-follow-btn-label--following">Following</span>

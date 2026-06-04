@@ -1,0 +1,48 @@
+.lang-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem;
+    border-radius: 999px;
+    background: var(--surface-muted, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+}
+
+.lang-switcher-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    color: var(--text-secondary, rgba(255, 255, 255, 0.72));
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.lang-switcher-link:hover {
+    color: var(--text-primary, #fff);
+}
+
+.lang-switcher-link.is-active {
+    background: var(--accent, #03a9f4);
+    color: #fff;
+}
+
+.topbar-end-desktop .lang-switcher,
+.app-mobile-nav-footer .lang-switcher {
+    margin-inline-end: 0.5rem;
+}
+
+.welcome-header .lang-switcher {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.register-form-header .lang-switcher {
+    margin-inline-start: auto;
+}

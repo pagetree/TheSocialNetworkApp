@@ -19,7 +19,7 @@ foreach ($steps as $index => $step) {
                     <a
                         href="<?php echo htmlspecialchars($url('/onboarding/welcome'), ENT_QUOTES, 'UTF-8'); ?>"
                         class="onboarding-chrome-logo-link"
-                        aria-label="TheSocialNetworkApp"
+                        aria-label="<?php echo __e('nav.home'); ?>"
                     >
                         <img
                             class="onboarding-chrome-logo"
@@ -27,10 +27,11 @@ foreach ($steps as $index => $step) {
                             alt=""
                         >
                     </a>
+                    <?php require __DIR__ . '/lang-switcher.php'; ?>
                     <?php require __DIR__ . '/theme-toggle.php'; ?>
                 </div>
 
-                <nav class="onboarding-inline-steps" aria-label="Onboarding progress">
+                <nav class="onboarding-inline-steps" aria-label="<?php echo __e('onboarding.progress'); ?>">
                     <ol class="onboarding-inline-steps-list">
                         <?php foreach ($steps as $index => $step) :
                             $isCurrent = $step['key'] === $onboardingStep;

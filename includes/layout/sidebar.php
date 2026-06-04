@@ -35,29 +35,29 @@ if ($sidebarViewerId > 0 && $whoToFollowSuggestions !== []) {
                                 id="profile-sidebar-avatar"
                                 class="profile-card-avatar"
                                 src="<?php echo htmlspecialchars($sidebarAvatar, ENT_QUOTES, 'UTF-8'); ?>"
-                                alt="<?php echo htmlspecialchars($sidebarName . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
+                                alt="<?php echo __e('sidebar.avatar_alt', ['name' => $sidebarName]); ?>"
                             >
                             <div class="profile-card-identity">
                                 <h2 id="profile-sidebar-name" class="profile-card-name"><?php echo htmlspecialchars($sidebarName, ENT_QUOTES, 'UTF-8'); ?></h2>
                                 <p class="profile-card-handle"><?php echo htmlspecialchars($sidebarHandle, ENT_QUOTES, 'UTF-8'); ?></p>
                             </div>
                         </header>
-                        <div class="profile-card-stats" aria-label="Profile stats">
+                        <div class="profile-card-stats" aria-label="<?php echo __e('sidebar.profile_stats'); ?>">
                             <span class="profile-card-stat">
                                 <span id="profile-sidebar-followers-count" class="profile-card-stat-value"><?php echo htmlspecialchars($sidebarFollowersLabel, ENT_QUOTES, 'UTF-8'); ?></span>
-                                <span class="profile-card-stat-label">Followers</span>
+                                <span class="profile-card-stat-label"><?php echo __e('sidebar.followers'); ?></span>
                             </span>
                             <span class="profile-card-stat">
                                 <span id="profile-sidebar-following-count" class="profile-card-stat-value"><?php echo htmlspecialchars($sidebarFollowingLabel, ENT_QUOTES, 'UTF-8'); ?></span>
-                                <span class="profile-card-stat-label">Following</span>
+                                <span class="profile-card-stat-label"><?php echo __e('sidebar.following'); ?></span>
                             </span>
                         </div>
                     </article>
 
                     <article class="who-to-follow-card">
-                        <h2 class="who-to-follow-card-title">Who to follow</h2>
+                        <h2 class="who-to-follow-card-title"><?php echo __e('sidebar.who_to_follow'); ?></h2>
                         <?php if ($whoToFollowSuggestions === []) : ?>
-                        <p class="who-to-follow-empty">No suggestions right now.</p>
+                        <p class="who-to-follow-empty"><?php echo __e('sidebar.no_suggestions'); ?></p>
                         <?php else : ?>
                         <ul class="who-to-follow-list">
                             <?php foreach ($whoToFollowSuggestions as $suggestion) :
@@ -74,7 +74,7 @@ if ($sidebarViewerId > 0 && $whoToFollowSuggestions !== []) {
                                         <img
                                             class="who-to-follow-avatar"
                                             src="<?php echo htmlspecialchars($suggestionAvatar, ENT_QUOTES, 'UTF-8'); ?>"
-                                            alt="<?php echo htmlspecialchars($suggestionName . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
+                                            alt="<?php echo __e('sidebar.avatar_alt', ['name' => $suggestionName]); ?>"
                                             width="60"
                                             height="60"
                                             loading="lazy"
@@ -91,11 +91,13 @@ if ($sidebarViewerId > 0 && $whoToFollowSuggestions !== []) {
                                         data-user-id="<?php echo $suggestionId; ?>"
                                         data-following="<?php echo $viewerFollows ? '1' : '0'; ?>"
                                         aria-pressed="<?php echo $viewerFollows ? 'true' : 'false'; ?>"
-                                        aria-label="<?php echo $viewerFollows ? 'Unfollow ' : 'Follow '; ?><?php echo htmlspecialchars($suggestionName, ENT_QUOTES, 'UTF-8'); ?>"
+                                        aria-label="<?php echo $viewerFollows
+                                            ? __e('follow.unfollow_user', ['name' => $suggestionName])
+                                            : __e('follow.follow_user', ['name' => $suggestionName]); ?>"
                                     >
-                                        <span class="profile-follow-btn-label profile-follow-btn-label--follow">Follow</span>
-                                        <span class="profile-follow-btn-label profile-follow-btn-label--following">Following</span>
-                                        <span class="profile-follow-btn-label profile-follow-btn-label--unfollow">Unfollow</span>
+                                        <span class="profile-follow-btn-label profile-follow-btn-label--follow"><?php echo __e('follow.follow'); ?></span>
+                                        <span class="profile-follow-btn-label profile-follow-btn-label--following"><?php echo __e('follow.following'); ?></span>
+                                        <span class="profile-follow-btn-label profile-follow-btn-label--unfollow"><?php echo __e('follow.unfollow'); ?></span>
                                     </button>
                                 </div>
                             </li>

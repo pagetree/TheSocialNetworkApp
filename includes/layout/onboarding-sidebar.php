@@ -15,10 +15,10 @@ foreach ($steps as $index => $step) {
 }
 ?>
                 <aside class="app-sidebar app-sidebar--onboarding">
-                    <nav class="onboarding-steps" aria-label="Onboarding steps">
-                        <p class="onboarding-steps-heading"><?php echo $onboardingStep === 'welcome' ? 'Your setup journey' : 'Set up your profile'; ?></p>
+                    <nav class="onboarding-steps" aria-label="<?php echo __e('onboarding.sidebar.steps'); ?>">
+                        <p class="onboarding-steps-heading"><?php echo $onboardingStep === 'welcome' ? __e('onboarding.sidebar.journey') : __e('onboarding.sidebar.setup_profile'); ?></p>
                         <?php if ($onboardingStep === 'welcome') : ?>
-                        <p class="onboarding-steps-intro">Four quick stops. Everything is optional&mdash;change it all later from your profile.</p>
+                        <p class="onboarding-steps-intro"><?php echo __e('onboarding.sidebar.intro'); ?></p>
                         <?php endif; ?>
                         <ol class="onboarding-steps-list">
                             <?php foreach ($steps as $index => $step) :

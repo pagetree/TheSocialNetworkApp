@@ -9,6 +9,7 @@ function appStylesheetPaths(): array
 {
     return [
         '/assets/css/variables.css',
+        '/assets/css/lang-switcher.css',
         '/assets/css/theme-toggle.css',
         '/assets/css/base.css',
         '/assets/css/layout.css',

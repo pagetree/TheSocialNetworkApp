@@ -136,6 +136,7 @@ if (!$onboardingLayout) : ?>
     </script>
     <?php endif; ?>
     <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/i18n.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/theme.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/icons.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php if (!$onboardingLayout) : ?>

@@ -23,6 +23,9 @@
         return;
     }
 
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
+
     const USERNAME_DEBOUNCE_MS = 500;
     let usernameTimer = null;
     let usernameRequestId = 0;
@@ -88,7 +91,7 @@
             available: false,
             checking: true,
         };
-        setUsernameHint("Checking username…", "is-checking");
+        setUsernameHint(t("auth.username_status.checking"), "is-checking");
         updateSubmitState();
 
         try {
@@ -111,7 +114,7 @@
                     available: false,
                     checking: false,
                 };
-                setUsernameHint("Unable to check username right now.", "is-warning");
+                setUsernameHint(t("auth.username_status.check_failed"), "is-warning");
                 updateSubmitState();
                 return;
             }
@@ -123,7 +126,12 @@
                     available: true,
                     checking: false,
                 };
-                setUsernameHint(`@${data.username || value} is available.`, "is-available");
+                setUsernameHint(
+                    t("auth.username_status.available_handle", {
+                        username: data.username || value,
+                    }),
+                    "is-available"
+                );
             } else if (data.valid && !data.available) {
                 usernameState = {
                     value: data.username || value,
@@ -131,7 +139,7 @@
                     available: false,
                     checking: false,
                 };
-                setUsernameHint(data.error || "Username is already taken.", "is-unavailable");
+                setUsernameHint(data.error || t("auth.username_status.taken"), "is-unavailable");
             } else {
                 usernameState = {
                     value: data.username || value,
@@ -139,7 +147,7 @@
                     available: false,
                     checking: false,
                 };
-                setUsernameHint(data.error || "Username is not valid.", "is-warning");
+                setUsernameHint(data.error || t("auth.username_status.invalid"), "is-warning");
             }
         } catch {
             if (requestId !== usernameRequestId) {
@@ -152,7 +160,7 @@
                 available: false,
                 checking: false,
             };
-            setUsernameHint("Unable to check username right now.", "is-warning");
+            setUsernameHint(t("auth.username_status.check_failed"), "is-warning");
         }
 
         updateSubmitState();
@@ -212,7 +220,7 @@
             passwordToggle.setAttribute("aria-pressed", String(isHidden));
             passwordToggle.setAttribute(
                 "aria-label",
-                isHidden ? "Hide password" : "Show password"
+                isHidden ? t("auth.password_toggle.hide") : t("auth.password_toggle.show")
             );
 
             const icon = passwordToggle.querySelector("[data-lucide]");
@@ -247,12 +255,12 @@
             !payload.email ||
             !payload.password
         ) {
-            showError("All fields are required.");
+            showError(t("auth.errors.all_fields_required"));
             return;
         }
 
         if (!usernameState.valid || !usernameState.available) {
-            showError(usernameHint.textContent || "Choose a valid username.");
+            showError(usernameHint.textContent || t("auth.errors.choose_username"));
             return;
         }
 
@@ -271,14 +279,14 @@
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok || !data.ok) {
-                showError(data.error || "Unable to create account.");
+                showError(data.error || t("auth.errors.register_failed"));
                 updateSubmitState();
                 return;
             }
 
             window.location.href = homeUrl;
         } catch {
-            showError("Unable to create account right now.");
+            showError(t("auth.errors.register_unavailable"));
             updateSubmitState();
         }
     });

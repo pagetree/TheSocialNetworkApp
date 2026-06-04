@@ -10,6 +10,9 @@
     const listEl = document.getElementById("post-stats-modal-list");
     const statusEl = document.getElementById("post-stats-modal-status");
 
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
+
     if (
         !detailUrl
         || !csrfToken
@@ -91,7 +94,7 @@
         const listMetrics = LIST_ORDER.map((key) => byKey.get(key)).filter(Boolean);
 
         if (engageMetrics.length === 0 && listMetrics.length === 0) {
-            setStatus("No stats available yet.");
+            setStatus(t("stats.no_stats"));
             return;
         }
 
@@ -125,7 +128,7 @@
         activeTrigger?.classList.remove("is-active");
         activeTrigger = null;
         clearPanel();
-        setStatus("Loading…");
+        setStatus(t("stats.loading"));
     };
 
     const openModal = async ({ postId = 0, replyId = 0, trigger = null }) => {
@@ -138,11 +141,11 @@
 
         overlay.hidden = false;
         document.body.classList.add("post-stats-modal-open");
-        titleEl.textContent = "Stats";
+        titleEl.textContent = t("stats.title");
         subtitleEl.textContent = "";
         subtitleEl.hidden = true;
         clearPanel();
-        setStatus("Loading…");
+        setStatus(t("stats.loading"));
 
         try {
             const response = await fetch(detailUrl, {
@@ -165,12 +168,12 @@
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok || !data.ok) {
-                setStatus(data.error || "Unable to load stats.", true);
+                setStatus(data.error || t("stats.errors.load_failed"), true);
                 return;
             }
 
-            titleEl.textContent = String(data.title || "Stats");
-            subtitleEl.textContent = data.is_owner ? "Your content" : "";
+            titleEl.textContent = String(data.title || t("stats.title"));
+            subtitleEl.textContent = data.is_owner ? t("stats.your_content") : "";
             subtitleEl.hidden = !data.is_owner;
 
             renderMetrics(Array.isArray(data.metrics) ? data.metrics : []);
@@ -179,7 +182,7 @@
                 return;
             }
 
-            setStatus("Unable to load stats right now.", true);
+            setStatus(t("stats.errors.load_failed"), true);
         }
     };
 

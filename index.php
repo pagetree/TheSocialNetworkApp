@@ -28,6 +28,12 @@ if ($path === '/health') {
     return;
 }
 
+if (preg_match('#^/lang/(en|es)/?$#', $path, $localeRouteMatch)) {
+    setAppLocaleCookie($localeRouteMatch[1]);
+    header('Location: ' . localeRedirectTarget());
+    exit;
+}
+
 startAppSession();
 
 if ($path === '/logout' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
@@ -35,7 +41,7 @@ if ($path === '/logout' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     if (!validateCsrfToken(extractCsrfToken($payload), 'logout')) {
         http_response_code(403);
         header('Content-Type: text/html; charset=utf-8');
-        echo 'Session expired. Refresh the page and try again.';
+        echo __('api.session_expired');
         exit;
     }
 
@@ -236,7 +242,7 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
         if ($profileUser === null) {
             http_response_code(404);
             header('Content-Type: text/html; charset=utf-8');
-            $pageTitle = 'Profile not found — TheSocialNetworkApp';
+            $pageTitle = __('meta.profile_not_found_title');
             $activeNav = 'profile';
             $mainClass = 'profile-page';
             $postStatsCsrfToken = $isLoggedIn ? createCsrfToken('post_stats') : '';
@@ -245,7 +251,7 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
 
             require __DIR__ . '/includes/layout/head.php';
             require __DIR__ . '/includes/layout/content-area-start.php';
-            echo '<p class="profile-not-found">This profile could not be found.</p>';
+            echo '<p class="profile-not-found">' . __e('errors.profile_not_found') . '</p>';
             require __DIR__ . '/includes/layout/content-area-end.php';
             return;
         }
@@ -313,7 +319,7 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) 
     if ($hashtagTag === '') {
         http_response_code(404);
         header('Content-Type: text/html; charset=utf-8');
-        $pageTitle = 'Hashtag not found — TheSocialNetworkApp';
+        $pageTitle = __('meta.hashtag_invalid_title');
         $activeNav = 'explore';
         $mainClass = 'app-content hashtag-page';
         $currentUser = getCurrentUser();
@@ -324,7 +330,7 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) 
 
         require __DIR__ . '/includes/layout/head.php';
         require __DIR__ . '/includes/layout/content-area-start.php';
-        echo '<p class="hashtag-page-empty">This hashtag is not valid.</p>';
+        echo '<p class="hashtag-page-empty">' . __e('errors.hashtag_invalid') . '</p>';
         require __DIR__ . '/includes/layout/content-area-end.php';
         return;
     }
@@ -361,7 +367,7 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) 
 
     http_response_code(200);
     header('Content-Type: text/html; charset=utf-8');
-    $pageTitle = '#' . $hashtagTag . ' — TheSocialNetworkApp';
+    $pageTitle = __('meta.hashtag_title', ['tag' => $hashtagTag]);
     $activeNav = 'explore';
     $mainClass = 'app-content hashtag-page';
     $pageScripts = [];
@@ -385,7 +391,7 @@ if (preg_match('#^/post/(\d+)/?$#', $path, $postRouteMatch)) {
     if ($post === null) {
         http_response_code(404);
         header('Content-Type: text/html; charset=utf-8');
-        $pageTitle = 'Post not found — TheSocialNetworkApp';
+        $pageTitle = __('meta.post_not_found_title');
         $activeNav = 'explore';
         $mainClass = 'app-content post-detail-page';
         $currentUser = getCurrentUser();
@@ -397,7 +403,7 @@ if (preg_match('#^/post/(\d+)/?$#', $path, $postRouteMatch)) {
 
         require __DIR__ . '/includes/layout/head.php';
         require __DIR__ . '/includes/layout/content-area-start.php';
-        echo '<p class="post-detail-empty">This post could not be found.</p>';
+        echo '<p class="post-detail-empty">' . __e('errors.post_not_found') . '</p>';
         require __DIR__ . '/includes/layout/content-area-end.php';
         return;
     }
@@ -440,7 +446,7 @@ $composerAvatarUrl = $isLoggedIn
 http_response_code(200);
 header('Content-Type: text/html; charset=utf-8');
 
-$pageTitle = 'TheSocialNetworkApp';
+$pageTitle = __('meta.feed_title');
 $activeNav = 'explore';
 $mainClass = 'app-content';
 $showPostComposerModal = $isLoggedIn;

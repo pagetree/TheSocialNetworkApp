@@ -153,11 +153,11 @@ function fetchPostStatsDetail(int $postId, int $viewerUserId): array
 
     $isOwner = (int) $post['user_id'] === $viewerUserId;
     $metrics = [
-        postStatMetric('views', 'Views', (int) $post['view_count'], 'eye'),
-        postStatMetric('likes', 'Likes', (int) $post['like_count'], 'heart'),
-        postStatMetric('replies', 'Replies', (int) $post['reply_count'], 'message-circle'),
-        postStatMetric('reposts', 'Reposts', (int) $post['repost_count'], 'repeat-2'),
-        postStatMetric('interactions', 'Profile clicks', (int) ($post['interaction_count'] ?? 0), 'mouse-pointer-click'),
+        postStatMetric('views', __('stats.metrics.views'), (int) $post['view_count'], 'eye'),
+        postStatMetric('likes', __('stats.metrics.likes'), (int) $post['like_count'], 'heart'),
+        postStatMetric('replies', __('stats.metrics.replies'), (int) $post['reply_count'], 'message-circle'),
+        postStatMetric('reposts', __('stats.metrics.reposts'), (int) $post['repost_count'], 'repeat-2'),
+        postStatMetric('interactions', __('stats.metrics.interactions'), (int) ($post['interaction_count'] ?? 0), 'mouse-pointer-click'),
     ];
 
     if ($isOwner) {
@@ -165,7 +165,7 @@ function fetchPostStatsDetail(int $postId, int $viewerUserId): array
         if ($score !== null && $score !== '') {
             $metrics[] = [
                 'key' => 'score',
-                'label' => 'Engagement score',
+                'label' => __('stats.metrics.score'),
                 'value' => rtrim(rtrim(number_format((float) $score, 2, '.', ''), '0'), '.'),
                 'icon' => 'trending-up',
             ];
@@ -175,7 +175,7 @@ function fetchPostStatsDetail(int $postId, int $viewerUserId): array
     return [
         'ok' => true,
         'kind' => 'post',
-        'title' => 'Post stats',
+        'title' => __('stats.post_title'),
         'is_owner' => $isOwner,
         'metrics' => $metrics,
     ];
@@ -210,11 +210,11 @@ function fetchReplyStatsDetail(int $replyId, int $viewerUserId): array
     return [
         'ok' => true,
         'kind' => 'reply',
-        'title' => 'Reply stats',
+        'title' => __('stats.reply_title'),
         'is_owner' => $isOwner,
         'metrics' => [
-            postStatMetric('likes', 'Likes', (int) $reply['like_count'], 'heart'),
-            postStatMetric('replies', 'Replies', (int) $reply['reply_count'], 'message-circle'),
+            postStatMetric('likes', __('stats.metrics.likes'), (int) $reply['like_count'], 'heart'),
+            postStatMetric('replies', __('stats.metrics.replies'), (int) $reply['reply_count'], 'message-circle'),
         ],
     ];
 }

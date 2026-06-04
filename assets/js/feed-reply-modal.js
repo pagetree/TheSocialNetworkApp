@@ -1,4 +1,6 @@
 (() => {
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
     const maxChars = 300;
     const warningAt = 50;
 
@@ -71,7 +73,7 @@
         submitBtn.disabled = isLoading || !canSend;
         submitBtn.classList.toggle("is-loading", isLoading);
         submitBtn.setAttribute("aria-busy", isLoading ? "true" : "false");
-        submitBtn.textContent = isLoading ? "Replying..." : "Reply";
+        submitBtn.textContent = isLoading ? t("reply.replying") : t("reply.reply");
         textarea.disabled = isLoading;
         closeBtn.disabled = isLoading;
     };
@@ -233,22 +235,22 @@
         clearError();
 
         if (postId < 1) {
-            showError("Invalid post.");
+            showError(t("api.invalid_post"));
             return;
         }
 
         if (mediaPicker && !mediaPicker.canSubmit(body)) {
-            showError("Write a reply or add media before posting.");
+            showError(t("reply.errors.body_or_media_required"));
             return;
         }
 
         if (!mediaPicker && !body) {
-            showError("Write a reply before posting.");
+            showError(t("reply.errors.body_required"));
             return;
         }
 
         if (body.length > maxChars) {
-            showError(`Reply must be ${maxChars} characters or less.`);
+            showError(t("reply.errors.too_long", { max: maxChars }));
             return;
         }
 
@@ -282,7 +284,7 @@
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok || !data.ok) {
-                showError(data.error || "Unable to post reply.");
+                showError(data.error || t("reply.errors.create_failed"));
                 return;
             }
 
@@ -304,7 +306,7 @@
 
             closeModal();
         } catch {
-            showError("Unable to post reply right now.");
+            showError(t("reply.errors.create_failed"));
         } finally {
             setLoading(false);
             updateCounter();

@@ -32,8 +32,8 @@ if (!$isLoggedIn) {
             <?php if (!$onboardingLayout) : ?>
             <header class="<?php echo htmlspecialchars($appTopbarClass, ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="topbar-sidebar">
-                    <a href="<?php echo htmlspecialchars($url('/'), ENT_QUOTES, 'UTF-8'); ?>" class="topbar-logo" aria-label="TheSocialNetworkApp">
-                        <img src="<?php echo htmlspecialchars($url('/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="TheSocialNetworkApp logo">
+                    <a href="<?php echo htmlspecialchars($url('/'), ENT_QUOTES, 'UTF-8'); ?>" class="topbar-logo" aria-label="<?php echo __e('nav.home'); ?>">
+                        <img src="<?php echo htmlspecialchars($url('/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo __e('nav.home'); ?>">
                     </a>
                 </div>
                 <div class="topbar-content">
@@ -44,6 +44,7 @@ require __DIR__ . '/primary-nav.php';
                 </div>
                 <div class="topbar-end">
                     <div class="topbar-end-desktop">
+                        <?php require __DIR__ . '/lang-switcher.php'; ?>
                         <?php require __DIR__ . '/theme-toggle.php'; ?>
                         <?php if ($isLoggedIn) :
                             $logoutCsrfToken = createCsrfToken('logout');
@@ -56,7 +57,7 @@ require __DIR__ . '/primary-nav.php';
                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($logoutCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                             <button type="submit" class="topbar-link">
                                 <i data-lucide="log-out" aria-hidden="true"></i>
-                                <span>Logout</span>
+                                <span><?php echo __e('nav.logout'); ?></span>
                             </button>
                         </form>
                         <?php endif; ?>
@@ -67,7 +68,7 @@ require __DIR__ . '/primary-nav.php';
                         id="app-mobile-nav-open"
                         aria-controls="app-mobile-nav-panel"
                         aria-expanded="false"
-                        aria-label="Open menu"
+                        aria-label="<?php echo __e('nav.open_menu'); ?>"
                     >
                         <i data-lucide="menu" aria-hidden="true"></i>
                     </button>

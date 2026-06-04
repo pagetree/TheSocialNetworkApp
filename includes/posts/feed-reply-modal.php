@@ -11,12 +11,12 @@ declare(strict_types=1);
         aria-modal="true"
         aria-labelledby="feed-reply-modal-title"
     >
-        <span class="profile-edit-sr-only" id="feed-reply-modal-title">Reply to post</span>
-        <button type="button" class="feed-reply-modal-close" id="feed-reply-modal-close" aria-label="Close reply">
+        <span class="profile-edit-sr-only" id="feed-reply-modal-title"><?php echo __e('reply.to_post'); ?></span>
+        <button type="button" class="feed-reply-modal-close" id="feed-reply-modal-close" aria-label="<?php echo __e('composer.close_reply'); ?>">
             <i data-lucide="x" aria-hidden="true"></i>
         </button>
 
-        <article class="feed-reply-modal-preview post-card" id="feed-reply-modal-preview" aria-label="Post">
+        <article class="feed-reply-modal-preview post-card" id="feed-reply-modal-preview" aria-label="<?php echo __e('post.info'); ?>">
             <header class="post-header">
                 <img
                     class="post-avatar"
@@ -34,11 +34,11 @@ declare(strict_types=1);
             <p class="post-text" id="feed-reply-preview-text" hidden></p>
         </article>
 
-        <section class="post-reply-composer feed-reply-modal-composer" aria-label="Write a reply">
+        <section class="post-reply-composer feed-reply-modal-composer" aria-label="<?php echo __e('reply.write'); ?>">
             <img
                 class="post-reply-composer-avatar"
                 src="<?php echo htmlspecialchars($composerAvatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                alt="Your avatar"
+                alt="<?php echo __e('composer.your_avatar'); ?>"
             >
             <div class="post-reply-composer-body">
                 <div class="post-composer-box post-reply-composer-box">
@@ -47,7 +47,7 @@ declare(strict_types=1);
                         id="feed-reply-input"
                         rows="3"
                         maxlength="300"
-                        placeholder="Post your reply"
+                        placeholder="<?php echo __e('reply.placeholder'); ?>"
                         aria-describedby="feed-reply-char-counter feed-reply-error"
                     ></textarea>
                     <p class="post-composer-error post-reply-form-error" id="feed-reply-error" hidden></p>
@@ -57,11 +57,11 @@ declare(strict_types=1);
     require __DIR__ . '/reply-composer-media.php';
 ?>
                     <div class="post-composer-actions">
-                        <div class="post-composer-tools" aria-label="Reply tools">
-                            <button type="button" class="post-tool-btn" id="feed-reply-image-btn" aria-label="Add image">
+                        <div class="post-composer-tools" aria-label="<?php echo __e('reply.tools'); ?>">
+                            <button type="button" class="post-tool-btn" id="feed-reply-image-btn" aria-label="<?php echo __e('composer.add_image'); ?>">
                                 <i data-lucide="image" aria-hidden="true"></i>
                             </button>
-                            <button type="button" class="post-tool-btn" id="feed-reply-video-btn" aria-label="Add video">
+                            <button type="button" class="post-tool-btn" id="feed-reply-video-btn" aria-label="<?php echo __e('composer.add_video'); ?>">
                                 <i data-lucide="film" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -78,7 +78,7 @@ declare(strict_types=1);
                                     <circle class="post-char-counter-progress feed-reply-char-counter-progress" cx="18" cy="18" r="15.5"></circle>
                                 </svg>
                             </div>
-                            <button type="button" class="post-submit-btn" id="feed-reply-submit" disabled>Reply</button>
+                            <button type="button" class="post-submit-btn" id="feed-reply-submit" disabled><?php echo __e('reply.reply'); ?></button>
                         </div>
                     </div>
                 </div>

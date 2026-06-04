@@ -7,12 +7,13 @@ $loginCsrfToken = createCsrfToken('login');
 $appTheme = resolveAppTheme();
 ?>
 <!doctype html>
-<html lang="en" data-theme="<?php echo htmlspecialchars($appTheme, ENT_QUOTES, 'UTF-8'); ?>">
+<html lang="<?php echo htmlspecialchars(appHtmlLang(), ENT_QUOTES, 'UTF-8'); ?>" data-theme="<?php echo htmlspecialchars($appTheme, ENT_QUOTES, 'UTF-8'); ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 <?php renderThemeHeadScript(); ?>
-    <title>Sign in — Dots</title>
+    <title><?php echo __e('meta.sign_in_title'); ?></title>
+<?php renderAppI18nScript(); ?>
     <link rel="icon" type="image/png" href="<?php echo htmlspecialchars($url('/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,18 +35,19 @@ renderAppStylesheets($url);
                     height="72"
                 >
                 <div class="register-form-header">
+                    <?php require __DIR__ . '/../includes/layout/lang-switcher.php'; ?>
                     <?php require __DIR__ . '/../includes/layout/theme-toggle.php'; ?>
                 </div>
-                <h1 class="register-title">Join Dots. Today.</h1>
+                <h1 class="register-title"><?php echo __e('auth.sign_in'); ?></h1>
                 <form class="auth-form register-form" id="login-form" novalidate>
                     <div class="auth-honeypot" aria-hidden="true">
                         <label>
-                            <span>Website</span>
+                            <span><?php echo __e('auth.website_honeypot'); ?></span>
                             <input type="text" name="_hp_url" tabindex="-1" autocomplete="off">
                         </label>
                     </div>
                     <label class="auth-field">
-                        <span>Email or username</span>
+                        <span><?php echo __e('auth.email_or_username'); ?></span>
                         <div class="auth-input-wrap">
                             <span class="auth-input-leading-icon" aria-hidden="true">
                                 <i data-lucide="user-round"></i>
@@ -54,7 +56,7 @@ renderAppStylesheets($url);
                         </div>
                     </label>
                     <label class="auth-field">
-                        <span>Password</span>
+                        <span><?php echo __e('auth.password'); ?></span>
                         <div class="auth-input-wrap auth-input-wrap--password">
                             <span class="auth-input-leading-icon" aria-hidden="true">
                                 <i data-lucide="lock-keyhole"></i>
@@ -63,11 +65,11 @@ renderAppStylesheets($url);
                         </div>
                     </label>
                     <p class="auth-form-error" id="login-form-error" hidden></p>
-                    <button type="submit" class="auth-submit-btn">Sign in</button>
+                    <button type="submit" class="auth-submit-btn"><?php echo __e('auth.sign_in'); ?></button>
                 </form>
                 <p class="register-footer">
-                    No account yet?
-                    <a href="<?php echo htmlspecialchars($url('/register'), ENT_QUOTES, 'UTF-8'); ?>">Create one</a>
+                    <?php echo __e('auth.no_account'); ?>
+                    <a href="<?php echo htmlspecialchars($url('/register'), ENT_QUOTES, 'UTF-8'); ?>"><?php echo __e('auth.create_one'); ?></a>
                 </p>
             </div>
         </section>
@@ -83,6 +85,7 @@ renderAppStylesheets($url);
     <script>
         lucide.createIcons();
     </script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/i18n.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/login.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
 </body>
 </html>

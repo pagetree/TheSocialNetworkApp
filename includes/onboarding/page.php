@@ -36,7 +36,7 @@ if (!is_file($stepFile)) {
 http_response_code(200);
 header('Content-Type: text/html; charset=utf-8');
 
-$pageTitle = 'Welcome — TheSocialNetworkApp';
+$pageTitle = __('meta.onboarding_title');
 $activeNav = 'explore';
 $mainClass = 'onboarding-main';
 $onboardingLayout = true;

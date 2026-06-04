@@ -68,8 +68,8 @@ $profileFollowingLabel = formatEngagementCount($profileFollowingCount);
 $profileFollowersLabel = formatEngagementCount($profileFollowersCount);
 
 $pageTitle = $hasProfileUser
-    ? (string) ($profileUser['display_name'] ?? 'Profile') . ' — TheSocialNetworkApp'
-    : 'Profile — TheSocialNetworkApp';
+    ? __('meta.profile_title', ['name' => (string) ($profileUser['display_name'] ?? 'Profile')])
+    : __('meta.profile_default_title');
 $activeNav = 'profile';
 $mainClass = 'profile-page';
 $pageScripts = [];
@@ -89,7 +89,7 @@ if ($showFeedReplyModal) {
 require __DIR__ . '/includes/layout/head.php';
 require __DIR__ . '/includes/layout/content-area-start.php';
 ?>
-                    <section class="profile-hero" aria-label="Profile overview">
+                    <section class="profile-hero" aria-label="<?php echo __e('profile.overview'); ?>">
                         <div class="profile-cover">
                             <img
                                 id="profile-display-cover"
@@ -104,7 +104,7 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                     id="profile-display-avatar"
                                     class="profile-hero-avatar"
                                     src="<?php echo htmlspecialchars($avatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                                    alt="<?php echo htmlspecialchars($displayName . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
+                                    alt="<?php echo __e('sidebar.avatar_alt', ['name' => $displayName]); ?>"
                                 >
                                 <div class="profile-hero-actions">
                                     <?php if ($isOwnProfile) : ?>
@@ -115,7 +115,7 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                     >
                                     <button type="button" class="profile-edit-btn" id="profile-edit-open">
                                         <i data-lucide="square-pen" aria-hidden="true"></i>
-                                        <span>Edit profile</span>
+                                        <span><?php echo __e('profile.edit'); ?></span>
                                     </button>
                                     <?php elseif ($showProfileActions) : ?>
                                     <?php
@@ -126,8 +126,8 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                     <button
                                         type="button"
                                         class="profile-chat-btn"
-                                        aria-label="Message user (coming soon)"
-                                        title="Coming soon"
+                                        aria-label="<?php echo __e('profile.message_soon'); ?>"
+                                        title="<?php echo __e('profile.coming_soon'); ?>"
                                     >
                                         <i data-lucide="message-circle" aria-hidden="true"></i>
                                     </button>
@@ -139,7 +139,7 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                         data-following="<?php echo $viewerFollowsProfile ? '1' : '0'; ?>"
                                         aria-pressed="<?php echo $viewerFollowsProfile ? 'true' : 'false'; ?>"
                                     >
-                                        <span class="profile-follow-btn-label"><?php echo $viewerFollowsProfile ? 'Following' : 'Follow'; ?></span>
+                                        <span class="profile-follow-btn-label"><?php echo $viewerFollowsProfile ? __e('follow.following') : __e('follow.follow'); ?></span>
                                     </button>
                                     <?php endif; ?>
                                 </div>
@@ -184,14 +184,14 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                 </div>
                                 <?php endif; ?>
                                 <?php if ($hasProfileUser && $showProfileDetails) : ?>
-                                <div class="profile-hero-social-stats" aria-label="Follow stats">
+                                <div class="profile-hero-social-stats" aria-label="<?php echo __e('profile.follow_stats'); ?>">
                                     <p class="profile-hero-social-stat">
                                         <span class="profile-hero-social-stat-value" id="profile-following-count"><?php echo htmlspecialchars($profileFollowingLabel, ENT_QUOTES, 'UTF-8'); ?></span>
-                                        <span class="profile-hero-social-stat-label">Following</span>
+                                        <span class="profile-hero-social-stat-label"><?php echo __e('sidebar.following'); ?></span>
                                     </p>
                                     <p class="profile-hero-social-stat">
                                         <span class="profile-hero-social-stat-value" id="profile-followers-count"><?php echo htmlspecialchars($profileFollowersLabel, ENT_QUOTES, 'UTF-8'); ?></span>
-                                        <span class="profile-hero-social-stat-label">Followers</span>
+                                        <span class="profile-hero-social-stat-label"><?php echo __e('sidebar.followers'); ?></span>
                                     </p>
                                 </div>
                                 <?php endif; ?>
@@ -199,11 +199,11 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                         </div>
                     </section>
 
-                    <nav class="profile-tabs" aria-label="Profile sections">
-                        <a href="#" class="profile-tab is-active">Posts</a>
-                        <a href="#" class="profile-tab">Replies</a>
-                        <a href="#" class="profile-tab">Media</a>
-                        <a href="#" class="profile-tab">Likes</a>
+                    <nav class="profile-tabs" aria-label="<?php echo __e('profile.sections'); ?>">
+                        <a href="#" class="profile-tab is-active"><?php echo __e('profile.tabs.posts'); ?></a>
+                        <a href="#" class="profile-tab"><?php echo __e('profile.tabs.replies'); ?></a>
+                        <a href="#" class="profile-tab"><?php echo __e('profile.tabs.media'); ?></a>
+                        <a href="#" class="profile-tab"><?php echo __e('profile.tabs.likes'); ?></a>
                     </nav>
 
 <?php if ($showPostComposerModal) {
@@ -212,9 +212,9 @@ require __DIR__ . '/includes/layout/content-area-start.php';
 
                     <div class="profile-feed" id="profile-post-feed">
 <?php if ($profileIsPrivate) : ?>
-                        <p class="profile-feed-empty">This profile is private.</p>
+                        <p class="profile-feed-empty"><?php echo __e('profile.empty.private'); ?></p>
 <?php elseif ($profilePosts === []) : ?>
-                        <p class="profile-feed-empty"><?php echo $isOwnProfile ? 'You have not posted yet.' : 'No posts yet.'; ?></p>
+                        <p class="profile-feed-empty"><?php echo $isOwnProfile ? __e('profile.empty.own_no_posts') : __e('profile.empty.no_posts'); ?></p>
 <?php else :
     foreach ($profilePosts as $profilePost) {
         renderPostCard(

@@ -8,8 +8,10 @@ if (is_file($autoload)) {
 }
 
 require_once __DIR__ . '/paths.php';
+require_once __DIR__ . '/i18n.php';
 require_once __DIR__ . '/env.php';
 loadAppEnv();
+initAppLocale();
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../auth/session.php';
@@ -35,6 +37,10 @@ require_once __DIR__ . '/content-reports.php';
 
 function jsonResponse(array $payload, int $statusCode = 200): void
 {
+    if (isset($payload['error']) && is_string($payload['error'])) {
+        $payload['error'] = translateUserMessage($payload['error']);
+    }
+
     http_response_code($statusCode);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode($payload, JSON_UNESCAPED_SLASHES);

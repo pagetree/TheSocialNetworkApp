@@ -65,7 +65,7 @@ $replies = $replies ?? [];
                             require __DIR__ . '/post-media-gallery.php';
                         } ?>
 
-                        <footer class="post-detail-meta" aria-label="Post info">
+                        <footer class="post-detail-meta" aria-label="<?php echo __e('post.info'); ?>">
                             <?php if ($detailDateLabel !== '') : ?>
                             <p class="post-detail-meta-item">
                                 <i data-lucide="calendar" aria-hidden="true"></i>
@@ -75,10 +75,10 @@ $replies = $replies ?? [];
                             <button
                                 type="button"
                                 class="post-detail-meta-item post-detail-meta-views-btn post-action-stat-views"
-                                aria-label="View post stats"
+                                aria-label="<?php echo __e('post.view_stats'); ?>"
                                 data-post-id="<?php echo (int) ($post['id'] ?? 0); ?>"
                             >
-                                <span><span class="post-detail-view-count"><?php echo htmlspecialchars($viewCount, ENT_QUOTES, 'UTF-8'); ?></span> Views</span>
+                                <span><span class="post-detail-view-count"><?php echo htmlspecialchars($viewCount, ENT_QUOTES, 'UTF-8'); ?></span> <?php echo __e('stats.metrics.views'); ?></span>
                             </button>
                             <span class="post-stat-interactions" hidden aria-hidden="true"><?php echo htmlspecialchars($interactionCount, ENT_QUOTES, 'UTF-8'); ?></span>
                         </footer>

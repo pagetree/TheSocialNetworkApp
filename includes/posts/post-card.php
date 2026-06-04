@@ -23,7 +23,7 @@ $postUserId = (int) ($post['user_id'] ?? 0);
 $trackStats = $currentUserId > 0 && $postUserId !== $currentUserId;
 $postUrl = (string) ($post['post_url'] ?? postUrl((int) ($post['id'] ?? 0), $url));
 $hasMedia = count($postMediaItems) > 0;
-$postLinkLabel = 'View post by ' . $authorName;
+$postLinkLabel = __('post.view_by', ['name' => $authorName]);
 $viewerLiked = (bool) ($post['viewer_liked'] ?? false);
 $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-like';
 ?>
@@ -43,7 +43,7 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                             <img
                                 class="post-avatar"
                                 src="<?php echo htmlspecialchars($authorAvatar, ENT_QUOTES, 'UTF-8'); ?>"
-                                alt="<?php echo htmlspecialchars($authorName . ' avatar', ENT_QUOTES, 'UTF-8'); ?>"
+                                alt="<?php echo __e('sidebar.avatar_alt', ['name' => $authorName]); ?>"
                             >
                             <div class="post-meta">
                                 <p class="post-meta-line">
@@ -72,20 +72,20 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                         <?php if ($hasMedia) {
                             require __DIR__ . '/post-media-gallery.php';
                         } ?>
-                        <footer class="post-actions" aria-label="Post engagement">
-                            <button type="button" class="post-action post-action-reply" aria-label="Reply to post"><i data-lucide="message-circle" aria-hidden="true"></i><span><?php echo htmlspecialchars($replyCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
+                        <footer class="post-actions" aria-label="<?php echo __e('post.engagement'); ?>">
+                            <button type="button" class="post-action post-action-reply" aria-label="<?php echo __e('post.reply_to'); ?>"><i data-lucide="message-circle" aria-hidden="true"></i><span><?php echo htmlspecialchars($replyCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span><?php echo htmlspecialchars($repostCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button
                                 type="button"
                                 class="post-action<?php echo $likeActionClass; ?>"
-                                aria-label="<?php echo $viewerLiked ? 'Unlike post' : 'Like post'; ?>"
+                                aria-label="<?php echo $viewerLiked ? __e('post.unlike') : __e('post.like'); ?>"
                                 aria-pressed="<?php echo $viewerLiked ? 'true' : 'false'; ?>"
                                 data-liked="<?php echo $viewerLiked ? '1' : '0'; ?>"
                             ><i data-lucide="heart" aria-hidden="true"></i><span><?php echo htmlspecialchars($likeCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button
                                 type="button"
                                 class="post-action post-action-stat-views"
-                                aria-label="View post stats"
+                                aria-label="<?php echo __e('post.view_stats'); ?>"
                                 data-post-id="<?php echo (int) ($post['id'] ?? 0); ?>"
                             >
                                 <i data-lucide="bar-chart-2" aria-hidden="true"></i>

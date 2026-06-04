@@ -14,11 +14,11 @@ function validatePostReplyForCreate(string $body, bool $hasMedia): ?string
     $body = sanitizePostText($body);
 
     if ($body === '' && !$hasMedia) {
-        return 'Write a reply or add media before posting.';
+        return __('reply.errors.body_or_media_required');
     }
 
     if ($body !== '' && mb_strlen($body) > POST_REPLY_MAX_LENGTH) {
-        return 'Reply must be ' . POST_REPLY_MAX_LENGTH . ' characters or less.';
+        return __('reply.errors.too_long', ['max' => POST_REPLY_MAX_LENGTH]);
     }
 
     return null;

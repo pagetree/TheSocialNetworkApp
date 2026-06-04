@@ -4,6 +4,9 @@
         return;
     }
 
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
+
     const TAG_PATTERN = /^[a-z0-9_]{1,50}$/;
     const TAG_EXTRACT = /#([a-z0-9_]{1,50})/gi;
 
@@ -89,7 +92,7 @@
         if (!section) {
             section = document.createElement("section");
             section.className = "hashtag-post-replies post-replies";
-            section.setAttribute("aria-label", "Replies to this post");
+            section.setAttribute("aria-label", t("hashtag.replies_section"));
             card.appendChild(section);
         }
 
@@ -110,12 +113,12 @@
         }
 
         const menuOption = isOwn
-            ? '<button type="button" class="post-menu-option post-menu-option--remove" role="menuitem"><i data-lucide="trash-2" aria-hidden="true"></i><span>Remove</span></button>'
-            : '<button type="button" class="post-menu-option post-menu-option--report" role="menuitem"><i data-lucide="flag" aria-hidden="true"></i><span>Report</span></button>';
+            ? `<button type="button" class="post-menu-option post-menu-option--remove" role="menuitem"><i data-lucide="trash-2" aria-hidden="true"></i><span>${escapeHtml(t("post.remove"))}</span></button>`
+            : `<button type="button" class="post-menu-option post-menu-option--report" role="menuitem"><i data-lucide="flag" aria-hidden="true"></i><span>${escapeHtml(t("post.report"))}</span></button>`;
 
         return `
                     <div class="post-menu" data-menu-kind="reply" data-target-id="${replyId}" data-is-own="${isOwn ? "1" : "0"}" data-conversation-id="${conversationId}">
-                        <button type="button" class="post-menu-btn" aria-haspopup="menu" aria-expanded="false" aria-label="Reply options">
+                        <button type="button" class="post-menu-btn" aria-haspopup="menu" aria-expanded="false" aria-label="${escapeHtml(t("reply.options"))}">
                             <i data-lucide="ellipsis" aria-hidden="true"></i>
                         </button>
                         <div class="post-menu-dropdown" role="menu" hidden>
@@ -129,7 +132,7 @@
         const body = String(reply.body ?? "").trim();
         const serverHtml = typeof reply.body_html === "string" ? reply.body_html.trim() : "";
         const bodyHtml = serverHtml !== "" ? serverHtml : formatReplyBodyHtml(body, card);
-        const authorName = reply.author?.display_name ?? "User";
+        const authorName = reply.author?.display_name ?? t("common.user");
         const authorHandle = reply.author?.handle ?? "@user";
         const avatarUrl = reply.author?.avatar_url ?? "";
         const likeCount = String(reply.like_count ?? 0);
@@ -158,16 +161,16 @@
                     ${menuHtml}
                 </header>
                 ${bodyHtml !== "" ? `<p class="post-reply-text">${bodyHtml}</p>` : ""}
-                <footer class="post-actions post-reply-actions" aria-label="Reply engagement">
-                    <button type="button" class="post-action post-reply-action-reply" aria-label="Reply to this reply">
+                <footer class="post-actions post-reply-actions" aria-label="${escapeHtml(t("reply.engagement"))}">
+                    <button type="button" class="post-action post-reply-action-reply" aria-label="${escapeHtml(t("reply.to_reply"))}">
                         <i data-lucide="message-circle" aria-hidden="true"></i>
                         <span>${escapeHtml(replyCount)}</span>
                     </button>
-                    <button type="button" class="post-action" aria-label="Repost reply">
+                    <button type="button" class="post-action" aria-label="${escapeHtml(t("reply.repost"))}">
                         <i data-lucide="repeat-2" aria-hidden="true"></i>
                         <span>0</span>
                     </button>
-                    <button type="button" class="post-action" aria-label="Like reply">
+                    <button type="button" class="post-action" aria-label="${escapeHtml(t("reply.like"))}">
                         <i data-lucide="heart" aria-hidden="true"></i>
                         <span>${escapeHtml(likeCount)}</span>
                     </button>

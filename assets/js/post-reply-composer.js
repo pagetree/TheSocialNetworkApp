@@ -32,6 +32,9 @@
         return;
     }
 
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
+
     const refreshIcons = () => {
         if (window.lucide && typeof window.lucide.createIcons === "function") {
             window.lucide.createIcons();
@@ -68,16 +71,16 @@
     };
 
     const buildReplyActionsHtml = (replyCount = "0", likeCount = "0") => `
-        <footer class="post-actions post-reply-actions" aria-label="Reply engagement">
-            <button type="button" class="post-action post-reply-action-reply" aria-label="Reply to this reply">
+        <footer class="post-actions post-reply-actions" aria-label="${escapeHtml(t("reply.engagement"))}">
+            <button type="button" class="post-action post-reply-action-reply" aria-label="${escapeHtml(t("reply.to_reply"))}">
                 <i data-lucide="message-circle" aria-hidden="true"></i>
                 <span>${replyCount}</span>
             </button>
-            <button type="button" class="post-action" aria-label="Repost reply">
+            <button type="button" class="post-action" aria-label="${escapeHtml(t("reply.repost"))}">
                 <i data-lucide="repeat-2" aria-hidden="true"></i>
                 <span>0</span>
             </button>
-            <button type="button" class="post-action" aria-label="Like reply">
+            <button type="button" class="post-action" aria-label="${escapeHtml(t("reply.like"))}">
                 <i data-lucide="heart" aria-hidden="true"></i>
                 <span>${likeCount}</span>
             </button>
@@ -251,17 +254,17 @@
         const trimmedBody = body.trim();
 
         if (mediaPicker && !mediaPicker.canSubmit(trimmedBody)) {
-            onError("Write a reply or add media before posting.");
+            onError(t("reply.errors.body_or_media_required"));
             return;
         }
 
         if (!mediaPicker && !trimmedBody) {
-            onError("Write a reply before posting.");
+            onError(t("reply.errors.body_required"));
             return;
         }
 
         if (trimmedBody.length > maxChars) {
-            onError(`Reply must be ${maxChars} characters or less.`);
+            onError(t("reply.errors.too_long", { max: maxChars }));
             return;
         }
 
@@ -301,7 +304,7 @@
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok || !data.ok) {
-                onError(data.error || "Unable to post reply.");
+                onError(data.error || t("reply.errors.create_failed"));
                 return;
             }
 
@@ -309,7 +312,7 @@
             incrementReplyCounts(data.reply);
             onSuccess();
         } catch {
-            onError("Unable to post reply right now.");
+            onError(t("reply.errors.create_failed"));
         } finally {
             setLoading(false);
         }
@@ -353,7 +356,7 @@
             submitBtn.disabled = isLoading || !canSend;
             submitBtn.classList.toggle("is-loading", isLoading);
             submitBtn.setAttribute("aria-busy", isLoading ? "true" : "false");
-            submitBtn.textContent = isLoading ? "Replying..." : "Reply";
+            submitBtn.textContent = isLoading ? t("reply.replying") : t("reply.reply");
             textarea.disabled = isLoading;
         };
 
@@ -459,7 +462,7 @@
             modalSubmit.disabled = isLoading || !canSend;
             modalSubmit.classList.toggle("is-loading", isLoading);
             modalSubmit.setAttribute("aria-busy", isLoading ? "true" : "false");
-            modalSubmit.textContent = isLoading ? "Submitting..." : "Submit";
+            modalSubmit.textContent = isLoading ? t("reply.submitting") : t("reply.submit");
             modalInput.disabled = isLoading;
             modalCancel.disabled = isLoading;
         };

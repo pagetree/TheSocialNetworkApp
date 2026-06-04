@@ -18,7 +18,7 @@ $onboardingPrimaryHref = $onboardingPrimaryHref ?? null;
             class="onboarding-btn onboarding-btn--ghost onboarding-btn--back"
         >
             <i data-lucide="arrow-left" aria-hidden="true"></i>
-            <span>Back</span>
+            <span><?php echo __e('onboarding.back'); ?></span>
         </a>
         <?php endif; ?>
         <?php if ($onboardingPrimaryHref !== null) : ?>

@@ -17,7 +17,7 @@ $profileMenuUserName = trim((string) ($profileMenuUserName ?? ''));
                                             class="profile-menu-btn"
                                             aria-haspopup="menu"
                                             aria-expanded="false"
-                                            aria-label="Profile options"
+                                            aria-label="<?php echo __e('profile.options'); ?>"
                                         >
                                             <i data-lucide="ellipsis" aria-hidden="true"></i>
                                         </button>
@@ -28,7 +28,7 @@ $profileMenuUserName = trim((string) ($profileMenuUserName ?? ''));
                                                 role="menuitem"
                                             >
                                                 <i data-lucide="volume-x" aria-hidden="true"></i>
-                                                <span>Mute</span>
+                                                <span><?php echo __e('profile.mute'); ?></span>
                                             </button>
                                             <button
                                                 type="button"
@@ -36,7 +36,7 @@ $profileMenuUserName = trim((string) ($profileMenuUserName ?? ''));
                                                 role="menuitem"
                                             >
                                                 <i data-lucide="ban" aria-hidden="true"></i>
-                                                <span>Block</span>
+                                                <span><?php echo __e('profile.block'); ?></span>
                                             </button>
                                             <button
                                                 type="button"
@@ -44,7 +44,7 @@ $profileMenuUserName = trim((string) ($profileMenuUserName ?? ''));
                                                 role="menuitem"
                                             >
                                                 <i data-lucide="flag" aria-hidden="true"></i>
-                                                <span>Report</span>
+                                                <span><?php echo __e('post.report'); ?></span>
                                             </button>
                                         </div>
                                     </div>

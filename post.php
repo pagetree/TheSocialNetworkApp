@@ -10,7 +10,7 @@ declare(strict_types=1);
 /** @var string $postStatsCsrfToken */
 /** @var array<string, mixed>|null $currentUser */
 
-$pageTitle = 'Post — TheSocialNetworkApp';
+$pageTitle = __('meta.post_title');
 $activeNav = 'explore';
 $mainClass = 'app-content post-detail-page';
 $pageScripts = ['/assets/js/reply-media-picker.js', '/assets/js/post-reply-composer.js'];

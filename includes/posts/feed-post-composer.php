@@ -8,7 +8,7 @@ declare(strict_types=1);
                         <img
                             class="post-avatar"
                             src="<?php echo htmlspecialchars($composerAvatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                            alt="Your avatar"
+                            alt="<?php echo __e('composer.your_avatar'); ?>"
                         >
                         <div class="post-composer-body">
                             <div class="post-composer-box">
@@ -17,7 +17,7 @@ declare(strict_types=1);
                                     id="post-composer-input"
                                     rows="3"
                                     maxlength="300"
-                                    placeholder="What's happening?"
+                                    placeholder="<?php echo __e('composer.placeholder'); ?>"
                                     aria-describedby="post-char-counter-label post-composer-error"
                                 ></textarea>
                                 <p class="post-composer-error" id="post-composer-error" hidden></p>
@@ -33,11 +33,11 @@ declare(strict_types=1);
                                     multiple
                                 >
                                 <div class="post-composer-actions">
-                                    <div class="post-composer-tools" aria-label="Post tools">
-                                        <button type="button" class="post-tool-btn" id="post-composer-image-btn" aria-label="Add image">
+                                    <div class="post-composer-tools" aria-label="<?php echo __e('composer.tools'); ?>">
+                                        <button type="button" class="post-tool-btn" id="post-composer-image-btn" aria-label="<?php echo __e('composer.add_image'); ?>">
                                             <i data-lucide="image" aria-hidden="true"></i>
                                         </button>
-                                        <button type="button" class="post-tool-btn" id="post-composer-video-btn" aria-label="Add video">
+                                        <button type="button" class="post-tool-btn" id="post-composer-video-btn" aria-label="<?php echo __e('composer.add_video'); ?>">
                                             <i data-lucide="film" aria-hidden="true"></i>
                                         </button>
                                     </div>
@@ -54,7 +54,7 @@ declare(strict_types=1);
                                                 <circle class="post-char-counter-progress" cx="18" cy="18" r="15.5"></circle>
                                             </svg>
                                         </div>
-                                        <button type="button" class="post-submit-btn" id="post-composer-submit" disabled>Post</button>
+                                        <button type="button" class="post-submit-btn" id="post-composer-submit" disabled><?php echo __e('composer.post'); ?></button>
                                     </div>
                                 </div>
                             </div>

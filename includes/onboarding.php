@@ -12,11 +12,11 @@ const ONBOARDING_MAX_BULK_FOLLOWS = 20;
 function onboardingSteps(): array
 {
     return [
-        ['key' => 'welcome', 'label' => 'Welcome', 'path' => '/onboarding/welcome'],
-        ['key' => 'avatar', 'label' => 'Profile photo', 'path' => '/onboarding/avatar'],
-        ['key' => 'bio', 'label' => 'Bio', 'path' => '/onboarding/bio'],
-        ['key' => 'interests', 'label' => 'Interests', 'path' => '/onboarding/interests'],
-        ['key' => 'suggestions', 'label' => 'Suggestions', 'path' => '/onboarding/suggestions'],
+        ['key' => 'welcome', 'label' => __('onboarding.steps.welcome'), 'path' => '/onboarding/welcome'],
+        ['key' => 'avatar', 'label' => __('onboarding.steps.avatar'), 'path' => '/onboarding/avatar'],
+        ['key' => 'bio', 'label' => __('onboarding.steps.bio'), 'path' => '/onboarding/bio'],
+        ['key' => 'interests', 'label' => __('onboarding.steps.interests'), 'path' => '/onboarding/interests'],
+        ['key' => 'suggestions', 'label' => __('onboarding.steps.suggestions'), 'path' => '/onboarding/suggestions'],
     ];
 }
 
@@ -170,14 +170,14 @@ function groupOnboardingInterests(array $interests): array
             continue;
         }
         $grouped[] = [
-            'title' => $title,
+            'title' => translateInterestGroupTitle($title),
             'interests' => $buckets[$title],
         ];
     }
 
     if ($other !== []) {
         $grouped[] = [
-            'title' => $otherTitle,
+            'title' => translateInterestGroupTitle($otherTitle),
             'interests' => $other,
         ];
     }

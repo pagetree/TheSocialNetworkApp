@@ -1,4 +1,6 @@
 (() => {
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
     const overlay = document.getElementById("profile-edit-overlay");
     const form = document.getElementById("profile-edit-form");
     const openBtn = document.getElementById("profile-edit-open");
@@ -202,7 +204,7 @@
         saveBtn.setAttribute("aria-busy", isLoading ? "true" : "false");
 
         if (saveLabel) {
-            saveLabel.textContent = isLoading ? "Saving..." : "Save";
+            saveLabel.textContent = isLoading ? t("profile.saving") : t("profile.save");
         }
 
         if (saveSpinner) {
@@ -256,12 +258,12 @@
         const bio = fieldBio?.value.trim() ?? "";
 
         if (!name) {
-            showError("Name is required.");
+            showError(t("profile.errors.name_required"));
             return;
         }
 
         if (bio.length > bioMaxLength) {
-            showError(`Bio must be ${bioMaxLength} characters or less.`);
+            showError(t("profile.errors.bio_too_long", { max: bioMaxLength }));
             return;
         }
 
@@ -283,14 +285,14 @@
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok || !data.ok) {
-                showError(data.error || "Unable to save profile.");
+                showError(data.error || t("profile.errors.save_failed"));
                 return;
             }
 
             closeModal();
             window.location.reload();
         } catch {
-            showError("Unable to save profile right now.");
+            showError(t("profile.save_unavailable"));
         } finally {
             setSaveLoading(false);
         }

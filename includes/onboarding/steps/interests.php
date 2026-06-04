@@ -5,8 +5,8 @@ declare(strict_types=1);
 /** @var list<array{id: int, slug: string, label: string}> $onboardingInterests */
 /** @var list<int> $userInterestIds */
 
-$stepTitle = 'What are you into?';
-$stepSubtitle = 'Pick up to ' . ONBOARDING_MAX_INTERESTS . ' interests to personalize your experience.';
+$stepTitle = __('onboarding.interests.title');
+$stepSubtitle = __('onboarding.interests.subtitle', ['max' => ONBOARDING_MAX_INTERESTS]);
 require dirname(__DIR__) . '/step-shell-start.php';
 
 $selectedMap = array_flip($userInterestIds);
@@ -34,5 +34,5 @@ $interestGroups = groupOnboardingInterests($onboardingInterests);
 <?php
 require dirname(__DIR__) . '/step-shell-end.php';
 $onboardingPrimaryId = 'onboarding-interests-continue';
-$onboardingPrimaryLabel = 'Continue';
+$onboardingPrimaryLabel = __('onboarding.continue');
 require dirname(__DIR__) . '/step-footer.php';

@@ -16,8 +16,8 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
         aria-modal="true"
         aria-labelledby="profile-edit-title"
     >
-        <span class="profile-edit-sr-only" id="profile-edit-title">Edit profile</span>
-        <button type="button" class="profile-edit-close" id="profile-edit-close" aria-label="Close edit profile">
+        <span class="profile-edit-sr-only" id="profile-edit-title"><?php echo __e('profile.edit'); ?></span>
+        <button type="button" class="profile-edit-close" id="profile-edit-close" aria-label="<?php echo __e('profile.edit_close'); ?>">
             <i data-lucide="x" aria-hidden="true"></i>
         </button>
 
@@ -25,12 +25,12 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($profileCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
             <div class="auth-honeypot" aria-hidden="true">
                 <label>
-                    <span>Website</span>
+                    <span><?php echo __e('auth.website_honeypot'); ?></span>
                     <input type="text" name="_hp_url" tabindex="-1" autocomplete="off">
                 </label>
             </div>
 
-            <section class="profile-hero profile-hero--edit" aria-label="Edit profile preview">
+            <section class="profile-hero profile-hero--edit" aria-label="<?php echo __e('profile.edit_preview'); ?>">
                 <div class="profile-cover profile-cover--editable">
                     <img
                         class="profile-cover-image"
@@ -38,7 +38,7 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
                         src="<?php echo htmlspecialchars($modalCoverUrl, ENT_QUOTES, 'UTF-8'); ?>"
                         alt=""
                     >
-                    <label class="profile-media-upload profile-media-upload--cover" aria-label="Upload cover image">
+                    <label class="profile-media-upload profile-media-upload--cover" aria-label="<?php echo __e('profile.upload_cover'); ?>">
                         <input
                             type="file"
                             id="profile-edit-cover-input"
@@ -56,9 +56,9 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
                                 class="profile-hero-avatar"
                                 id="profile-edit-avatar-preview"
                                 src="<?php echo htmlspecialchars($modalAvatarUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                                alt="Avatar preview"
+                                alt="<?php echo __e('profile.avatar_preview'); ?>"
                             >
-                            <label class="profile-media-upload profile-media-upload--avatar" aria-label="Upload avatar">
+                            <label class="profile-media-upload profile-media-upload--avatar" aria-label="<?php echo __e('profile.upload_avatar'); ?>">
                                 <input
                                     type="file"
                                     id="profile-edit-avatar-input"
@@ -76,7 +76,7 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
             <div class="profile-edit-modal-scroll">
             <div class="profile-edit-fields">
                 <label class="auth-field">
-                    <span>Name</span>
+                        <span><?php echo __e('profile.fields.name'); ?></span>
                     <div class="auth-input-wrap">
                         <span class="auth-input-leading-icon" aria-hidden="true">
                             <i data-lucide="user-round"></i>
@@ -85,7 +85,7 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
                     </div>
                 </label>
                 <label class="auth-field">
-                    <span>Bio</span>
+                        <span><?php echo __e('profile.fields.bio'); ?></span>
                     <div class="auth-input-wrap auth-input-wrap--textarea">
                         <span class="auth-input-leading-icon" aria-hidden="true">
                             <i data-lucide="align-left"></i>
@@ -99,7 +99,7 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
                     </div>
                 </label>
                 <label class="auth-field">
-                    <span>Location</span>
+                        <span><?php echo __e('profile.fields.location'); ?></span>
                     <div class="auth-input-wrap">
                         <span class="auth-input-leading-icon" aria-hidden="true">
                             <i data-lucide="map-pin"></i>
@@ -108,7 +108,7 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
                     </div>
                 </label>
                 <label class="auth-field">
-                    <span>Website</span>
+                    <span><?php echo __e('profile.fields.website'); ?></span>
                     <div class="auth-input-wrap auth-input-wrap--website">
                         <span class="auth-input-leading-icon" aria-hidden="true">
                             <i data-lucide="link"></i>
@@ -127,7 +127,7 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
                     </div>
                 </label>
                 <label class="auth-field">
-                    <span>Date of birth</span>
+                        <span><?php echo __e('profile.fields.dob'); ?></span>
                     <div class="auth-input-wrap">
                         <span class="auth-input-leading-icon" aria-hidden="true">
                             <i data-lucide="cake"></i>
@@ -143,8 +143,8 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
                         value="1"
                     >
                     <span class="profile-edit-visibility-text">
-                        <strong>Public profile</strong>
-                        <span>Show my profile when I like, reply to, or interact with posts.</span>
+                        <strong><?php echo __e('profile.visibility.title'); ?></strong>
+                        <span><?php echo __e('profile.visibility.hint'); ?></span>
                     </span>
                 </label>
             </div>
@@ -153,10 +153,10 @@ $modalAvatarUrl = userMediaUrl($profileUser ?? null, 'avatar_url', $url);
             </div>
 
             <footer class="profile-edit-actions">
-                <button type="button" class="profile-edit-cancel" id="profile-edit-cancel">Cancel</button>
+                <button type="button" class="profile-edit-cancel" id="profile-edit-cancel"><?php echo __e('common.cancel'); ?></button>
                 <button type="submit" class="profile-edit-save" id="profile-edit-save">
                     <span class="profile-edit-save-spinner" aria-hidden="true" hidden></span>
-                    <span class="profile-edit-save-label">Save</span>
+                    <span class="profile-edit-save-label"><?php echo __e('common.save'); ?></span>
                 </button>
             </footer>
         </form>

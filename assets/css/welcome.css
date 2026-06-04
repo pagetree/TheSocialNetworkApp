@@ -61,6 +61,7 @@ html:has(.welcome-page) *::after {
 }
 
 .welcome-header {
+    position: relative;
     flex-shrink: 0;
     display: grid;
     grid-template-columns: auto 1fr;

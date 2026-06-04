@@ -2,6 +2,7 @@
     RewriteEngine On
 
     RewriteRule ^(?:includes|config|vendor|sql)(?:/|$) - [F,L]
+    RewriteRule ^lang/.+\.php$ - [F,L]
     RewriteRule ^auth/.+\.php$ - [F,L]
     RewriteRule ^composer\.(json|lock)$ - [F,L]
 

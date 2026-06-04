@@ -19,6 +19,14 @@ function isSensitivePublicPath(string $appPath): bool
         }
     }
 
+    if (str_starts_with($appPath, '/lang/')) {
+        if (preg_match('#^/lang/(en|es)/?$#', $appPath)) {
+            return false;
+        }
+
+        return true;
+    }
+
     if ($appPath === '/composer.json' || $appPath === '/composer.lock') {
         return true;
     }

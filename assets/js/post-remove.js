@@ -1,4 +1,7 @@
 (() => {
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
+
     const removeUrl = window.APP_POST_REMOVE_URL;
     const csrfToken = window.APP_POST_REMOVE_CSRF_TOKEN;
     const canRemove = Boolean(removeUrl && csrfToken);
@@ -134,8 +137,8 @@
         if (!feed.querySelector(".post-card")) {
             const emptyClass = feed.id === "profile-post-feed" ? "profile-feed-empty" : "hashtag-page-empty";
             const emptyText = feed.id === "profile-post-feed"
-                ? "You have not posted yet."
-                : "No posts with this hashtag yet.";
+                ? t("hashtag.empty_own")
+                : t("hashtag.empty");
 
             if (!feed.querySelector(`.${emptyClass}`) && feed.id !== "post-feed") {
                 const empty = document.createElement("p");
@@ -193,7 +196,7 @@
 
         const data = await response.json().catch(() => ({}));
         if (!response.ok || !data.ok) {
-            throw new Error(data.error || "Unable to remove right now.");
+            throw new Error(data.error || t("post.errors.remove_failed"));
         }
 
         return data;

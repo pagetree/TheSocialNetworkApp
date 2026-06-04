@@ -27,6 +27,9 @@
         return;
     }
 
+    const t = (key, replacements = {}) =>
+        window.AppI18n?.t?.(key, replacements) ?? key;
+
     const radius = 15.5;
     const circumference = 2 * Math.PI * radius;
     progressCircle.style.strokeDasharray = String(circumference);
@@ -85,7 +88,7 @@
         submitBtn.disabled = isLoading || !canSubmit();
         submitBtn.classList.toggle("is-loading", isLoading);
         submitBtn.setAttribute("aria-busy", isLoading ? "true" : "false");
-        submitBtn.textContent = isLoading ? "Posting..." : "Post";
+        submitBtn.textContent = isLoading ? t("composer.posting") : t("composer.post");
         textarea.disabled = isLoading;
         if (imageBtn) {
             imageBtn.disabled = isLoading;
@@ -117,7 +120,7 @@
 
     const validateMediaFile = (file) => {
         if (!file) {
-            return "Choose a media file to upload.";
+            return t("common.choose_media_file");
         }
 
         const maxBytes = maxBytesForFile(file);
@@ -126,7 +129,7 @@
         }
 
         if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
-            return "Unsupported media type.";
+            return t("common.unsupported_media");
         }
 
         return null;
@@ -151,15 +154,15 @@
         }
 
         if (videoCount > mediaLimits.maxVideos) {
-            return `Posts can include at most ${mediaLimits.maxVideos} video.`;
+            return t("common.max_video", { max: mediaLimits.maxVideos });
         }
 
         if (imageCount > mediaLimits.maxImages) {
-            return `Posts can include at most ${mediaLimits.maxImages} images.`;
+            return t("common.max_images", { max: mediaLimits.maxImages });
         }
 
         if (videoCount > 0 && imageCount > 0) {
-            return "Add either images or a video, not both.";
+            return t("common.mixed_media");
         }
 
         return null;
@@ -196,7 +199,7 @@
             const removeBtn = document.createElement("button");
             removeBtn.type = "button";
             removeBtn.className = "post-composer-media-remove";
-            removeBtn.setAttribute("aria-label", "Remove media");
+            removeBtn.setAttribute("aria-label", t("common.remove_media"));
             removeBtn.innerHTML = '<i data-lucide="x" aria-hidden="true"></i>';
             removeBtn.addEventListener("click", () => {
                 selectedMedia = selectedMedia.filter((candidate) => candidate.id !== entry.id);
@@ -274,7 +277,9 @@
         if (isTyping) {
             counter.setAttribute(
                 "aria-label",
-                `${remaining} character${remaining === 1 ? "" : "s"} remaining`
+                t(remaining === 1 ? "common.chars_remaining" : "common.chars_remaining_plural", {
+                    count: remaining,
+                })
             );
         } else {
             counter.removeAttribute("aria-label");
@@ -333,12 +338,12 @@
         const hasMedia = selectedMedia.length > 0;
 
         if (!body && !hasMedia) {
-            showError("Write something or add media before posting.");
+            showError(t("composer.errors.body_or_media_required"));
             return;
         }
 
         if (body.length > maxChars) {
-            showError(`Post must be ${maxChars} characters or less.`);
+            showError(t("composer.errors.too_long", { max: maxChars }));
             return;
         }
 
@@ -374,13 +379,13 @@
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok || !data.ok) {
-                showError(data.error || "Unable to create post.");
+                showError(data.error || t("composer.errors.create_failed"));
                 return;
             }
 
             window.location.reload();
         } catch {
-            showError("Unable to create post right now.");
+            showError(t("composer.errors.create_unavailable"));
         } finally {
             setSubmitLoading(false);
             updateCounter();
