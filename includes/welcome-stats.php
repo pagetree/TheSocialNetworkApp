@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @return array{members: int, posts: int, replies: int, hashtags: int, likes: int}
+ * @return array{members: int, posts: int, replies: int, hashtags: int}
  */
 function fetchPublicPlatformStats(): array
 {
@@ -12,7 +12,6 @@ function fetchPublicPlatformStats(): array
         'posts' => 0,
         'replies' => 0,
         'hashtags' => 0,
-        'likes' => 0,
     ];
 
     try {
@@ -25,8 +24,7 @@ function fetchPublicPlatformStats(): array
                 (SELECT COUNT(*)::int FROM users) AS members,
                 (SELECT COUNT(*)::int FROM posts WHERE is_deleted = FALSE) AS posts,
                 (SELECT COUNT(*)::int FROM post_replies) AS replies,
-                ' . $hashtagsCountSql . ' AS hashtags,
-                (SELECT COUNT(*)::int FROM post_likes) AS likes'
+                ' . $hashtagsCountSql . ' AS hashtags'
         );
         $row = $stmt->fetch();
         if ($row === false) {
@@ -38,7 +36,6 @@ function fetchPublicPlatformStats(): array
             'posts' => max(0, (int) ($row['posts'] ?? 0)),
             'replies' => max(0, (int) ($row['replies'] ?? 0)),
             'hashtags' => max(0, (int) ($row['hashtags'] ?? 0)),
-            'likes' => max(0, (int) ($row['likes'] ?? 0)),
         ];
     } catch (Throwable) {
         return $defaults;

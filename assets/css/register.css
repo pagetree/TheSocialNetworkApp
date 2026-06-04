@@ -27,7 +27,6 @@
     align-items: center;
     justify-content: center;
     padding: var(--element-padding);
-    background: var(--light);
 }
 
 .register-logo {
@@ -37,8 +36,42 @@
     display: block;
 }
 
+.register-logo--black {
+    display: none;
+}
+
+@media (min-width: 901px) {
+    html[data-theme="dark"] .register-page .register-brand-column {
+        background: #fff;
+    }
+
+    html[data-theme="light"] .register-page .register-brand-column {
+        background: #111;
+    }
+
+    html[data-theme="dark"] .register-page .register-logo--default {
+        display: none;
+    }
+
+    html[data-theme="dark"] .register-page .register-logo--black {
+        display: block;
+    }
+
+    html[data-theme="light"] .register-page .register-logo--black {
+        display: none;
+    }
+
+    html[data-theme="light"] .register-page .register-logo--default {
+        display: block;
+    }
+}
+
+.register-form-logo {
+    display: none;
+}
+
 .register-title {
-    margin: 0;
+    margin: 0 0 var(--post-gap);
     font-size: 28px;
     font-weight: 700;
     color: var(--light);
@@ -77,16 +110,89 @@
 }
 
 @media (max-width: 900px) {
+    .register-page {
+        background: #fff;
+        color: #111;
+    }
+
     .register-layout {
-        grid-template-columns: 1fr;
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .register-brand-column {
-        order: -1;
-        min-height: 220px;
+        display: none;
     }
 
-    .register-logo {
-        width: min(75%, 280px);
+    .register-form-column {
+        flex: 1;
+        width: 100%;
+        min-height: 100dvh;
+        padding:
+            max(1rem, env(safe-area-inset-top, 0px))
+            var(--element-padding)
+            max(1rem, env(safe-area-inset-bottom, 0px));
+        background: #fff;
+    }
+
+    .register-form-panel {
+        width: min(100%, 400px);
+        margin-inline: auto;
+    }
+
+    .register-form-logo {
+        display: block;
+        width: clamp(56px, 18vw, 72px);
+        height: auto;
+        margin: 0 auto 1.25rem;
+        object-fit: contain;
+    }
+
+    .register-form-header {
+        display: none;
+    }
+
+    .register-title {
+        text-align: center;
+        color: #111;
+    }
+
+    .register-subtitle {
+        text-align: center;
+        color: #5a6570;
+    }
+
+    .register-footer {
+        text-align: center;
+        color: #5a6570;
+    }
+
+    .register-page .auth-field {
+        color: #5a6570;
+    }
+
+    .register-page .auth-field input {
+        background: #f3f5f7;
+        color: #111;
+    }
+
+    .register-page .auth-input-leading-icon,
+    .register-page .auth-input-prefix {
+        color: #8a949e;
+    }
+
+    .register-page .auth-input-toggle {
+        color: #8a949e;
+    }
+
+    .register-page .auth-input-toggle:hover {
+        color: #111;
+    }
+
+    .register-page .auth-field-hint.is-checking {
+        color: #8a949e;
     }
 }

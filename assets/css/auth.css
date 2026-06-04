@@ -232,6 +232,23 @@ body.auth-locked {
     cursor: not-allowed;
 }
 
+body.register-page .register-form .auth-submit-btn {
+    margin-top: 1.25rem;
+    padding: 15px 25px;
+    min-height: 3rem;
+    appearance: none;
+    -webkit-appearance: none;
+    accent-color: #111;
+    border: 0;
+    background: #111;
+    color: #fff;
+}
+
+body.register-page .register-form .auth-submit-btn:disabled {
+    background: #111;
+    color: #fff;
+}
+
 .auth-modal-footer {
     margin: var(--post-gap) 0 0;
     font-size: 14px;

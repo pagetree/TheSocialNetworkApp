@@ -26,11 +26,17 @@ renderAppStylesheets($url);
     <div class="register-layout">
         <section class="register-form-column">
             <div class="register-form-panel">
+                <img
+                    class="register-form-logo"
+                    src="<?php echo htmlspecialchars($url('/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>"
+                    alt=""
+                    width="72"
+                    height="72"
+                >
                 <div class="register-form-header">
                     <?php require __DIR__ . '/../includes/layout/theme-toggle.php'; ?>
                 </div>
-                <h1 class="register-title">Create account</h1>
-                <p class="register-subtitle">Join TheSocialNetworkApp today.</p>
+                <h1 class="register-title">Join Dots. Today.</h1>
                 <form class="auth-form register-form" id="register-form" novalidate>
                     <div class="auth-honeypot" aria-hidden="true">
                         <label>
@@ -105,13 +111,7 @@ renderAppStylesheets($url);
                 </p>
             </div>
         </section>
-        <section class="register-brand-column" aria-hidden="true">
-            <img
-                class="register-logo"
-                src="<?php echo htmlspecialchars($url('/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>"
-                alt=""
-            >
-        </section>
+<?php require __DIR__ . '/../includes/auth/register-brand-column.php'; ?>
     </div>
     <script>
         window.APP_REGISTER_URL = <?php echo json_encode($url('/auth/register'), JSON_THROW_ON_ERROR); ?>;

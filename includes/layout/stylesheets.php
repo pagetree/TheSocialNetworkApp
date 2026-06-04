@@ -21,12 +21,12 @@ function appStylesheetPaths(): array
         '/assets/css/sidebar.css',
         '/assets/css/profile.css',
         '/assets/css/auth.css',
-        '/assets/css/register.css',
         '/assets/css/onboarding.css',
         '/assets/css/hashtag.css',
         '/assets/css/post-stats-modal.css',
         '/assets/css/content-report-modal.css',
         '/assets/css/welcome.css',
+        '/assets/css/register.css',
     ];
 }
 
