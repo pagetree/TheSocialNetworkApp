@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 $currentUser = getCurrentUser();
 if ($currentUser === null) {
-    header('Location: ' . $url('/register'));
+    header('Location: ' . $url('/'));
     exit;
 }
 

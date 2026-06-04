@@ -148,6 +148,19 @@ if ($path === '/register') {
     return;
 }
 
+if ($path === '/login') {
+    if (isLoggedIn()) {
+        $loginUser = getCurrentUser();
+        $loginTarget = userNeedsOnboarding($loginUser)
+            ? $url('/onboarding/welcome')
+            : $url('/');
+        header('Location: ' . $loginTarget);
+        exit;
+    }
+    require __DIR__ . '/auth/login-page.php';
+    return;
+}
+
 if (preg_match('#^/onboarding(?:/(welcome|avatar|bio|interests|suggestions))?/?$#', $path, $onboardingRouteMatch)) {
     $onboardingStep = $onboardingRouteMatch[1] ?? 'welcome';
     require __DIR__ . '/includes/onboarding/page.php';
@@ -161,6 +174,25 @@ if (
 ) {
     header('Location: ' . $onboardingRedirect);
     exit;
+}
+
+$guestRedirect = guestAppRedirectUrlIfNeeded($path, $url);
+if (
+    $guestRedirect !== null
+    && strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'GET'
+) {
+    header('Location: ' . $guestRedirect);
+    exit;
+}
+
+if (!isLoggedIn() && $path === '/' && isset($_GET['login'])) {
+    header('Location: ' . $url('/login'));
+    exit;
+}
+
+if (!isLoggedIn() && $path === '/') {
+    require __DIR__ . '/auth/welcome-page.php';
+    return;
 }
 
 if ($path === '/profile.php') {

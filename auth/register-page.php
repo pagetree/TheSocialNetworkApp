@@ -101,7 +101,7 @@ renderAppStylesheets($url);
                 </form>
                 <p class="register-footer">
                     Already have an account?
-                    <a href="<?php echo htmlspecialchars($url('/'), ENT_QUOTES, 'UTF-8'); ?>">Sign in</a>
+                    <a href="<?php echo htmlspecialchars($url('/login'), ENT_QUOTES, 'UTF-8'); ?>">Sign in</a>
                 </p>
             </div>
         </section>

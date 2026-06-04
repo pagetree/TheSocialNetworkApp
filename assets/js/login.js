@@ -3,6 +3,7 @@
     const errorEl = document.getElementById("login-form-error");
     const submitBtn = form?.querySelector(".auth-submit-btn");
     const loginUrl = window.APP_LOGIN_URL;
+    const homeUrl = window.APP_HOME_URL;
     const csrfToken = window.APP_CSRF_TOKEN;
 
     if (!form || !errorEl || !submitBtn || !loginUrl || !csrfToken) {
@@ -56,7 +57,7 @@
                 return;
             }
 
-            window.location.reload();
+            window.location.href = homeUrl || "/";
         } catch {
             showError("Unable to sign in right now.");
         } finally {
