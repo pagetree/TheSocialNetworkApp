@@ -15,6 +15,13 @@
 .post-card:not(.post-composer) {
     grid-template-columns: 48px minmax(0, 1fr);
     align-items: start;
+    transition: background-color 0.18s ease;
+}
+
+@media (hover: hover) {
+    .post-card:not(.post-composer):hover {
+        background-color: color-mix(in srgb, var(--light) 3.5%, var(--elements-bg));
+    }
 }
 
 .post-card:not(.post-composer) .post-header {

@@ -25,6 +25,15 @@
     grid-template-columns: 48px minmax(0, 1fr);
     gap: 14px;
     align-items: stretch;
+    padding-inline: var(--element-padding);
+    border-radius: calc(var(--container-radius) - 5px);
+    transition: background-color 0.18s ease;
+}
+
+@media (hover: hover) {
+    .post-reply-item:hover {
+        background-color: color-mix(in srgb, var(--light) 3.5%, var(--elements-bg));
+    }
 }
 
 .post-reply-item--nested {
