@@ -173,6 +173,30 @@
         box-sizing: border-box;
     }
 
+    body:not(.welcome-page):not(.register-page) .profile-hero-meta {
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 0.5rem;
+        overflow-x: visible;
+    }
+
+    body:not(.welcome-page):not(.register-page) .profile-hero-location,
+    body:not(.welcome-page):not(.register-page) .profile-hero-website,
+    body:not(.welcome-page):not(.register-page) .profile-hero-dob,
+    body:not(.welcome-page):not(.register-page) .profile-hero-joined {
+        width: 100%;
+        max-width: 100%;
+        flex-shrink: 0;
+        white-space: normal;
+        min-width: 0;
+    }
+
+    body:not(.welcome-page):not(.register-page) .profile-hero-website a {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
     body:not(.welcome-page):not(.register-page) .post-card:not(.post-composer) .post-meta-line {
         display: block;
         line-height: 1.15;
