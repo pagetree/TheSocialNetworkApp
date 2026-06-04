@@ -13,7 +13,7 @@
     const mobileQuery = window.matchMedia("(max-width: 900px)");
     let lastFocused = null;
 
-    const isMobile = () => mobileQuery.matches;
+    const useFabComposer = () => mobileQuery.matches;
 
     const refreshIcons = () => {
         if (typeof window.refreshLucideIcons === "function") {
@@ -22,7 +22,7 @@
     };
 
     const setOpen = (open) => {
-        if (!isMobile()) {
+        if (!useFabComposer()) {
             overlay.hidden = false;
             modalRoot.classList.remove("is-open");
             document.body.classList.remove("post-composer-modal-open");
@@ -63,7 +63,7 @@
     };
 
     const syncLayoutMode = () => {
-        if (isMobile()) {
+        if (useFabComposer()) {
             if (!modalRoot.classList.contains("is-open")) {
                 overlay.hidden = true;
             }
@@ -77,7 +77,7 @@
     };
 
     fab.addEventListener("click", () => {
-        if (!isMobile()) {
+        if (!useFabComposer()) {
             return;
         }
         setOpen(!modalRoot.classList.contains("is-open"));
@@ -87,7 +87,7 @@
     backdrop?.addEventListener("click", () => setOpen(false));
 
     document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && isMobile() && modalRoot.classList.contains("is-open")) {
+        if (event.key === "Escape" && useFabComposer() && modalRoot.classList.contains("is-open")) {
             event.preventDefault();
             setOpen(false);
         }

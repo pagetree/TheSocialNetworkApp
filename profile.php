@@ -16,6 +16,9 @@ declare(strict_types=1);
 /** @var int $currentUserId */
 /** @var bool $showFeedReplyModal */
 /** @var bool $profileIsPrivate */
+/** @var bool $showPostComposerModal */
+/** @var string $postCsrfToken */
+/** @var string $composerAvatarUrl */
 
 $profileUser = $profileUser ?? null;
 $profileIsPrivate = $profileIsPrivate ?? false;
@@ -28,6 +31,8 @@ $profilePosts = $profilePosts ?? [];
 $profileLikedPostIds = $profileLikedPostIds ?? [];
 $currentUserId = $currentUserId ?? 0;
 $showFeedReplyModal = $showFeedReplyModal ?? false;
+$showPostComposerModal = !empty($showPostComposerModal);
+$postCsrfToken = $postCsrfToken ?? '';
 
 $hasProfileUser = is_array($profileUser);
 $showProfileActions = $isLoggedIn && $hasProfileUser && !$isOwnProfile && !$profileIsPrivate;
@@ -72,6 +77,9 @@ if ($isOwnProfile) {
     $pageScripts[] = '/assets/js/edit-profile.js';
 } elseif ($showProfileActions && $profileFollowUserId > 0) {
     $pageScripts[] = '/assets/js/profile-menu.js';
+}
+if ($showPostComposerModal) {
+    $pageScripts[] = '/assets/js/post-composer.js';
 }
 if ($showFeedReplyModal) {
     $pageScripts[] = '/assets/js/reply-media-picker.js';
@@ -197,6 +205,10 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                         <a href="#" class="profile-tab">Media</a>
                         <a href="#" class="profile-tab">Likes</a>
                     </nav>
+
+<?php if ($showPostComposerModal) {
+    require __DIR__ . '/includes/posts/post-composer-modal.php';
+} ?>
 
                     <div class="profile-feed" id="profile-post-feed">
 <?php if ($profileIsPrivate) : ?>

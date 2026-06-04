@@ -299,6 +299,8 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
     $composerAvatarUrl = $isLoggedIn && is_array($currentUser)
         ? userMediaUrl($currentUser, 'avatar_url', $url)
         : 'https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/romeo-leaupepe-su-a-70gb9CHBX4g-unsplash.jpg';
+    $showPostComposerModal = $isLoggedIn;
+    $postCsrfToken = $isLoggedIn ? createCsrfToken('post_create') : '';
 
     http_response_code(200);
     header('Content-Type: text/html; charset=utf-8');
