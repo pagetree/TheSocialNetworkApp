@@ -15,7 +15,7 @@ html[data-theme="dark"] {
     --app-container-padding: 3rem;
     --layout-gap: 35px;
     --element-padding: 1rem;
-    --post-gap: 15px;
+    --post-gap: 10px;
     --card-shadow: 0 5px 15px color-mix(in srgb, #000 15%, transparent);
 }
 

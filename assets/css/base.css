@@ -27,26 +27,13 @@ body {
     -webkit-backdrop-filter: blur(12px);
 }
 
-.post-card,
-.profile-card,
-.who-to-follow-card,
-.post-participants-card,
-.post-detail,
-.post-detail-empty,
-.post-replies:has(.post-reply-item),
-.post-reply-composer,
-.onboarding-content-card,
-.profile-hero,
-.profile-edit-modal,
-.auth-modal,
-.post-stats-modal,
-.reply-modal,
-.feed-reply-modal,
-.content-report-modal {
+.app-sidebar .profile-card,
+.app-sidebar .who-to-follow-card,
+.app-sidebar--right .post-participants-card,
+.app-content .post-card,
+.app-content .post-detail,
+.app-content .post-detail-empty,
+.app-content .post-replies:has(.post-reply-item),
+.app-content .post-reply-composer {
     box-shadow: var(--card-shadow);
-}
-
-.feed-reply-modal .post-card,
-.feed-reply-modal-preview.post-card {
-    box-shadow: none;
 }
