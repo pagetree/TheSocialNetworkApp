@@ -5,7 +5,6 @@ declare(strict_types=1);
 <button
     type="button"
     class="theme-toggle topbar-link"
-    id="theme-toggle"
     aria-label="Switch to light theme"
     aria-pressed="false"
 >

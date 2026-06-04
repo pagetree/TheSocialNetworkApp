@@ -30,23 +30,31 @@
     };
 
     const init = () => {
-        const button = document.getElementById("theme-toggle");
-        if (!button) {
+        const buttons = document.querySelectorAll(".theme-toggle");
+        if (buttons.length === 0) {
             return;
         }
 
+        const syncToggles = (theme) => {
+            buttons.forEach((button) => {
+                updateToggle(button, theme);
+            });
+        };
+
         const theme = applyTheme(getTheme());
-        updateToggle(button, theme);
+        syncToggles(theme);
 
-        button.addEventListener("click", () => {
-            const nextTheme = getTheme() === "dark" ? "light" : "dark";
-            applyTheme(nextTheme);
-            writeThemeCookie(nextTheme);
-            updateToggle(button, nextTheme);
+        buttons.forEach((button) => {
+            button.addEventListener("click", () => {
+                const nextTheme = getTheme() === "dark" ? "light" : "dark";
+                applyTheme(nextTheme);
+                writeThemeCookie(nextTheme);
+                syncToggles(nextTheme);
 
-            if (typeof window.refreshLucideIcons === "function") {
-                window.refreshLucideIcons();
-            }
+                if (typeof window.refreshLucideIcons === "function") {
+                    window.refreshLucideIcons();
+                }
+            });
         });
     };
 

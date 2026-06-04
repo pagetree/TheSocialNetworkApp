@@ -1,0 +1,369 @@
+
+/* Main app only — welcome/register pages use their own layout. */
+@media (max-width: 900px) {
+    body:not(.welcome-page):not(.register-page) {
+        --app-margin-top: 0;
+        --app-container-padding: 0;
+        --layout-gap: 0;
+        --sidebar-width: 0;
+        --mobile-offset-top: 2.25rem;
+        background: none !important;
+        background-image: none !important;
+        overflow-x: hidden;
+    }
+
+    body:not(.welcome-page):not(.register-page).app-mobile-nav-open {
+        overflow: hidden;
+    }
+
+    body:not(.welcome-page):not(.register-page) .glass-overlay {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        padding: 0;
+        margin: 0;
+        background: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-container {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        margin: 0;
+        margin-top: max(var(--mobile-offset-top), env(safe-area-inset-top));
+        padding: 0;
+        background: none !important;
+        background-image: none !important;
+        border: 0;
+        border-radius: 0;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-sidebar {
+        display: none !important;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-topbar,
+    body:not(.welcome-page):not(.register-page) .app-topbar--with-right-sidebar {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+        gap: 0;
+        padding-left: max(var(--element-padding), env(safe-area-inset-left));
+        padding-right: max(var(--element-padding), env(safe-area-inset-right));
+        box-sizing: border-box;
+    }
+
+    body:not(.welcome-page):not(.register-page) .topbar-sidebar {
+        padding: 0;
+        margin: 0;
+        gap: 0;
+        justify-self: start;
+        min-width: 0;
+    }
+
+    body:not(.welcome-page):not(.register-page) .topbar-logo {
+        margin: 0;
+        padding: 0;
+    }
+
+    body:not(.welcome-page):not(.register-page) .topbar-content {
+        display: none !important;
+    }
+
+    body:not(.welcome-page):not(.register-page) .topbar-end {
+        padding: 0;
+        margin: 0;
+        justify-self: end;
+        min-width: 0;
+    }
+
+    body:not(.welcome-page):not(.register-page) .topbar-end-desktop {
+        display: none !important;
+    }
+
+    body:not(.welcome-page):not(.register-page) .topbar-mobile-menu-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--light);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: color 140ms ease, background 140ms ease;
+    }
+
+    body:not(.welcome-page):not(.register-page) .topbar-mobile-menu-btn:hover,
+    body:not(.welcome-page):not(.register-page) .topbar-mobile-menu-btn:focus-visible {
+        color: var(--accent);
+        background: color-mix(in srgb, var(--light) 8%, transparent);
+        outline: none;
+    }
+
+    body:not(.welcome-page):not(.register-page) .topbar-mobile-menu-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: currentColor;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-main,
+    body:not(.welcome-page):not(.register-page) .app-main--with-right-sidebar {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-main > main,
+    body:not(.welcome-page):not(.register-page) .app-main > main.app-content,
+    body:not(.welcome-page):not(.register-page) .app-main > main.profile-page,
+    body:not(.welcome-page):not(.register-page) .app-main > main.post-detail-page,
+    body:not(.welcome-page):not(.register-page) .app-main > main.hashtag-page {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        background: none !important;
+        background-image: none !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        border-radius: 0;
+        box-sizing: border-box;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main .onboarding-content-card {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding:
+            max(var(--element-padding), env(safe-area-inset-top))
+            max(var(--element-padding), env(safe-area-inset-right))
+            max(var(--element-padding), env(safe-area-inset-bottom))
+            max(var(--element-padding), env(safe-area-inset-left));
+        background: none !important;
+        background-image: none !important;
+        border: 0 !important;
+        border-radius: 0;
+        box-shadow: none !important;
+        box-sizing: border-box;
+    }
+
+    body:not(.welcome-page):not(.register-page) .onboarding-content-card > .post-card.post-composer {
+        display: none !important;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-main .post-feed,
+    body:not(.welcome-page):not(.register-page) .app-main .post-card:not(.post-composer),
+    body:not(.welcome-page):not(.register-page) .app-main .post-detail,
+    body:not(.welcome-page):not(.register-page) .app-main .profile-hero,
+    body:not(.welcome-page):not(.register-page) .app-main .hashtag-page-header {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    body:not(.welcome-page):not(.register-page) .post-card:not(.post-composer) .post-meta-line {
+        display: block;
+        line-height: 1.15;
+    }
+
+    body:not(.welcome-page):not(.register-page) .post-card:not(.post-composer) .post-meta-line .post-author,
+    body:not(.welcome-page):not(.register-page) .post-card:not(.post-composer) .post-meta-line .post-author-link {
+        display: block;
+        line-height: 1.15;
+    }
+
+    body:not(.welcome-page):not(.register-page) .post-card:not(.post-composer) .post-meta-line .post-handle,
+    body:not(.welcome-page):not(.register-page) .post-card:not(.post-composer) .post-meta-line .post-time {
+        display: inline;
+        line-height: 1.2;
+    }
+
+    body:not(.welcome-page):not(.register-page) .post-card:not(.post-composer) .post-meta-line .post-time {
+        margin-top: 0;
+    }
+
+    body:not(.welcome-page):not(.register-page) .post-card:not(.post-composer) .post-meta-line .post-time::before {
+        content: "·";
+        margin-inline: 0.35rem;
+        color: color-mix(in srgb, var(--light) 55%, transparent);
+    }
+
+    /* Mobile sliding navigation */
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav {
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+        pointer-events: none;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav.is-open {
+        pointer-events: auto;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-backdrop {
+        position: absolute;
+        inset: 0;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        background: color-mix(in srgb, var(--dark) 55%, transparent);
+        opacity: 0;
+        transition: opacity 220ms ease;
+        cursor: pointer;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav.is-open .app-mobile-nav-backdrop {
+        opacity: 1;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: min(100%, 320px);
+        height: 100%;
+        max-height: 100dvh;
+        padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 1.25rem;
+        background: var(--elements-bg);
+        color: var(--light);
+        box-shadow: -8px 0 32px color-mix(in srgb, #000 28%, transparent);
+        transform: translateX(100%);
+        transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav.is-open .app-mobile-nav-panel {
+        transform: translateX(0);
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-title {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--light);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: color 140ms ease, background 140ms ease;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-close:hover,
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-close:focus-visible {
+        color: var(--accent);
+        background: color-mix(in srgb, var(--light) 8%, transparent);
+        outline: none;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-close svg {
+        width: 22px;
+        height: 22px;
+        stroke: currentColor;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        overflow-y: auto;
+        min-height: 0;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-links .topbar-link {
+        width: 100%;
+        min-height: 48px;
+        padding: 0.65rem 0.75rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        justify-content: flex-start;
+        opacity: 1;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-links .topbar-link span {
+        display: inline;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-links .topbar-link:hover,
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-links .topbar-link.is-active {
+        background: color-mix(in srgb, var(--light) 8%, transparent);
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-links .topbar-link svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-footer {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid color-mix(in srgb, var(--light) 12%, transparent);
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-footer .theme-toggle,
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-logout-btn {
+        width: 100%;
+        min-height: 48px;
+        padding: 0.65rem 0.75rem;
+        border-radius: 12px;
+        justify-content: flex-start;
+        opacity: 1;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav-logout {
+        margin: 0;
+    }
+}
+
+@media (min-width: 901px) {
+    body:not(.welcome-page):not(.register-page) .topbar-mobile-menu-btn {
+        display: none;
+    }
+
+    body:not(.welcome-page):not(.register-page) .app-mobile-nav {
+        display: none !important;
+    }
+}
+
+@media (max-width: 640px) {
+    body:not(.welcome-page):not(.register-page) {
+        --mobile-offset-top: 2rem;
+    }
+}

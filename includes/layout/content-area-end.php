@@ -138,6 +138,12 @@ if (!$onboardingLayout) : ?>
     <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/theme.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/icons.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php if (!$onboardingLayout) : ?>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/mobile-nav.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php endif; ?>
+    <?php if (!empty($showPostComposerModal)) : ?>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/post-composer-modal.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php endif; ?>
     <?php if ($isLoggedIn && $onboardingLayout) : ?>
     <?php foreach ($pageScripts as $scriptPath) : ?>
     <script src="<?php echo htmlspecialchars($url($scriptPath), ENT_QUOTES, 'UTF-8'); ?>"></script>

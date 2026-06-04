@@ -37,44 +37,43 @@ if (!$isLoggedIn) {
                     </a>
                 </div>
                 <div class="topbar-content">
-                    <nav class="app-topbar-nav" aria-label="Primary navigation">
-                        <a href="<?php echo htmlspecialchars($url('/'), ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo $navLinkClass('explore'); ?>">
-                            <i data-lucide="compass" aria-hidden="true"></i>
-                            <span>Explore</span>
-                        </a>
-                        <a href="#" class="<?php echo $navLinkClass('messages'); ?>">
-                            <i data-lucide="message-circle" aria-hidden="true"></i>
-                            <span>Chat</span>
-                        </a>
-                        <a href="#" class="<?php echo $navLinkClass('notifications'); ?>">
-                            <i data-lucide="bell" aria-hidden="true"></i>
-                            <span>Notifications</span>
-                        </a>
-                        <a href="<?php echo htmlspecialchars($url('/profile'), ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo $navLinkClass('profile'); ?>">
-                            <i data-lucide="user-round" aria-hidden="true"></i>
-                            <span>Profile</span>
-                        </a>
-                    </nav>
+<?php
+$primaryNavClass = 'app-topbar-nav';
+require __DIR__ . '/primary-nav.php';
+?>
                 </div>
                 <div class="topbar-end">
-                    <?php require __DIR__ . '/theme-toggle.php'; ?>
-                    <?php if ($isLoggedIn) :
-                        $logoutCsrfToken = createCsrfToken('logout');
-                    ?>
-                    <form
-                        method="post"
-                        action="<?php echo htmlspecialchars($url('/logout'), ENT_QUOTES, 'UTF-8'); ?>"
-                        class="topbar-logout-form"
+                    <div class="topbar-end-desktop">
+                        <?php require __DIR__ . '/theme-toggle.php'; ?>
+                        <?php if ($isLoggedIn) :
+                            $logoutCsrfToken = createCsrfToken('logout');
+                        ?>
+                        <form
+                            method="post"
+                            action="<?php echo htmlspecialchars($url('/logout'), ENT_QUOTES, 'UTF-8'); ?>"
+                            class="topbar-logout-form"
+                        >
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($logoutCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                            <button type="submit" class="topbar-link">
+                                <i data-lucide="log-out" aria-hidden="true"></i>
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                        <?php endif; ?>
+                    </div>
+                    <button
+                        type="button"
+                        class="topbar-mobile-menu-btn"
+                        id="app-mobile-nav-open"
+                        aria-controls="app-mobile-nav-panel"
+                        aria-expanded="false"
+                        aria-label="Open menu"
                     >
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($logoutCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                        <button type="submit" class="topbar-link">
-                            <i data-lucide="log-out" aria-hidden="true"></i>
-                            <span>Logout</span>
-                        </button>
-                    </form>
-                    <?php endif; ?>
+                        <i data-lucide="menu" aria-hidden="true"></i>
+                    </button>
                 </div>
             </header>
+<?php require __DIR__ . '/mobile-nav.php'; ?>
 
             <div class="<?php echo htmlspecialchars($appMainClass, ENT_QUOTES, 'UTF-8'); ?>">
                 <?php require __DIR__ . '/sidebar.php'; ?>
