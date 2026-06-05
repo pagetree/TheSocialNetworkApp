@@ -391,16 +391,12 @@ if ($path === '/notifications') {
     $currentUserId = (int) $currentUser['id'];
     $isLoggedIn = true;
     $loginCsrfToken = '';
+    markAllNotificationsRead($currentUserId);
     $notificationItems = fetchNotificationsForUser($currentUserId);
     $notificationsReadCsrfToken = createCsrfToken('notifications_read');
-    $postStatsCsrfToken = createCsrfToken('post_stats');
-    $postLikeCsrfToken = createCsrfToken('post_like');
-    $postRepostCsrfToken = createCsrfToken('post_repost');
-    $replyCsrfToken = createCsrfToken('post_reply');
-    $postCsrfToken = createCsrfToken('post_create');
-    $showFeedReplyModal = true;
-    $showQuoteModal = true;
-    $showPostComposerModal = true;
+    $showFeedReplyModal = false;
+    $showQuoteModal = false;
+    $showPostComposerModal = false;
     $showNotificationsPage = true;
 
     http_response_code(200);
@@ -411,11 +407,7 @@ if ($path === '/notifications') {
     $activeNav = 'notifications';
     $contentPageTitle = __('nav.page_notifications');
     $mainClass = 'app-content notifications-page';
-    $pageScripts = [
-        '/assets/js/post-composer.js',
-        '/assets/js/reply-media-picker.js',
-        '/assets/js/feed-reply-modal.js',
-    ];
+    $pageScripts = [];
 
     require __DIR__ . '/includes/layout/head.php';
     require __DIR__ . '/includes/layout/content-area-start.php';

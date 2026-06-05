@@ -279,6 +279,56 @@ function notificationMessage(array $notification): string
 }
 
 /**
+ * @return array{before: string, after: string}
+ */
+function notificationActionParts(array $notification): array
+{
+    $type = (string) ($notification['type'] ?? '');
+    $typeKey = in_array($type, NOTIFICATION_TYPES, true) ? $type : 'generic';
+
+    return [
+        'before' => __('notifications.action_parts.' . $typeKey . '.before'),
+        'after' => __('notifications.action_parts.' . $typeKey . '.after'),
+    ];
+}
+
+function formatNotificationTimeLabel(string $createdAt): string
+{
+    try {
+        $created = new DateTimeImmutable($createdAt);
+    } catch (Exception) {
+        return '';
+    }
+
+    $now = new DateTimeImmutable('now');
+    $seconds = max(0, $now->getTimestamp() - $created->getTimestamp());
+
+    if ($seconds < 3600) {
+        $minutes = max(1, (int) floor($seconds / 60));
+
+        return $minutes . 'm';
+    }
+
+    $hours = max(1, (int) floor($seconds / 3600));
+
+    return $hours . 'h';
+}
+
+/**
+ * @param array<string, mixed> $notification
+ */
+function notificationActorLinkHtml(array $notification, callable $url): string
+{
+    $actorName = (string) ($notification['display_name'] ?? 'User');
+
+    return '<a href="'
+        . htmlspecialchars(profileUrlForUser($notification, $url), ENT_QUOTES, 'UTF-8')
+        . '" class="notifications-item-actor">'
+        . htmlspecialchars($actorName, ENT_QUOTES, 'UTF-8')
+        . '</a>';
+}
+
+/**
  * @param array<string, mixed> $notification
  */
 function notificationTargetUrl(array $notification, callable $url): string

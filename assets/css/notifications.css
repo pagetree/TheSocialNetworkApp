@@ -52,15 +52,51 @@
 }
 
 .notifications-item {
+    --notifications-avatar-size: 48px;
+    --notifications-item-gap: 12px;
+    position: relative;
     display: grid;
-    grid-template-columns: 48px minmax(0, 1fr) auto;
+    grid-template-columns: var(--notifications-avatar-size) minmax(0, 1fr);
+    column-gap: var(--notifications-item-gap);
     align-items: center;
-    gap: 12px;
     padding: 14px var(--post-card-padding);
     border-radius: var(--container-radius);
-    text-decoration: none;
     color: inherit;
     transition: background 140ms ease;
+}
+
+.notifications-item-avatar {
+    width: var(--notifications-avatar-size);
+    height: var(--notifications-avatar-size);
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    align-self: center;
+}
+
+.notifications-item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    text-align: left;
+}
+
+.notifications-item-name {
+    margin: 0;
+    line-height: 1.3;
+}
+
+.notifications-item-actor {
+    color: inherit;
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.notifications-item-actor:hover {
+    text-decoration: underline;
 }
 
 .notifications-item:hover {
@@ -75,35 +111,39 @@
     background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
-.notifications-item-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-}
-
-.notifications-item-body {
-    min-width: 0;
-}
-
-.notifications-item-message {
+.notifications-item-detail {
     margin: 0;
     font-size: 15px;
-    line-height: 1.35;
-    font-weight: 600;
-    color: var(--light);
+    line-height: 1.4;
+    font-weight: 400;
+    color: color-mix(in srgb, var(--light) 78%, transparent);
+    text-align: left;
+}
+
+.notifications-item-prefix,
+.notifications-item-action {
+    font-weight: 400;
+}
+
+.notifications-item-sep {
+    margin: 0 0.35em;
+    color: color-mix(in srgb, var(--light) 45%, transparent);
 }
 
 .notifications-item-time {
-    display: block;
-    margin-top: 4px;
+    display: inline;
+    margin: 0;
     font-size: 13px;
-    line-height: 1.3;
+    line-height: 1.4;
+    font-weight: 400;
     color: color-mix(in srgb, var(--light) 62%, transparent);
+    white-space: nowrap;
 }
 
 .notifications-item-dot {
+    position: absolute;
+    top: 14px;
+    right: var(--post-card-padding);
     width: 8px;
     height: 8px;
     border-radius: 50%;

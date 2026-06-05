@@ -206,5 +206,10 @@ if (!$onboardingLayout) : ?>
     <?php else : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/login.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endif; ?>
+    <script>
+        if (typeof window.refreshLucideIcons === "function") {
+            window.refreshLucideIcons();
+        }
+    </script>
 </body>
 </html>

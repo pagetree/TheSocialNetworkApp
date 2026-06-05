@@ -473,6 +473,14 @@ return [
             'follow' => ':name followed you',
             'generic' => ':name interacted with you',
         ],
+        'action_parts' => [
+            'like' => ['before' => '', 'after' => ' liked your post'],
+            'reply' => ['before' => '', 'after' => ' replied to your post'],
+            'repost' => ['before' => '', 'after' => ' reposted your post'],
+            'quote' => ['before' => '', 'after' => ' quoted your post'],
+            'follow' => ['before' => '', 'after' => ' followed you'],
+            'generic' => ['before' => '', 'after' => ' interacted with you'],
+        ],
     ],
     'errors' => [
         'profile_not_found' => 'This profile could not be found.',

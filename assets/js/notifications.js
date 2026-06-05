@@ -103,16 +103,18 @@
                     }
                 });
             }
+
         } catch {
             /* ignore */
         }
     }
 
-    pollUnread();
-    window.setInterval(pollUnread, pollMs);
-    document.addEventListener("visibilitychange", pollUnread);
-
     if (window.APP_NOTIFICATIONS_PAGE) {
-        document.addEventListener("DOMContentLoaded", markAllRead);
+        setBadgeVisible(false);
+        markAllRead();
+    } else {
+        pollUnread();
+        window.setInterval(pollUnread, pollMs);
+        document.addEventListener("visibilitychange", pollUnread);
     }
 })();

@@ -311,8 +311,8 @@ html[data-theme="light"] .app-sidebar-nav-link.is-active {
     position: absolute;
     top: -2px;
     right: -2px;
-    width: 9px;
-    height: 9px;
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
     background: var(--accent);
     border: 2px solid var(--body-bg);

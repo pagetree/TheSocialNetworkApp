@@ -473,6 +473,14 @@ return [
             'follow' => ':name empezó a seguirte',
             'generic' => ':name interactuó contigo',
         ],
+        'action_parts' => [
+            'like' => ['before' => '', 'after' => 'le gustó tu publicación'],
+            'reply' => ['before' => '', 'after' => ' respondió a tu publicación'],
+            'repost' => ['before' => '', 'after' => ' republicó tu publicación'],
+            'quote' => ['before' => '', 'after' => ' citó tu publicación'],
+            'follow' => ['before' => '', 'after' => ' empezó a seguirte'],
+            'generic' => ['before' => '', 'after' => ' interactuó contigo'],
+        ],
     ],
     'errors' => [
         'profile_not_found' => 'No se ha encontrado este perfil.',

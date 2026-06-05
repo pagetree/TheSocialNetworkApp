@@ -1,16 +1,21 @@
 (() => {
     const run = () => {
         if (!window.lucide || typeof window.lucide.createIcons !== "function") {
-            return;
+            return false;
         }
 
         window.lucide.createIcons();
+        return true;
     };
 
     window.refreshLucideIcons = run;
 
     const schedule = () => {
-        run();
+        if (!run()) {
+            window.setTimeout(run, 100);
+            window.setTimeout(run, 500);
+        }
+
         window.addEventListener("load", run, { once: true });
     };
 
