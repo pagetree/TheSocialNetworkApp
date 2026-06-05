@@ -466,13 +466,14 @@ return [
     ],
     'notifications' => [
         'empty_title' => 'Estás al día',
-        'empty_hint' => 'Cuando alguien interactúe contigo o te siga, lo verás aquí.',
+        'empty_hint' => 'Cuando alguien interactúe contigo, te mencione o te siga, lo verás aquí.',
         'types' => [
             'like' => 'A :name le gustó tu publicación',
             'reply' => ':name respondió a tu publicación',
             'repost' => ':name republicó tu publicación',
             'quote' => ':name citó tu publicación',
             'follow' => ':name empezó a seguirte',
+            'mention' => ':name te mencionó en una publicación',
             'generic' => ':name interactuó contigo',
         ],
         'action_parts' => [
@@ -481,6 +482,7 @@ return [
             'repost' => ['before' => '', 'after' => ' republicó tu publicación'],
             'quote' => ['before' => '', 'after' => ' citó tu publicación'],
             'follow' => ['before' => '', 'after' => ' empezó a seguirte'],
+            'mention' => ['before' => '', 'after' => ' te mencionó en una publicación'],
             'generic' => ['before' => '', 'after' => ' interactuó contigo'],
         ],
     ],

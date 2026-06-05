@@ -31,6 +31,7 @@ require_once __DIR__ . '/onboarding.php';
 require_once __DIR__ . '/post-participants.php';
 require_once __DIR__ . '/post-scores.php';
 require_once __DIR__ . '/r2-storage.php';
+require_once __DIR__ . '/mentions.php';
 require_once __DIR__ . '/hashtags.php';
 require_once __DIR__ . '/welcome-stats.php';
 require_once __DIR__ . '/post-remove.php';

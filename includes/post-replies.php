@@ -305,12 +305,14 @@ function createPostReply(int $conversationId, int $userId, string $body, ?int $p
     }
 
     if (is_array($reply)) {
+        $replyId = (int) ($reply['id'] ?? 0);
         notifyPostReply(
             $conversationId,
             $userId,
             $parentReplyId,
-            (int) ($reply['id'] ?? 0)
+            $replyId
         );
+        notifyReplyMentions($conversationId, $replyId, $userId, $body);
     }
 
     $author = fetchUserById($userId);

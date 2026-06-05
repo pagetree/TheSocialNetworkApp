@@ -89,30 +89,45 @@ function formatPostBodyHtml(string $body, callable $url): string
         return '';
     }
 
-    $pattern = '/#(' . HASHTAG_TAG_REGEX . ')/i';
+    $pattern = '/(?<![a-z0-9_])@(' . MENTION_HANDLE_REGEX . ')(?![a-z0-9_])|#(' . HASHTAG_TAG_REGEX . ')/i';
     if (!preg_match_all($pattern, $body, $matches, PREG_OFFSET_CAPTURE)) {
         return htmlspecialchars($body, ENT_QUOTES, 'UTF-8');
     }
 
+    $mentionUsers = fetchUsersByMentionHandles(extractMentionHandles($body));
     $html = '';
     $byteOffset = 0;
 
     foreach ($matches[0] as $index => $fullMatch) {
         $matchBytes = (string) $fullMatch[0];
         $matchByteStart = (int) $fullMatch[1];
+        $mentionRaw = (string) ($matches[1][$index][0] ?? '');
+        $hashtagRaw = (string) ($matches[2][$index][0] ?? '');
 
         if ($matchByteStart > $byteOffset) {
             $html .= htmlspecialchars(substr($body, $byteOffset, $matchByteStart - $byteOffset), ENT_QUOTES, 'UTF-8');
         }
 
-        $tag = normalizeHashtagTag((string) $matches[1][$index][0]);
-        $path = $tag !== '' ? hashtagUrlPath($tag) : '';
-        if ($path === '') {
-            $html .= htmlspecialchars($matchBytes, ENT_QUOTES, 'UTF-8');
+        if ($mentionRaw !== '') {
+            $handle = normalizeMentionHandle($mentionRaw);
+            $mentionedUser = $handle !== '' ? ($mentionUsers[$handle] ?? null) : null;
+            if ($mentionedUser === null) {
+                $html .= htmlspecialchars($matchBytes, ENT_QUOTES, 'UTF-8');
+            } else {
+                $href = htmlspecialchars(profileUrlForUser($mentionedUser, $url), ENT_QUOTES, 'UTF-8');
+                $label = htmlspecialchars($handle, ENT_QUOTES, 'UTF-8');
+                $html .= '<a href="' . $href . '" class="post-mention">' . $label . '</a>';
+            }
         } else {
-            $href = htmlspecialchars($url($path), ENT_QUOTES, 'UTF-8');
-            $label = htmlspecialchars('#' . $tag, ENT_QUOTES, 'UTF-8');
-            $html .= '<a href="' . $href . '" class="post-hashtag">' . $label . '</a>';
+            $tag = normalizeHashtagTag($hashtagRaw);
+            $path = $tag !== '' ? hashtagUrlPath($tag) : '';
+            if ($path === '') {
+                $html .= htmlspecialchars($matchBytes, ENT_QUOTES, 'UTF-8');
+            } else {
+                $href = htmlspecialchars($url($path), ENT_QUOTES, 'UTF-8');
+                $label = htmlspecialchars('#' . $tag, ENT_QUOTES, 'UTF-8');
+                $html .= '<a href="' . $href . '" class="post-hashtag">' . $label . '</a>';
+            }
         }
 
         $byteOffset = $matchByteStart + strlen($matchBytes);

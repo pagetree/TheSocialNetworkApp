@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-const NOTIFICATION_TYPES = ['like', 'reply', 'repost', 'quote', 'follow'];
+const NOTIFICATION_TYPES = ['like', 'reply', 'repost', 'quote', 'follow', 'mention'];
 
 function createNotificationIfEligible(
     int $recipientUserId,
@@ -274,6 +274,7 @@ function notificationMessage(array $notification): string
         'repost' => __('notifications.types.repost', ['name' => $actorName]),
         'quote' => __('notifications.types.quote', ['name' => $actorName]),
         'follow' => __('notifications.types.follow', ['name' => $actorName]),
+        'mention' => __('notifications.types.mention', ['name' => $actorName]),
         default => __('notifications.types.generic', ['name' => $actorName]),
     };
 }

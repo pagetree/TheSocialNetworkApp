@@ -160,6 +160,7 @@ $post['avatar_url'] = $author['avatar_url'];
 
 if ($bodyForDb !== null) {
     syncPostHashtags($postId, $bodyForDb);
+    notifyPostMentions($postId, $userId, $bodyForDb);
 }
 
 consumeCsrfToken(extractCsrfToken($payload), 'post_create');

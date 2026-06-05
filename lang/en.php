@@ -466,13 +466,14 @@ return [
     ],
     'notifications' => [
         'empty_title' => 'You\'re all caught up',
-        'empty_hint' => 'When someone likes, replies, or follows you, it\'ll show up here.',
+        'empty_hint' => 'When someone likes, replies, mentions, or follows you, it\'ll show up here.',
         'types' => [
             'like' => ':name liked your post',
             'reply' => ':name replied to your post',
             'repost' => ':name reposted your post',
             'quote' => ':name quoted your post',
             'follow' => ':name followed you',
+            'mention' => ':name mentioned you in a post',
             'generic' => ':name interacted with you',
         ],
         'action_parts' => [
@@ -481,6 +482,7 @@ return [
             'repost' => ['before' => '', 'after' => ' reposted your post'],
             'quote' => ['before' => '', 'after' => ' quoted your post'],
             'follow' => ['before' => '', 'after' => ' followed you'],
+            'mention' => ['before' => '', 'after' => ' mentioned you in a post'],
             'generic' => ['before' => '', 'after' => ' interacted with you'],
         ],
     ],
