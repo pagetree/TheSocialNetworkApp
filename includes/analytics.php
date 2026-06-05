@@ -176,6 +176,8 @@ function analyticsTrendIcon(string $trend): string
  *     reposts: int,
  *     new_followers: int,
  *     interactions: int,
+ *     profile_views: int,
+ *     link_clicks: int,
  *     engagement_rate: float
  * }
  */
@@ -248,7 +250,20 @@ function fetchUserAnalyticsMetricCounts(
                   AND p.is_deleted = FALSE
                   AND pse.event_type = \'interaction\'
                   AND pse.created_at >= :since' . str_replace('metric_created_at', 'pse.created_at', $untilSql) . '
-            ) AS interactions'
+            ) AS interactions,
+            (
+                SELECT COUNT(*)::int
+                FROM profile_stat_events pse
+                WHERE pse.profile_user_id = :user_id
+                  AND pse.event_type = \'view\'
+                  AND pse.created_at >= :since' . str_replace('metric_created_at', 'pse.created_at', $untilSql) . '
+            ) AS profile_views,
+            (
+                SELECT COUNT(*)::int
+                FROM link_click_events lce
+                WHERE lce.owner_user_id = :user_id
+                  AND lce.created_at >= :since' . str_replace('metric_created_at', 'lce.created_at', $untilSql) . '
+            ) AS link_clicks'
     );
     $stmt->execute($params);
     $row = $stmt->fetch();
@@ -259,6 +274,8 @@ function fetchUserAnalyticsMetricCounts(
     $reposts = (int) ($row['reposts'] ?? 0);
     $newFollowers = (int) ($row['new_followers'] ?? 0);
     $interactions = (int) ($row['interactions'] ?? 0);
+    $profileViews = (int) ($row['profile_views'] ?? 0);
+    $linkClicks = (int) ($row['link_clicks'] ?? 0);
     $engagements = $likes + $replies + $reposts + $interactions;
     $engagementRate = $impressions > 0
         ? round(($engagements / $impressions) * 100, 1)
@@ -271,6 +288,8 @@ function fetchUserAnalyticsMetricCounts(
         'reposts' => $reposts,
         'new_followers' => $newFollowers,
         'interactions' => $interactions,
+        'profile_views' => $profileViews,
+        'link_clicks' => $linkClicks,
         'engagement_rate' => $engagementRate,
     ];
 }
@@ -400,8 +419,8 @@ function fetchUserAnalyticsStats(int $userId, string $period): array
         'stats' => [
             analyticsStatCard('impressions', __('analytics.stats.impressions'), $current['impressions'], $previous['impressions']),
             analyticsStatCard('engagement_rate', __('analytics.stats.engagement_rate'), $current['engagement_rate'], $previous['engagement_rate'], false, true),
-            analyticsStatCard('profile_views', __('analytics.stats.profile_views'), null, 0, true),
-            analyticsStatCard('link_clicks', __('analytics.stats.link_clicks'), null, 0, true),
+            analyticsStatCard('profile_views', __('analytics.stats.profile_views'), $current['profile_views'], $previous['profile_views']),
+            analyticsStatCard('link_clicks', __('analytics.stats.link_clicks'), $current['link_clicks'], $previous['link_clicks']),
             analyticsStatCard('new_followers', __('analytics.stats.new_followers'), $current['new_followers'], $previous['new_followers']),
             analyticsStatCard('replies', __('analytics.stats.replies'), $current['replies'], $previous['replies']),
             analyticsStatCard('likes', __('analytics.stats.likes'), $current['likes'], $previous['likes']),

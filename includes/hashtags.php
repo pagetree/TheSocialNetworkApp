@@ -83,6 +83,48 @@ function hashtagUrlPath(string $tag): string
     return $tag === '' ? '' : '/hashtag/' . $tag;
 }
 
+function formatPostPlainTextHtml(string $text): string
+{
+    if ($text === '') {
+        return '';
+    }
+
+    $pattern = '/\b(https?:\/\/[^\s<>"\'\]]+|www\.[^\s<>"\'\]]+)/i';
+    if (!preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
+        return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+    }
+
+    $html = '';
+    $byteOffset = 0;
+
+    foreach ($matches[0] as $fullMatch) {
+        $matchBytes = (string) $fullMatch[0];
+        $matchByteStart = (int) $fullMatch[1];
+
+        if ($matchByteStart > $byteOffset) {
+            $html .= htmlspecialchars(substr($text, $byteOffset, $matchByteStart - $byteOffset), ENT_QUOTES, 'UTF-8');
+        }
+
+        $url = rtrim($matchBytes, '.,!?)]');
+        $trailing = substr($matchBytes, strlen($url));
+        $href = str_starts_with(strtolower($url), 'www.') ? 'https://' . $url : $url;
+
+        $html .= '<a href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8')
+            . '" class="post-external-link" target="_blank" rel="noopener noreferrer">'
+            . htmlspecialchars($url, ENT_QUOTES, 'UTF-8')
+            . '</a>'
+            . htmlspecialchars($trailing, ENT_QUOTES, 'UTF-8');
+
+        $byteOffset = $matchByteStart + strlen($matchBytes);
+    }
+
+    if ($byteOffset < strlen($text)) {
+        $html .= htmlspecialchars(substr($text, $byteOffset), ENT_QUOTES, 'UTF-8');
+    }
+
+    return $html;
+}
+
 function formatPostBodyHtml(string $body, callable $url): string
 {
     if ($body === '') {
@@ -91,7 +133,7 @@ function formatPostBodyHtml(string $body, callable $url): string
 
     $pattern = '/(?<![a-z0-9._-])@(' . MENTION_HANDLE_REGEX . ')(?![a-z0-9._-])|#(' . HASHTAG_TAG_REGEX . ')/i';
     if (!preg_match_all($pattern, $body, $matches, PREG_OFFSET_CAPTURE)) {
-        return htmlspecialchars($body, ENT_QUOTES, 'UTF-8');
+        return formatPostPlainTextHtml($body);
     }
 
     $mentionUsers = fetchUsersByMentionHandles(extractMentionHandles($body));
@@ -105,7 +147,7 @@ function formatPostBodyHtml(string $body, callable $url): string
         $hashtagRaw = (string) ($matches[2][$index][0] ?? '');
 
         if ($matchByteStart > $byteOffset) {
-            $html .= htmlspecialchars(substr($body, $byteOffset, $matchByteStart - $byteOffset), ENT_QUOTES, 'UTF-8');
+            $html .= formatPostPlainTextHtml(substr($body, $byteOffset, $matchByteStart - $byteOffset));
         }
 
         if ($mentionRaw !== '') {
@@ -134,7 +176,7 @@ function formatPostBodyHtml(string $body, callable $url): string
     }
 
     if ($byteOffset < strlen($body)) {
-        $html .= htmlspecialchars(substr($body, $byteOffset), ENT_QUOTES, 'UTF-8');
+        $html .= formatPostPlainTextHtml(substr($body, $byteOffset));
     }
 
     return $html;

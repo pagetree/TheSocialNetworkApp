@@ -17,6 +17,8 @@ function rateLimitConfig(string $action): array
         'profile.update' => ['max' => 15, 'window_seconds' => 900],
         'posts.create' => ['max' => 20, 'window_seconds' => 900],
         'posts.stats' => ['max' => 120, 'window_seconds' => 900],
+        'profile.stats' => ['max' => 120, 'window_seconds' => 900],
+        'links.click' => ['max' => 120, 'window_seconds' => 900],
         'posts.stats.detail' => ['max' => 60, 'window_seconds' => 900],
         'posts.reply' => ['max' => 30, 'window_seconds' => 900],
         'posts.like' => ['max' => 60, 'window_seconds' => 900],

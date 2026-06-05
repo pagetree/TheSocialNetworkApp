@@ -103,6 +103,9 @@ if ($showFeedReplyModal) {
     $pageScripts[] = '/assets/js/reply-media-picker.js';
     $pageScripts[] = '/assets/js/feed-reply-modal.js';
 }
+if (!empty($profileStatsCsrfToken) && !empty($profileTrackUserId)) {
+    $pageScripts[] = '/assets/js/profile-stats.js';
+}
 
 require __DIR__ . '/includes/layout/head.php';
 require __DIR__ . '/includes/layout/content-area-start.php';

@@ -14,7 +14,12 @@ $quotedPostUrl = (string) ($quotedPost['post_url'] ?? '');
 $quotedMediaItems = is_array($quotedPost['media'] ?? null) ? $quotedPost['media'] : [];
 $post = $quotedPost;
 ?>
-                        <article class="post-quoted-card" aria-label="<?php echo __e('quote.embedded'); ?>">
+                        <article
+                            class="post-quoted-card"
+                            aria-label="<?php echo __e('quote.embedded'); ?>"
+                            data-post-id="<?php echo (int) ($quotedPost['id'] ?? 0); ?>"
+                            data-post-user-id="<?php echo (int) ($quotedPost['user_id'] ?? 0); ?>"
+                        >
 <?php if ($quotedPostUrl !== '') : ?>
                             <a class="post-quoted-card-link" href="<?php echo htmlspecialchars($quotedPostUrl, ENT_QUOTES, 'UTF-8'); ?>" tabindex="-1" aria-hidden="true"></a>
 <?php endif; ?>

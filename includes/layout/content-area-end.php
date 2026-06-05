@@ -105,6 +105,24 @@ if (!$onboardingLayout) : ?>
         window.APP_CURRENT_USER_ID = <?php echo json_encode($currentUserId ?? 0, JSON_THROW_ON_ERROR); ?>;
     </script>
     <?php endif; ?>
+    <?php if (!empty($profileStatsCsrfToken) && !empty($profileTrackUserId)) : ?>
+    <script>
+        window.APP_PROFILE_STATS_URL = <?php echo json_encode($url('/profile/stats'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_PROFILE_STATS_CSRF_TOKEN = <?php echo json_encode($profileStatsCsrfToken, JSON_THROW_ON_ERROR); ?>;
+        window.APP_PROFILE_TRACK_USER_ID = <?php echo json_encode((int) $profileTrackUserId, JSON_THROW_ON_ERROR); ?>;
+    </script>
+    <?php endif; ?>
+    <?php
+    if ($isLoggedIn && !$onboardingLayout && empty($linkClickCsrfToken)) {
+        $linkClickCsrfToken = createCsrfToken('link_click');
+    }
+    ?>
+    <?php if ($isLoggedIn && !$onboardingLayout && !empty($linkClickCsrfToken)) : ?>
+    <script>
+        window.APP_LINK_CLICK_URL = <?php echo json_encode($url('/links/click'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_LINK_CLICK_CSRF_TOKEN = <?php echo json_encode($linkClickCsrfToken, JSON_THROW_ON_ERROR); ?>;
+    </script>
+    <?php endif; ?>
     <?php
     if ($isLoggedIn && empty($postRepostCsrfToken)) {
         $postRepostCsrfToken = createCsrfToken('post_repost');
@@ -230,6 +248,9 @@ if (!$onboardingLayout) : ?>
     <?php endforeach; ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/media-lightbox.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-stats.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php if ($isLoggedIn && !$onboardingLayout && !empty($linkClickCsrfToken)) : ?>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/link-clicks.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php endif; ?>
     <?php if (!empty($postStatsCsrfToken)) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-stats-modal.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endif; ?>

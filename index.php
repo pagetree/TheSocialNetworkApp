@@ -121,6 +121,16 @@ if ($path === '/posts/stats' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     return;
 }
 
+if ($path === '/profile/stats' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/profile-stats.php';
+    return;
+}
+
+if ($path === '/links/click' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/link-click.php';
+    return;
+}
+
 if ($path === '/posts/stats/detail' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     require __DIR__ . '/auth/post-stats-detail.php';
     return;
@@ -358,6 +368,20 @@ if (preg_match('#^/profile(?:/([a-z0-9._-]+))?/?$#i', $path, $profileRouteMatch)
         : 'https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/romeo-leaupepe-su-a-70gb9CHBX4g-unsplash.jpg';
     $showPostComposerModal = false;
     $postCsrfToken = '';
+    $profileStatsCsrfToken = '';
+    $profileTrackUserId = 0;
+
+    if (
+        $isLoggedIn
+        && !$isOwnProfile
+        && !$profileIsPrivate
+        && is_array($profileUser)
+    ) {
+        $profileTrackUserId = (int) ($profileUser['id'] ?? 0);
+        if ($profileTrackUserId > 0) {
+            $profileStatsCsrfToken = createCsrfToken('profile_stats');
+        }
+    }
 
     http_response_code(200);
     header('Content-Type: text/html; charset=utf-8');
