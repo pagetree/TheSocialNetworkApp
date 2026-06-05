@@ -333,6 +333,7 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) 
         $pageTitle = __('meta.hashtag_invalid_title');
         $pageSeo = seoNoindexPage('/hashtag/' . rawurlencode((string) $hashtagRouteMatch[1]));
         $activeNav = 'explore';
+        $contentPageTitle = __('nav.page_hashtags');
         $mainClass = 'app-content hashtag-page';
         $currentUser = getCurrentUser();
         $isLoggedIn = $currentUser !== null;
@@ -352,10 +353,6 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) 
     $hashtagPostCount = $hashtagMeta !== null
         ? (int) $hashtagMeta['post_count']
         : count($hashtagPosts);
-    $hashtagRepliesByPost = fetchPostRepliesGroupedByConversationIds(
-        array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $hashtagPosts)
-    );
-
     $currentUser = getCurrentUser();
     $isLoggedIn = $currentUser !== null;
     $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
@@ -382,12 +379,12 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) 
     $pageSeo = seoBuildHashtagPage($hashtagTag, $hashtagPostCount);
     $pageTitle = seoApplyPageTitle($pageSeo, __('meta.hashtag_title', ['tag' => $hashtagTag]));
     $activeNav = 'explore';
+    $contentPageTitle = __('nav.page_hashtags');
     $mainClass = 'app-content hashtag-page';
     $pageScripts = [];
     if ($showFeedReplyModal) {
         $pageScripts[] = '/assets/js/reply-media-picker.js';
         $pageScripts[] = '/assets/js/feed-reply-modal.js';
-        $pageScripts[] = '/assets/js/hashtag-reply.js';
     }
 
     require __DIR__ . '/includes/layout/head.php';

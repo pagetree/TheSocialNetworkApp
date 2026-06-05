@@ -18,6 +18,10 @@ declare(strict_types=1);
                             <i data-lucide="bell" aria-hidden="true"></i>
                             <span><?php echo __e('nav.notifications'); ?></span>
                         </a>
+                        <a href="#" class="<?php echo $sidebarNavLinkClass('analytics'); ?>">
+                            <i data-lucide="bar-chart-2" aria-hidden="true"></i>
+                            <span><?php echo __e('nav.analytics'); ?></span>
+                        </a>
                         <a href="<?php echo htmlspecialchars($url('/profile'), ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo $sidebarNavLinkClass('profile'); ?>">
                             <i data-lucide="user-round" aria-hidden="true"></i>
                             <span><?php echo __e('nav.profile'); ?></span>

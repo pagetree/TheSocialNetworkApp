@@ -144,6 +144,9 @@ if (!$onboardingLayout) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/icons.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php if (!$onboardingLayout) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/mobile-nav.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php if ($isLoggedIn) : ?>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/sidebar-footer-menu.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php endif; ?>
     <?php endif; ?>
     <?php if (!empty($showPostComposerModal)) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-composer-modal.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>

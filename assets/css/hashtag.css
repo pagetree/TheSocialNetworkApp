@@ -57,19 +57,3 @@
     text-decoration: underline;
 }
 
-.hashtag-page .post-card:not(.post-composer) .hashtag-post-replies {
-    grid-column: 2;
-    text-align: left;
-}
-
-.hashtag-page .post-card--linkable .hashtag-post-replies,
-.hashtag-page .post-card--linkable .hashtag-post-replies .post-action,
-.hashtag-page .post-card--linkable .hashtag-post-replies .post-hashtag {
-    pointer-events: auto;
-    position: relative;
-    z-index: 2;
-}
-
-.hashtag-page .hashtag-post-replies {
-    margin-top: calc(var(--post-gap) * 0.5);
-}

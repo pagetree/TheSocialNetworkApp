@@ -301,6 +301,7 @@ html[data-theme="light"] .app-sidebar-nav-link.is-active {
     margin-top: auto;
     flex-shrink: 0;
     border-top: 1px solid var(--sidebar-border-color);
+    overflow: visible;
 }
 
 .app-sidebar .app-sidebar-footer {
@@ -419,6 +420,97 @@ html[data-theme="light"] .app-sidebar-nav-link.is-active {
     width: 18px;
     height: 18px;
     stroke: currentColor;
+}
+
+.app-sidebar-footer-menu-btn[aria-expanded="true"] {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--light) 8%, transparent);
+}
+
+.app-sidebar-footer-menu {
+    position: relative;
+    width: 100%;
+}
+
+.app-sidebar-footer-dropdown {
+    position: absolute;
+    bottom: calc(100% + 17px);
+    left: 0;
+    right: 0;
+    z-index: 30;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border-radius: var(--container-radius);
+    background: var(--elements-bg);
+    transform: translateY(24px);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+}
+
+.app-sidebar-footer-dropdown.is-open {
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+html[data-theme="light"] .app-sidebar-footer-dropdown {
+    background: var(--composer-bg);
+}
+
+.app-sidebar-footer-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: calc(var(--container-radius) - 2px);
+    padding: 18px 16px;
+    background: transparent;
+    color: var(--light);
+    font: inherit;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 140ms ease, color 140ms ease;
+}
+
+.app-sidebar-footer-option:hover,
+.app-sidebar-footer-option:focus-visible {
+    background: color-mix(in srgb, var(--light) 8%, transparent);
+    color: var(--light);
+    outline: none;
+}
+
+.app-sidebar-footer-option svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    stroke: currentColor;
+}
+
+.app-sidebar-footer-option--settings {
+    color: color-mix(in srgb, var(--light) 48%, transparent);
+    cursor: default;
+}
+
+.app-sidebar-footer-option--settings:hover,
+.app-sidebar-footer-option--settings:focus-visible {
+    background: transparent;
+    color: color-mix(in srgb, var(--light) 48%, transparent);
+}
+
+.app-sidebar-footer-logout-form {
+    margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-sidebar-footer-dropdown {
+        transition: none;
+    }
 }
 
 .app-sidebar--right {

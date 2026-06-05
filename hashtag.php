@@ -8,7 +8,6 @@ declare(strict_types=1);
 /** @var string $hashtagTag */
 /** @var int $hashtagPostCount */
 /** @var list<array<string, mixed>> $hashtagPosts */
-/** @var array<int, list<array<string, mixed>>> $hashtagRepliesByPost */
 /** @var array<int, int> $hashtagLikedPostIds */
 /** @var int $currentUserId */
 /** @var bool $showFeedReplyModal */
@@ -16,7 +15,6 @@ declare(strict_types=1);
 $hashtagTag = $hashtagTag ?? '';
 $hashtagPostCount = $hashtagPostCount ?? 0;
 $hashtagPosts = $hashtagPosts ?? [];
-$hashtagRepliesByPost = $hashtagRepliesByPost ?? [];
 $hashtagLikedPostIds = $hashtagLikedPostIds ?? [];
 $currentUserId = $currentUserId ?? 0;
 $showFeedReplyModal = $showFeedReplyModal ?? false;
@@ -47,7 +45,6 @@ $postCountLabel = $hashtagPostCount === 1
             $currentUserId,
             isset($hashtagLikedPostIds[$postId])
         );
-        renderHashtagPostCardReplies($hashtagRepliesByPost[$postId] ?? [], $url, $currentUserId, $postId);
     }
 endif; ?>
                     </div>

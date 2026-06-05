@@ -38,9 +38,8 @@
 }
 
 .profile-hero {
-    background: var(--elements-bg);
-    border-radius: var(--container-radius);
     overflow: hidden;
+    padding: 0 var(--post-card-padding) 2rem var(--post-card-padding);
 }
 
 .profile-cover {
@@ -639,6 +638,7 @@ body.profile-edit-open {
     flex-wrap: wrap;
     gap: 0;
     border-bottom: 1px solid color-mix(in srgb, var(--light) 12%, transparent);
+    margin: 2rem 0;
 }
 
 .profile-tab {
