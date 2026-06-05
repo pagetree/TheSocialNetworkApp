@@ -46,8 +46,55 @@
         errorEl.hidden = true;
     };
 
-    const normalizeUsernameInput = (value) =>
-        value.trim().replace(/^@+/, "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+    const USERNAME_MIN_LENGTH = 3;
+    const USERNAME_MAX_LENGTH = 50;
+    const USERNAME_ALLOWED_CHARS = /[^a-z0-9._-]/g;
+    const USERNAME_FORMAT = /^[a-z0-9](?:[a-z0-9]*(?:[._-][a-z0-9]+)*)?$/;
+
+    const prepareUsernameInput = (value) =>
+        value.trim().replace(/^@+/, "").toLowerCase();
+
+    const validateUsernameFormat = (value) => {
+        if (value === "") {
+            return { valid: false, errorKey: "required" };
+        }
+
+        if (value.length < USERNAME_MIN_LENGTH) {
+            return { valid: false, errorKey: "min_length" };
+        }
+
+        if (value.length > USERNAME_MAX_LENGTH) {
+            return { valid: false, errorKey: "too_long" };
+        }
+
+        if (!/^[a-z0-9._-]+$/.test(value)) {
+            return { valid: false, errorKey: "invalid" };
+        }
+
+        if (value.includes("..") || value.includes("--") || value.includes("__")) {
+            return { valid: false, errorKey: "invalid" };
+        }
+
+        if (!USERNAME_FORMAT.test(value)) {
+            return { valid: false, errorKey: "invalid" };
+        }
+
+        return { valid: true, errorKey: null };
+    };
+
+    const usernameFormatMessage = (errorKey) => {
+        if (errorKey === "required") {
+            return t("auth.username_status.required");
+        }
+        if (errorKey === "min_length") {
+            return t("auth.username_status.min_length");
+        }
+        if (errorKey === "too_long") {
+            return t("auth.username_status.too_long");
+        }
+
+        return t("auth.username_status.invalid");
+    };
 
     const setUsernameHint = (message, state) => {
         usernameHint.textContent = message;
@@ -71,7 +118,7 @@
 
     const checkUsername = async (rawValue) => {
         const requestId = ++usernameRequestId;
-        const value = normalizeUsernameInput(rawValue);
+        const value = prepareUsernameInput(rawValue);
 
         if (value === "") {
             usernameState = {
@@ -81,6 +128,19 @@
                 checking: false,
             };
             setUsernameHint("");
+            updateSubmitState();
+            return;
+        }
+
+        const formatCheck = validateUsernameFormat(value);
+        if (!formatCheck.valid) {
+            usernameState = {
+                value,
+                valid: false,
+                available: false,
+                checking: false,
+            };
+            setUsernameHint(usernameFormatMessage(formatCheck.errorKey), "is-warning");
             updateSubmitState();
             return;
         }
@@ -174,7 +234,10 @@
     };
 
     usernameInput.addEventListener("input", () => {
-        const cleaned = normalizeUsernameInput(usernameInput.value);
+        const cleaned = prepareUsernameInput(usernameInput.value).replace(
+            USERNAME_ALLOWED_CHARS,
+            ""
+        );
         if (usernameInput.value !== cleaned) {
             usernameInput.value = cleaned;
         }
@@ -193,14 +256,37 @@
             return;
         }
 
+        const formatCheck = validateUsernameFormat(cleaned);
+        if (!formatCheck.valid) {
+            setUsernameHint(usernameFormatMessage(formatCheck.errorKey), "is-warning");
+            updateSubmitState();
+            return;
+        }
+
         setUsernameHint("", "");
         updateSubmitState();
         scheduleUsernameCheck(cleaned);
     });
 
     usernameInput.addEventListener("blur", () => {
-        const cleaned = normalizeUsernameInput(usernameInput.value);
+        const cleaned = prepareUsernameInput(usernameInput.value).replace(
+            USERNAME_ALLOWED_CHARS,
+            ""
+        );
         if (cleaned === "") {
+            return;
+        }
+
+        const formatCheck = validateUsernameFormat(cleaned);
+        if (!formatCheck.valid) {
+            usernameState = {
+                value: cleaned,
+                valid: false,
+                available: false,
+                checking: false,
+            };
+            setUsernameHint(usernameFormatMessage(formatCheck.errorKey), "is-warning");
+            updateSubmitState();
             return;
         }
 
@@ -241,7 +327,10 @@
         const payload = {
             first_name: String(formData.get("first_name") ?? "").trim(),
             last_name: String(formData.get("last_name") ?? "").trim(),
-            username: normalizeUsernameInput(String(formData.get("username") ?? "")),
+            username: prepareUsernameInput(String(formData.get("username") ?? "")).replace(
+                USERNAME_ALLOWED_CHARS,
+                ""
+            ),
             email: String(formData.get("email") ?? "").trim(),
             password: String(formData.get("password") ?? ""),
             csrf_token: csrfToken,

@@ -59,6 +59,13 @@ function logoutUser(): void
 
 function attemptLogin(string $identifier, string $password): ?array
 {
+    $identifier = trim($identifier);
+    if (str_contains($identifier, '@') && !str_starts_with($identifier, '@')) {
+        $identifier = strtolower($identifier);
+    } else {
+        $identifier = prepareUsernameInput($identifier);
+    }
+
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
         'SELECT id, username, display_name, handle, email, password_hash, avatar_url, cover_url, bio, location, website_url, date_of_birth, created_at
@@ -86,9 +93,103 @@ function attemptLogin(string $identifier, string $password): ?array
     return fetchUserById((int) $user['id']) ?? $user;
 }
 
+const USERNAME_MIN_LENGTH = 3;
+const USERNAME_MAX_LENGTH = 50;
+
+/** ASCII slug charset for @handles: letters, digits, single . - _ between alphanumerics. */
+const USERNAME_FORMAT_PATTERN = '/^[a-z0-9](?:[a-z0-9]*(?:[._-][a-z0-9]+)*)?$/';
+
+/**
+ * @return list<string>
+ */
+function reservedUsernames(): array
+{
+    return [
+        'admin',
+        'administrator',
+        'analytics',
+        'api',
+        'auth',
+        'explore',
+        'hashtag',
+        'health',
+        'help',
+        'home',
+        'login',
+        'logout',
+        'messages',
+        'moderator',
+        'notifications',
+        'onboarding',
+        'post',
+        'posts',
+        'profile',
+        'register',
+        'root',
+        'search',
+        'settings',
+        'staff',
+        'support',
+        'system',
+        'team',
+        'www',
+    ];
+}
+
+function prepareUsernameInput(string $username): string
+{
+    $username = strtolower(trim($username));
+
+    return ltrim($username, '@');
+}
+
 function normalizeUsername(string $username): string
 {
-    return strtolower(preg_replace('/[^a-z0-9_]/', '', strtolower(trim($username))) ?? '');
+    return prepareUsernameInput($username);
+}
+
+function isReservedUsername(string $username): bool
+{
+    return in_array(prepareUsernameInput($username), reservedUsernames(), true);
+}
+
+function validateUsernameFormat(string $username): ?string
+{
+    $username = prepareUsernameInput($username);
+
+    if ($username === '') {
+        return 'Username is required.';
+    }
+
+    if (strlen($username) < USERNAME_MIN_LENGTH) {
+        return 'Username must be at least 3 characters (letters, numbers, period, hyphen, underscore).';
+    }
+
+    if (strlen($username) > USERNAME_MAX_LENGTH) {
+        return 'Username must be 50 characters or less.';
+    }
+
+    if (!preg_match('/^[a-z0-9._-]+$/', $username)) {
+        return 'Username is not valid.';
+    }
+
+    if (
+        str_contains($username, '..')
+        || str_contains($username, '--')
+        || str_contains($username, '__')
+    ) {
+        return 'Username is not valid.';
+    }
+
+    if (!preg_match(USERNAME_FORMAT_PATTERN, $username)) {
+        return 'Username is not valid.';
+    }
+
+    if (isReservedUsername($username)) {
+        return 'Username is not valid.';
+    }
+
+    return null;
 }
 
 /**
@@ -97,31 +198,14 @@ function normalizeUsername(string $username): string
 function checkUsernameAvailability(string $username): array
 {
     $normalized = normalizeUsername($username);
+    $formatError = validateUsernameFormat($username);
 
-    if ($normalized === '') {
-        return [
-            'valid' => false,
-            'available' => false,
-            'username' => '',
-            'error' => 'Username is required.',
-        ];
-    }
-
-    if (strlen($normalized) < 3) {
+    if ($formatError !== null) {
         return [
             'valid' => false,
             'available' => false,
             'username' => $normalized,
-            'error' => 'Username must be at least 3 characters (letters, numbers, underscore).',
-        ];
-    }
-
-    if (strlen($normalized) > 50) {
-        return [
-            'valid' => false,
-            'available' => false,
-            'username' => $normalized,
-            'error' => 'Username must be 50 characters or less.',
+            'error' => $formatError,
         ];
     }
 
@@ -158,6 +242,11 @@ function registerUser(
     string $email,
     string $password
 ): array {
+    $formatError = validateUsernameFormat($username);
+    if ($formatError !== null) {
+        throw new InvalidArgumentException($formatError);
+    }
+
     $pdo = createPdoConnection();
     $username = normalizeUsername($username);
     $email = strtolower(trim($email));
@@ -225,7 +314,7 @@ function fetchUserById(int $userId): ?array
 function fetchUserByUsername(string $username): ?array
 {
     $normalized = normalizeUsername($username);
-    if ($normalized === '') {
+    if ($normalized === '' || validateUsernameFormat($normalized) !== null) {
         return null;
     }
 

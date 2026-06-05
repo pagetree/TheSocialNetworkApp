@@ -6,7 +6,7 @@ const MENTION_HANDLE_MAX_LENGTH = 50;
 const MENTION_MAX_PER_CONTENT = 10;
 
 /** @ handle slug: same charset as username, without the leading @. */
-const MENTION_HANDLE_REGEX = '[a-z0-9_]{1,' . MENTION_HANDLE_MAX_LENGTH . '}';
+const MENTION_HANDLE_REGEX = '[a-z0-9._-]{1,' . MENTION_HANDLE_MAX_LENGTH . '}';
 
 function normalizeMentionHandle(string $raw): string
 {
@@ -16,7 +16,7 @@ function normalizeMentionHandle(string $raw): string
     }
 
     $username = normalizeUsername($raw);
-    if ($username === '' || strlen($username) > MENTION_HANDLE_MAX_LENGTH) {
+    if ($username === '' || validateUsernameFormat($username) !== null) {
         return '';
     }
 
@@ -32,7 +32,7 @@ function extractMentionHandles(string $body): array
         return [];
     }
 
-    $pattern = '/(?<![a-z0-9_])@(' . MENTION_HANDLE_REGEX . ')(?![a-z0-9_])/i';
+    $pattern = '/(?<![a-z0-9._-])@(' . MENTION_HANDLE_REGEX . ')(?![a-z0-9._-])/i';
     if (!preg_match_all($pattern, $body, $matches)) {
         return [];
     }

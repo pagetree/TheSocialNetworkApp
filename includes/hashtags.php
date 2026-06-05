@@ -89,7 +89,7 @@ function formatPostBodyHtml(string $body, callable $url): string
         return '';
     }
 
-    $pattern = '/(?<![a-z0-9_])@(' . MENTION_HANDLE_REGEX . ')(?![a-z0-9_])|#(' . HASHTAG_TAG_REGEX . ')/i';
+    $pattern = '/(?<![a-z0-9._-])@(' . MENTION_HANDLE_REGEX . ')(?![a-z0-9._-])|#(' . HASHTAG_TAG_REGEX . ')/i';
     if (!preg_match_all($pattern, $body, $matches, PREG_OFFSET_CAPTURE)) {
         return htmlspecialchars($body, ENT_QUOTES, 'UTF-8');
     }

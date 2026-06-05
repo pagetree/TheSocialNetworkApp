@@ -241,7 +241,7 @@ if ($path === '/profile.php') {
     exit;
 }
 
-if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) {
+if (preg_match('#^/profile(?:/([a-z0-9._-]+))?/?$#i', $path, $profileRouteMatch)) {
     $currentUser = getCurrentUser();
     $isLoggedIn = $currentUser !== null;
     $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');

@@ -261,7 +261,7 @@ function translateUserMessage(string $message): string
             'Unable to create account.' => 'auth.errors.register_failed',
             'Unable to create account right now.' => 'auth.errors.register_unavailable',
             'Username is required.' => 'auth.username_status.required',
-            'Username must be at least 3 characters (letters, numbers, underscore).' => 'auth.username_status.min_length',
+            'Username must be at least 3 characters (letters, numbers, period, hyphen, underscore).' => 'auth.username_status.min_length',
             'Username must be 50 characters or less.' => 'auth.username_status.too_long',
             'Username is already taken.' => 'auth.username_status.taken',
             'Username is not valid.' => 'auth.username_status.invalid',
