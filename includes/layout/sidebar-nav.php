@@ -35,7 +35,7 @@ $showNotificationsBadge = ($notificationsUnreadCount ?? 0) > 0 && ($activeNav ??
                             </span>
                             <span><?php echo __e('nav.notifications'); ?></span>
                         </a>
-                        <a href="#" class="<?php echo $sidebarNavLinkClass('analytics'); ?>">
+                        <a href="<?php echo htmlspecialchars($url('/analytics'), ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo $sidebarNavLinkClass('analytics'); ?>">
                             <i data-lucide="bar-chart-2" aria-hidden="true"></i>
                             <span><?php echo __e('nav.analytics'); ?></span>
                         </a>

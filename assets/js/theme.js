@@ -54,6 +54,10 @@
                 writeThemeCookie(nextTheme);
                 syncToggles(nextTheme);
 
+                document.dispatchEvent(
+                    new CustomEvent("app:theme-change", { detail: { theme: nextTheme } })
+                );
+
                 if (typeof window.refreshLucideIcons === "function") {
                     window.refreshLucideIcons();
                 }

@@ -11,6 +11,7 @@ $contentPageTitle = isset($contentPageTitle) && is_string($contentPageTitle) && 
         'profile' => __('nav.page_profile'),
         'messages' => __('nav.page_chat'),
         'notifications' => __('nav.page_notifications'),
+        'analytics' => __('nav.page_analytics'),
         default => __('nav.explore'),
     };
 ?>

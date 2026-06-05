@@ -209,6 +209,19 @@ if (!$onboardingLayout) : ?>
     <script src="<?php echo htmlspecialchars($url($scriptPath), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endforeach; ?>
     <?php elseif ($isLoggedIn) : ?>
+    <?php if (!empty($showAnalyticsPage)) : ?>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.0/dist/apexcharts.min.js"></script>
+    <script>
+        window.APP_ANALYTICS = <?php echo json_encode([
+            'url' => $url('/analytics/impressions'),
+            'statsUrl' => $url('/analytics/stats'),
+            'defaultPeriod' => $analyticsDefaultPeriod ?? '7d',
+            'initialData' => $analyticsInitialData ?? ['ok' => false],
+            'initialStats' => $analyticsInitialStats ?? ['ok' => false],
+            'impressionsLabel' => __('analytics.impressions_series'),
+        ], JSON_THROW_ON_ERROR); ?>;
+    </script>
+    <?php endif; ?>
     <?php foreach ($pageScripts as $scriptPath) : ?>
     <script src="<?php echo htmlspecialchars($url($scriptPath), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endforeach; ?>

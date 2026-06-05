@@ -166,6 +166,16 @@ if ($path === '/notifications/read' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'P
     return;
 }
 
+if ($path === '/analytics/impressions' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
+    require __DIR__ . '/auth/analytics-impressions.php';
+    return;
+}
+
+if ($path === '/analytics/stats' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
+    require __DIR__ . '/auth/analytics-stats.php';
+    return;
+}
+
 if ($path === '/register') {
     if (isLoggedIn()) {
         $registerUser = getCurrentUser();
@@ -414,6 +424,42 @@ if ($path === '/notifications') {
     require __DIR__ . '/includes/layout/head.php';
     require __DIR__ . '/includes/layout/content-area-start.php';
     require __DIR__ . '/notifications.php';
+    require __DIR__ . '/includes/layout/content-area-end.php';
+    return;
+}
+
+if ($path === '/analytics') {
+    $currentUser = getCurrentUser();
+    if ($currentUser === null) {
+        header('Location: ' . $url('/'));
+        exit;
+    }
+
+    $currentUserId = (int) $currentUser['id'];
+    $isLoggedIn = true;
+    $loginCsrfToken = '';
+    $analyticsDefaultPeriod = '7d';
+    $analyticsInitialData = fetchUserPostImpressionsSeries($currentUserId, $analyticsDefaultPeriod);
+    $analyticsInitialStats = fetchUserAnalyticsStats($currentUserId, $analyticsDefaultPeriod);
+    $showFeedReplyModal = false;
+    $showQuoteModal = false;
+    $showPostComposerModal = false;
+    $showAnalyticsPage = true;
+    $showAnalyticsToolbar = true;
+
+    http_response_code(200);
+    header('Content-Type: text/html; charset=utf-8');
+
+    $pageTitle = __('meta.analytics_title');
+    $pageSeo = seoNoindexPage('/analytics');
+    $activeNav = 'analytics';
+    $contentPageTitle = __('nav.page_analytics');
+    $mainClass = 'app-content analytics-page-shell';
+    $pageScripts = ['/assets/js/analytics.js'];
+
+    require __DIR__ . '/includes/layout/head.php';
+    require __DIR__ . '/includes/layout/content-area-start.php';
+    require __DIR__ . '/analytics.php';
     require __DIR__ . '/includes/layout/content-area-end.php';
     return;
 }

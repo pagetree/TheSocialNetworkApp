@@ -41,6 +41,9 @@ if (!$isLoggedIn) {
                     <div class="app-content-body">
                     <?php if (!$chatLayout) {
                         require __DIR__ . '/content-header.php';
+                        if (!empty($showAnalyticsToolbar)) {
+                            require __DIR__ . '/content-header-analytics-toolbar.php';
+                        }
                     } ?>
             <?php } ?>
                     <div class="onboarding-content-card">
