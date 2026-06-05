@@ -25,10 +25,13 @@ $postUrl = (string) ($post['post_url'] ?? postUrl((int) ($post['id'] ?? 0), $url
 $hasMedia = count($postMediaItems) > 0;
 $postLinkLabel = __('post.view_by', ['name' => $authorName]);
 $viewerLiked = (bool) ($post['viewer_liked'] ?? false);
+$isRepost = (bool) ($post['is_repost'] ?? false);
+$reposter = is_array($post['reposter'] ?? null) ? $post['reposter'] : null;
 $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-like';
+$postCardClass = 'post-card post-card--linkable' . ($isRepost ? ' post-card--repost' : '');
 ?>
                     <article
-                        class="post-card post-card--linkable"
+                        class="<?php echo htmlspecialchars($postCardClass, ENT_QUOTES, 'UTF-8'); ?>"
                         data-post-id="<?php echo (int) ($post['id'] ?? 0); ?>"
                         data-post-user-id="<?php echo $postUserId; ?>"
                         data-stat-trackable="<?php echo $trackStats ? '1' : '0'; ?>"
@@ -39,6 +42,20 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                             href="<?php echo htmlspecialchars($postUrl, ENT_QUOTES, 'UTF-8'); ?>"
                             aria-label="<?php echo htmlspecialchars($postLinkLabel, ENT_QUOTES, 'UTF-8'); ?>"
                         ></a>
+<?php if ($isRepost && $reposter !== null) :
+    $reposterName = (string) ($reposter['display_name'] ?? 'User');
+    $reposterProfileUrl = (string) ($reposter['profile_url'] ?? '');
+?>
+                        <p class="post-repost-badge">
+                            <i data-lucide="repeat-2" aria-hidden="true"></i>
+                            <?php if ($reposterProfileUrl !== '') : ?>
+                            <a class="post-repost-badge-link" href="<?php echo htmlspecialchars($reposterProfileUrl, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($reposterName, ENT_QUOTES, 'UTF-8'); ?></a>
+                            <?php else : ?>
+                            <span class="post-repost-badge-name"><?php echo htmlspecialchars($reposterName, ENT_QUOTES, 'UTF-8'); ?></span>
+                            <?php endif; ?>
+                            <span class="post-repost-badge-label"><?php echo __e('post.reposted'); ?></span>
+                        </p>
+<?php endif; ?>
                         <header class="post-header">
                             <img
                                 class="post-avatar"
@@ -74,7 +91,11 @@ $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-l
                         } ?>
                         <footer class="post-actions" aria-label="<?php echo __e('post.engagement'); ?>">
                             <button type="button" class="post-action post-action-reply" aria-label="<?php echo __e('post.reply_to'); ?>"><i data-lucide="message-circle" aria-hidden="true"></i><span><?php echo htmlspecialchars($replyCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
-                            <button type="button" class="post-action"><i data-lucide="repeat-2" aria-hidden="true"></i><span><?php echo htmlspecialchars($repostCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
+                            <button
+                                type="button"
+                                class="post-action post-action-repost"
+                                aria-label="<?php echo __e('post.repost'); ?>"
+                            ><i data-lucide="repeat-2" aria-hidden="true"></i><span><?php echo htmlspecialchars($repostCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button
                                 type="button"
                                 class="post-action<?php echo $likeActionClass; ?>"

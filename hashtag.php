@@ -38,12 +38,13 @@ $postCountLabel = $hashtagPostCount === 1
                         <p class="hashtag-page-empty">No posts with this hashtag yet.</p>
 <?php else :
     foreach ($hashtagPosts as $hashtagPost) {
-        $postId = (int) ($hashtagPost['id'] ?? 0);
+        $contentPostId = postContentPostId($hashtagPost);
         renderPostCard(
             $hashtagPost,
             $url,
             $currentUserId,
-            isset($hashtagLikedPostIds[$postId])
+            isset($hashtagLikedPostIds[$contentPostId]),
+            isset($hashtagRepostedPostIds[$contentPostId])
         );
     }
 endif; ?>

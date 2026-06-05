@@ -87,10 +87,21 @@ if (!$onboardingLayout) : ?>
         window.APP_CURRENT_USER_ID = <?php echo json_encode($currentUserId ?? 0, JSON_THROW_ON_ERROR); ?>;
     </script>
     <?php endif; ?>
+    <?php
+    if ($isLoggedIn && empty($postRepostCsrfToken)) {
+        $postRepostCsrfToken = createCsrfToken('post_repost');
+    }
+    ?>
     <?php if (!empty($postLikeCsrfToken)) : ?>
     <script>
         window.APP_POST_LIKE_URL = <?php echo json_encode($url('/posts/like'), JSON_THROW_ON_ERROR); ?>;
         window.APP_POST_LIKE_CSRF_TOKEN = <?php echo json_encode($postLikeCsrfToken, JSON_THROW_ON_ERROR); ?>;
+    </script>
+    <?php endif; ?>
+    <?php if (!empty($postRepostCsrfToken)) : ?>
+    <script>
+        window.APP_POST_REPOST_URL = <?php echo json_encode($url('/posts/repost'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_POST_REPOST_CSRF_TOKEN = <?php echo json_encode($postRepostCsrfToken, JSON_THROW_ON_ERROR); ?>;
     </script>
     <?php endif; ?>
     <?php if ($isLoggedIn && !$onboardingLayout) : ?>
@@ -165,6 +176,7 @@ if (!$onboardingLayout) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-stats-modal.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endif; ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-likes.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/post-reposts.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/content-report.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-remove.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/profile-follow.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>

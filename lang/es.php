@@ -262,6 +262,8 @@ return [
         'view_by' => 'Ver publicación de :name',
         'engagement' => 'Interacción de la publicación',
         'reply_to' => 'Responder a la publicación',
+        'repost' => 'Repostear',
+        'reposted' => 'reposteó',
         'like' => 'Me gusta en la publicación',
         'unlike' => 'Quitar me gusta',
         'view_stats' => 'Ver estadísticas de la publicación',

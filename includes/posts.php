@@ -147,14 +147,32 @@ function fetchPostMediaGroupedByPostIds(array $postIds): array
  * @param list<array<string, mixed>> $rows
  * @return list<array<string, mixed>>
  */
+function postContentPostId(array $row): int
+{
+    $repostOf = (int) ($row['repost_of_post_id'] ?? 0);
+
+    return $repostOf > 0 ? $repostOf : (int) ($row['id'] ?? 0);
+}
+
 function hydrateFeedPostsWithMedia(array $rows): array
 {
-    $postIds = array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $rows);
+    $postIds = [];
+    foreach ($rows as $row) {
+        $postIds[] = (int) ($row['id'] ?? 0);
+        $repostOf = (int) ($row['repost_of_post_id'] ?? 0);
+        if ($repostOf > 0) {
+            $postIds[] = $repostOf;
+        }
+    }
     $grouped = fetchPostMediaGroupedByPostIds($postIds);
 
     foreach ($rows as &$row) {
         $postId = (int) ($row['id'] ?? 0);
         $row['media_items'] = $grouped[$postId] ?? [];
+        $repostOf = (int) ($row['repost_of_post_id'] ?? 0);
+        if ($repostOf > 0) {
+            $row['repost_media_items'] = $grouped[$repostOf] ?? [];
+        }
     }
     unset($row);
 
@@ -185,13 +203,22 @@ function fetchFeedPosts(int $limit = POST_FEED_DEFAULT_LIMIT): array
     $limit = max(1, min($limit, 100));
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
-        'SELECT p.id, p.user_id, p.body, p.location_label,
+        'SELECT p.id, p.user_id, p.body, p.location_label, p.repost_of_post_id,
                 p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
-                u.display_name, u.handle, u.username, u.avatar_url
+                u.display_name, u.handle, u.username, u.avatar_url,
+                orig.id AS orig_id, orig.user_id AS orig_user_id, orig.body AS orig_body,
+                orig.location_label AS orig_location_label,
+                orig.reply_count AS orig_reply_count, orig.repost_count AS orig_repost_count,
+                orig.like_count AS orig_like_count, orig.view_count AS orig_view_count,
+                orig.interaction_count AS orig_interaction_count, orig.created_at AS orig_created_at,
+                orig_u.display_name AS orig_display_name, orig_u.handle AS orig_handle,
+                orig_u.username AS orig_username, orig_u.avatar_url AS orig_avatar_url
          FROM posts p
          INNER JOIN users u ON u.id = p.user_id
+         LEFT JOIN posts orig ON orig.id = p.repost_of_post_id AND orig.is_deleted = FALSE
+         LEFT JOIN users orig_u ON orig_u.id = orig.user_id
          WHERE p.is_deleted = FALSE
-           AND p.repost_of_post_id IS NULL
+           AND (p.repost_of_post_id IS NULL OR orig.id IS NOT NULL)
          ORDER BY p.created_at DESC
          LIMIT :limit'
     );
@@ -215,14 +242,23 @@ function fetchPostsByUserId(int $userId, int $limit = POST_FEED_DEFAULT_LIMIT): 
     $limit = max(1, min($limit, 100));
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
-        'SELECT p.id, p.user_id, p.body, p.location_label,
+        'SELECT p.id, p.user_id, p.body, p.location_label, p.repost_of_post_id,
                 p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
-                u.display_name, u.handle, u.username, u.avatar_url
+                u.display_name, u.handle, u.username, u.avatar_url,
+                orig.id AS orig_id, orig.user_id AS orig_user_id, orig.body AS orig_body,
+                orig.location_label AS orig_location_label,
+                orig.reply_count AS orig_reply_count, orig.repost_count AS orig_repost_count,
+                orig.like_count AS orig_like_count, orig.view_count AS orig_view_count,
+                orig.interaction_count AS orig_interaction_count, orig.created_at AS orig_created_at,
+                orig_u.display_name AS orig_display_name, orig_u.handle AS orig_handle,
+                orig_u.username AS orig_username, orig_u.avatar_url AS orig_avatar_url
          FROM posts p
          INNER JOIN users u ON u.id = p.user_id
+         LEFT JOIN posts orig ON orig.id = p.repost_of_post_id AND orig.is_deleted = FALSE
+         LEFT JOIN users orig_u ON orig_u.id = orig.user_id
          WHERE p.user_id = :user_id
            AND p.is_deleted = FALSE
-           AND p.repost_of_post_id IS NULL
+           AND (p.repost_of_post_id IS NULL OR orig.id IS NOT NULL)
          ORDER BY p.created_at DESC
          LIMIT :limit'
     );
@@ -363,48 +399,100 @@ function postMediaPayloadItems(array $row): array
  */
 function postFeedPayload(array $row, callable $url): array
 {
-    $user = [
-        'display_name' => (string) ($row['display_name'] ?? ''),
-        'handle' => (string) ($row['handle'] ?? ''),
-        'avatar_url' => (string) ($row['avatar_url'] ?? ''),
-    ];
-    $media = postMediaPayloadItems($row);
+    $isRepost = (int) ($row['repost_of_post_id'] ?? 0) > 0 && (int) ($row['orig_id'] ?? 0) > 0;
+    $contentRow = $row;
 
-    return [
-        'id' => (int) ($row['id'] ?? 0),
-        'user_id' => (int) ($row['user_id'] ?? 0),
-        'body' => (string) ($row['body'] ?? ''),
+    if ($isRepost) {
+        $contentRow = [
+            'id' => (int) ($row['orig_id'] ?? 0),
+            'user_id' => (int) ($row['orig_user_id'] ?? 0),
+            'body' => (string) ($row['orig_body'] ?? ''),
+            'location_label' => $row['orig_location_label'] ?? null,
+            'reply_count' => (int) ($row['orig_reply_count'] ?? 0),
+            'repost_count' => (int) ($row['orig_repost_count'] ?? 0),
+            'like_count' => (int) ($row['orig_like_count'] ?? 0),
+            'view_count' => (int) ($row['orig_view_count'] ?? 0),
+            'interaction_count' => (int) ($row['orig_interaction_count'] ?? 0),
+            'created_at' => (string) ($row['orig_created_at'] ?? ''),
+            'display_name' => (string) ($row['orig_display_name'] ?? ''),
+            'handle' => (string) ($row['orig_handle'] ?? ''),
+            'username' => (string) ($row['orig_username'] ?? ''),
+            'avatar_url' => (string) ($row['orig_avatar_url'] ?? ''),
+            'media_items' => is_array($row['repost_media_items'] ?? null) ? $row['repost_media_items'] : [],
+        ];
+    }
+
+    $user = [
+        'display_name' => (string) ($contentRow['display_name'] ?? ''),
+        'handle' => (string) ($contentRow['handle'] ?? ''),
+        'avatar_url' => (string) ($contentRow['avatar_url'] ?? ''),
+    ];
+    $media = postMediaPayloadItems($contentRow);
+
+    $payload = [
+        'id' => (int) ($contentRow['id'] ?? 0),
+        'user_id' => (int) ($contentRow['user_id'] ?? 0),
+        'body' => (string) ($contentRow['body'] ?? ''),
         'media' => $media,
-        'location_label' => isset($row['location_label']) && $row['location_label'] !== null
-            ? (string) $row['location_label']
+        'location_label' => isset($contentRow['location_label']) && $contentRow['location_label'] !== null
+            ? (string) $contentRow['location_label']
             : null,
-        'reply_count' => (int) ($row['reply_count'] ?? 0),
-        'repost_count' => (int) ($row['repost_count'] ?? 0),
-        'like_count' => (int) ($row['like_count'] ?? 0),
-        'view_count' => (int) ($row['view_count'] ?? 0),
-        'interaction_count' => (int) ($row['interaction_count'] ?? 0),
-        'created_at' => (string) ($row['created_at'] ?? ''),
-        'time_label' => formatPostTimeLabel((string) ($row['created_at'] ?? '')),
-        'detail_date_label' => formatPostDetailDateLabel((string) ($row['created_at'] ?? '')),
+        'reply_count' => (int) ($contentRow['reply_count'] ?? 0),
+        'repost_count' => (int) ($contentRow['repost_count'] ?? 0),
+        'like_count' => (int) ($contentRow['like_count'] ?? 0),
+        'view_count' => (int) ($contentRow['view_count'] ?? 0),
+        'interaction_count' => (int) ($contentRow['interaction_count'] ?? 0),
+        'created_at' => (string) ($contentRow['created_at'] ?? ''),
+        'time_label' => formatPostTimeLabel((string) ($contentRow['created_at'] ?? '')),
+        'detail_date_label' => formatPostDetailDateLabel((string) ($contentRow['created_at'] ?? '')),
         'author' => [
             'display_name' => $user['display_name'],
             'handle' => $user['handle'],
-            'username' => (string) ($row['username'] ?? ''),
+            'username' => (string) ($contentRow['username'] ?? ''),
             'avatar_url' => userMediaUrl($user, 'avatar_url', $url),
             'profile_url' => profileUrlForUser([
-                'username' => (string) ($row['username'] ?? ''),
+                'username' => (string) ($contentRow['username'] ?? ''),
             ], $url),
         ],
+        'is_repost' => $isRepost,
+        'repost_entry_id' => $isRepost ? (int) ($row['id'] ?? 0) : null,
+        'reposter' => null,
     ];
+
+    if ($isRepost) {
+        $reposter = [
+            'display_name' => (string) ($row['display_name'] ?? ''),
+            'handle' => (string) ($row['handle'] ?? ''),
+            'avatar_url' => (string) ($row['avatar_url'] ?? ''),
+            'username' => (string) ($row['username'] ?? ''),
+        ];
+        $payload['reposter'] = [
+            'display_name' => $reposter['display_name'],
+            'handle' => $reposter['handle'],
+            'username' => $reposter['username'],
+            'avatar_url' => userMediaUrl($reposter, 'avatar_url', $url),
+            'profile_url' => profileUrlForUser([
+                'username' => $reposter['username'],
+            ], $url),
+        ];
+    }
+
+    return $payload;
 }
 
 /**
  * @param array<string, mixed> $row
  */
-function renderPostCard(array $row, callable $url, int $currentUserId = 0, bool $viewerLiked = false): void
-{
+function renderPostCard(
+    array $row,
+    callable $url,
+    int $currentUserId = 0,
+    bool $viewerLiked = false,
+    bool $viewerReposted = false
+): void {
     $post = postFeedPayload($row, $url);
     $post['post_url'] = postUrl((int) $post['id'], $url);
     $post['viewer_liked'] = $viewerLiked;
+    $post['viewer_reposted'] = $viewerReposted;
     require __DIR__ . '/posts/post-card.php';
 }

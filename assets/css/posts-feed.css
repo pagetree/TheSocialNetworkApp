@@ -59,12 +59,15 @@
 }
 
 .post-card--linkable .post-actions,
+.post-card--linkable .post-action-repost,
 .post-card--linkable .post-header,
 .post-card--linkable .post-menu,
 .post-card--linkable .post-menu-btn,
 .post-card--linkable .post-media--zoomable,
 .post-card--linkable .post-media--video,
-.post-card--linkable .post-hashtag {
+.post-card--linkable .post-hashtag,
+.post-card--linkable .post-repost-badge,
+.post-card--linkable .post-repost-badge-link {
     pointer-events: auto;
     position: relative;
     z-index: 2;
@@ -85,4 +88,46 @@
 
 .post-action-like.is-liked svg {
     fill: currentColor;
+}
+
+.post-repost-badge {
+    grid-column: 1 / -1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-muted, #536471);
+}
+
+.post-repost-badge svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+}
+
+.post-repost-badge-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.post-repost-badge-link:hover {
+    text-decoration: underline;
+}
+
+.post-repost-badge-label {
+    font-weight: 500;
+}
+
+.post-card--repost .post-header {
+    margin-top: 0;
+}
+
+.post-action-repost.is-reposted {
+    color: #00ba7c;
+}
+
+.post-action-repost.is-reposted svg {
+    stroke: currentColor;
 }

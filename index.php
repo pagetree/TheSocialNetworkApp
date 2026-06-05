@@ -136,6 +136,11 @@ if ($path === '/posts/like' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     return;
 }
 
+if ($path === '/posts/repost' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/post-repost.php';
+    return;
+}
+
 if ($path === '/posts/remove' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     require __DIR__ . '/auth/post-remove.php';
     return;
@@ -292,7 +297,9 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
 
     $profilePosts = [];
     $profileLikedPostIds = [];
+    $profileRepostedPostIds = [];
     $postLikeCsrfToken = '';
+    $postRepostCsrfToken = '';
     $replyCsrfToken = '';
     $showFeedReplyModal = false;
 
@@ -301,13 +308,22 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
 
         if ($isLoggedIn) {
             $postLikeCsrfToken = createCsrfToken('post_like');
+            $postRepostCsrfToken = createCsrfToken('post_repost');
             $replyCsrfToken = createCsrfToken('post_reply');
             $showFeedReplyModal = true;
 
             if ($profilePosts !== []) {
+                $profileContentPostIds = array_map(
+                    static fn (array $row): int => postContentPostId($row),
+                    $profilePosts
+                );
                 $profileLikedPostIds = array_flip(fetchLikedPostIdsForUser(
                     $currentUserId,
-                    array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $profilePosts)
+                    $profileContentPostIds
+                ));
+                $profileRepostedPostIds = array_flip(fetchRepostedPostIdsForUser(
+                    $currentUserId,
+                    $profileContentPostIds
                 ));
             }
         }
@@ -358,15 +374,25 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) 
     $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
     $postStatsCsrfToken = $isLoggedIn ? createCsrfToken('post_stats') : '';
     $postLikeCsrfToken = $isLoggedIn ? createCsrfToken('post_like') : '';
+    $postRepostCsrfToken = $isLoggedIn ? createCsrfToken('post_repost') : '';
     $replyCsrfToken = $isLoggedIn ? createCsrfToken('post_reply') : '';
     $showFeedReplyModal = $isLoggedIn;
     $currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
     $hashtagLikedPostIds = [];
+    $hashtagRepostedPostIds = [];
 
     if ($isLoggedIn && $hashtagPosts !== []) {
+        $hashtagContentPostIds = array_map(
+            static fn (array $row): int => postContentPostId($row),
+            $hashtagPosts
+        );
         $hashtagLikedPostIds = array_flip(fetchLikedPostIdsForUser(
             $currentUserId,
-            array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $hashtagPosts)
+            $hashtagContentPostIds
+        ));
+        $hashtagRepostedPostIds = array_flip(fetchRepostedPostIdsForUser(
+            $currentUserId,
+            $hashtagContentPostIds
         ));
     }
 
@@ -439,15 +465,25 @@ $loginCsrfToken = $isLoggedIn ? '' : createCsrfToken('login');
 $postCsrfToken = $isLoggedIn ? createCsrfToken('post_create') : '';
 $postStatsCsrfToken = $isLoggedIn ? createCsrfToken('post_stats') : '';
 $postLikeCsrfToken = $isLoggedIn ? createCsrfToken('post_like') : '';
+$postRepostCsrfToken = $isLoggedIn ? createCsrfToken('post_repost') : '';
 $replyCsrfToken = $isLoggedIn ? createCsrfToken('post_reply') : '';
 $showFeedReplyModal = $isLoggedIn;
 $currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
 $feedPosts = fetchFeedPosts();
 $likedPostIds = [];
+$repostedPostIds = [];
 if ($isLoggedIn && $feedPosts !== []) {
+    $feedContentPostIds = array_map(
+        static fn (array $feedPost): int => postContentPostId($feedPost),
+        $feedPosts
+    );
     $likedPostIds = array_flip(fetchLikedPostIdsForUser(
         $currentUserId,
-        array_map(static fn (array $feedPost): int => (int) ($feedPost['id'] ?? 0), $feedPosts)
+        $feedContentPostIds
+    ));
+    $repostedPostIds = array_flip(fetchRepostedPostIdsForUser(
+        $currentUserId,
+        $feedContentPostIds
     ));
 }
 $composerAvatarUrl = $isLoggedIn
@@ -479,11 +515,13 @@ require __DIR__ . '/includes/layout/content-area-start.php';
 
                     <div class="post-feed" id="post-feed">
 <?php foreach ($feedPosts as $feedPost) {
+    $contentPostId = postContentPostId($feedPost);
     renderPostCard(
         $feedPost,
         $url,
         $currentUserId,
-        isset($likedPostIds[(int) ($feedPost['id'] ?? 0)])
+        isset($likedPostIds[$contentPostId]),
+        isset($repostedPostIds[$contentPostId])
     );
 } ?>
                     </div>

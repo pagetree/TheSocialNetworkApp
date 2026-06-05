@@ -223,11 +223,13 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                         <p class="profile-feed-empty"><?php echo $isOwnProfile ? __e('profile.empty.own_no_posts') : __e('profile.empty.no_posts'); ?></p>
 <?php else :
     foreach ($profilePosts as $profilePost) {
+        $contentPostId = postContentPostId($profilePost);
         renderPostCard(
             $profilePost,
             $url,
             $currentUserId,
-            isset($profileLikedPostIds[(int) ($profilePost['id'] ?? 0)])
+            isset($profileLikedPostIds[$contentPostId]),
+            isset($profileRepostedPostIds[$contentPostId])
         );
     }
 endif; ?>

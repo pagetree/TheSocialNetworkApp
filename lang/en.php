@@ -262,6 +262,8 @@ return [
         'view_by' => 'View post by :name',
         'engagement' => 'Post engagement',
         'reply_to' => 'Reply to post',
+        'repost' => 'Repost',
+        'reposted' => 'reposted',
         'like' => 'Like post',
         'unlike' => 'Unlike post',
         'view_stats' => 'View post stats',
