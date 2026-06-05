@@ -444,9 +444,11 @@ return [
     ],
     'follow' => [
         'follow' => 'Seguir',
+        'follow_back' => 'Seguir también',
         'following' => 'Siguiendo',
         'unfollow' => 'Dejar de seguir',
         'follow_user' => 'Seguir a :name',
+        'follow_back_user' => 'Seguir también a :name',
         'unfollow_user' => 'Dejar de seguir a :name',
     ],
     'chat' => [

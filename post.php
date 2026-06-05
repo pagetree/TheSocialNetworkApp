@@ -17,14 +17,14 @@ $mainClass = 'app-content post-detail-page';
 $pageScripts = ['/assets/js/reply-media-picker.js', '/assets/js/post-reply-composer.js'];
 $postParticipants = fetchVisiblePostParticipants((int) ($post['id'] ?? 0), POST_PARTICIPANTS_LIMIT);
 $postParticipantFollowedIds = [];
+$postParticipantFollowsViewerIds = [];
 $profileFollowCsrfToken = '';
 if ($isLoggedIn) {
     $profileFollowCsrfToken = createCsrfToken('profile_follow');
     if ($postParticipants !== []) {
-        $postParticipantFollowedIds = fetchFollowedUserIdsAmong(
-            $currentUserId,
-            array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $postParticipants)
-        );
+        $participantIds = array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $postParticipants);
+        $postParticipantFollowedIds = fetchFollowedUserIdsAmong($currentUserId, $participantIds);
+        $postParticipantFollowsViewerIds = fetchFollowerUserIdsAmong($currentUserId, $participantIds);
     }
 }
 

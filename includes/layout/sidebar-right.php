@@ -10,17 +10,18 @@ declare(strict_types=1);
 
 $postParticipants = $postParticipants ?? [];
 $postParticipantFollowedIds = $postParticipantFollowedIds ?? [];
+$postParticipantFollowsViewerIds = $postParticipantFollowsViewerIds ?? [];
 $currentUserId = $currentUserId ?? 0;
 
 $sidebarUser = getCurrentUser();
 $sidebarViewerId = is_array($sidebarUser) ? (int) ($sidebarUser['id'] ?? 0) : 0;
 $whoToFollowSuggestions = fetchWhoToFollowSuggestions($sidebarViewerId, SIDEBAR_WHO_TO_FOLLOW_LIMIT);
 $whoToFollowFollowedIds = [];
+$whoToFollowFollowsViewerIds = [];
 if ($sidebarViewerId > 0 && $whoToFollowSuggestions !== []) {
-    $whoToFollowFollowedIds = fetchFollowedUserIdsAmong(
-        $sidebarViewerId,
-        array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $whoToFollowSuggestions)
-    );
+    $suggestionIds = array_map(static fn (array $row): int => (int) ($row['id'] ?? 0), $whoToFollowSuggestions);
+    $whoToFollowFollowedIds = fetchFollowedUserIdsAmong($sidebarViewerId, $suggestionIds);
+    $whoToFollowFollowsViewerIds = fetchFollowerUserIdsAmong($sidebarViewerId, $suggestionIds);
 }
 $trendingHashtags = fetchTopHashtagsByPostCount();
 ?>

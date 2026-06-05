@@ -334,21 +334,30 @@ a.post-participants-identity:hover,
 }
 
 .post-participants-card .post-participants-follow-btn .profile-follow-btn-label--follow,
+.post-participants-card .post-participants-follow-btn .profile-follow-btn-label--follow-back,
 .post-participants-card .post-participants-follow-btn .profile-follow-btn-label--following,
 .post-participants-card .post-participants-follow-btn .profile-follow-btn-label--unfollow,
 .who-to-follow-card .post-participants-follow-btn .profile-follow-btn-label--follow,
+.who-to-follow-card .post-participants-follow-btn .profile-follow-btn-label--follow-back,
 .who-to-follow-card .post-participants-follow-btn .profile-follow-btn-label--following,
 .who-to-follow-card .post-participants-follow-btn .profile-follow-btn-label--unfollow {
     display: none;
 }
 
-.post-participants-card .post-participants-follow-btn .profile-follow-btn-label--follow,
-.who-to-follow-card .post-participants-follow-btn:not(.is-following) .profile-follow-btn-label--follow {
+.post-participants-card .post-participants-follow-btn:not(.is-following):not(.is-follow-back) .profile-follow-btn-label--follow,
+.who-to-follow-card .post-participants-follow-btn:not(.is-following):not(.is-follow-back) .profile-follow-btn-label--follow {
+    display: inline;
+}
+
+.post-participants-card .post-participants-follow-btn.is-follow-back:not(.is-following) .profile-follow-btn-label--follow-back,
+.who-to-follow-card .post-participants-follow-btn.is-follow-back:not(.is-following) .profile-follow-btn-label--follow-back {
     display: inline;
 }
 
 .post-participants-card .post-participants-follow-btn.is-following .profile-follow-btn-label--follow,
-.who-to-follow-card .post-participants-follow-btn.is-following .profile-follow-btn-label--follow {
+.post-participants-card .post-participants-follow-btn.is-following .profile-follow-btn-label--follow-back,
+.who-to-follow-card .post-participants-follow-btn.is-following .profile-follow-btn-label--follow,
+.who-to-follow-card .post-participants-follow-btn.is-following .profile-follow-btn-label--follow-back {
     display: none;
 }
 

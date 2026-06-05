@@ -7,6 +7,9 @@ declare(strict_types=1);
 /** @var bool $isLoggedIn */
 /** @var int $currentUserId */
 /** @var array<int, true> $postParticipantFollowedIds */
+/** @var array<int, true> $postParticipantFollowsViewerIds */
+
+$postParticipantFollowsViewerIds = $postParticipantFollowsViewerIds ?? [];
 ?>
                     <article class="profile-card post-participants-card">
                         <h2 class="post-participants-card-title">Relevant people</h2>
@@ -17,6 +20,7 @@ declare(strict_types=1);
                             <?php foreach ($postParticipants as $participantRow) :
                                 $participantId = (int) ($participantRow['id'] ?? 0);
                                 $viewerFollows = isset($postParticipantFollowedIds[$participantId]);
+                                $followsViewer = isset($postParticipantFollowsViewerIds[$participantId]);
                                 $participant = postParticipantPayload($participantRow, $url, $viewerFollows);
                                 $participantName = (string) ($participant['display_name'] ?? 'User');
                                 $participantHandle = (string) ($participant['handle'] ?? '@user');
@@ -56,22 +60,13 @@ declare(strict_types=1);
                                         </span>
                                     </div>
                                     <?php endif; ?>
-                                    <?php if ($showFollowBtn) : ?>
-                                    <button
-                                        type="button"
-                                        class="profile-follow-btn post-participants-follow-btn<?php echo $viewerFollows ? ' is-following' : ''; ?>"
-                                        data-user-id="<?php echo $participantId; ?>"
-                                        data-following="<?php echo $viewerFollows ? '1' : '0'; ?>"
-                                        aria-pressed="<?php echo $viewerFollows ? 'true' : 'false'; ?>"
-                                        aria-label="<?php echo $viewerFollows
-                                            ? __e('follow.unfollow_user', ['name' => $participantName])
-                                            : __e('follow.follow_user', ['name' => $participantName]); ?>"
-                                    >
-                                        <span class="profile-follow-btn-label profile-follow-btn-label--follow">Follow</span>
-                                        <span class="profile-follow-btn-label profile-follow-btn-label--following">Following</span>
-                                        <span class="profile-follow-btn-label profile-follow-btn-label--unfollow">Unfollow</span>
-                                    </button>
-                                    <?php endif; ?>
+                                    <?php if ($showFollowBtn) :
+                                        $followUserId = $participantId;
+                                        $followUserName = $participantName;
+                                        $followBtnClass = 'post-participants-follow-btn';
+                                        $followBtnId = '';
+                                        require dirname(__DIR__) . '/profile/follow-button.php';
+                                    endif; ?>
                                 </div>
                                 <?php if ($participantBio !== '') : ?>
                                 <p class="post-participants-bio"><?php echo htmlspecialchars($participantBio, ENT_QUOTES, 'UTF-8'); ?></p>

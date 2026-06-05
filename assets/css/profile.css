@@ -216,7 +216,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 96px;
+    min-width: 118px;
     border: 1px solid var(--accent);
     border-radius: 999px;
     padding: 0 18px;
@@ -245,6 +245,34 @@
     color: #f4212e;
     border-color: color-mix(in srgb, #f4212e 55%, transparent);
     background: color-mix(in srgb, #f4212e 10%, transparent);
+}
+
+.profile-follow-btn .profile-follow-btn-label--follow,
+.profile-follow-btn .profile-follow-btn-label--follow-back,
+.profile-follow-btn .profile-follow-btn-label--following,
+.profile-follow-btn .profile-follow-btn-label--unfollow {
+    display: none;
+}
+
+.profile-follow-btn:not(.is-following):not(.is-follow-back) .profile-follow-btn-label--follow {
+    display: inline;
+}
+
+.profile-follow-btn.is-follow-back:not(.is-following) .profile-follow-btn-label--follow-back {
+    display: inline;
+}
+
+.profile-follow-btn.is-following .profile-follow-btn-label--following {
+    display: inline;
+}
+
+.profile-follow-btn.is-following:hover .profile-follow-btn-label--following {
+    display: none;
+}
+
+.profile-follow-btn.is-following:hover .profile-follow-btn-label--unfollow {
+    display: inline;
+    color: inherit;
 }
 
 .profile-follow-btn:disabled {

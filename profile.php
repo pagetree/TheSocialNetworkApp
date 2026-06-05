@@ -9,6 +9,7 @@ declare(strict_types=1);
 /** @var string $profileCsrfToken */
 /** @var bool $isOwnProfile */
 /** @var bool $viewerFollowsProfile */
+/** @var bool $profileFollowsViewer */
 /** @var string $profileFollowCsrfToken */
 /** @var int $profileFollowUserId */
 /** @var list<array<string, mixed>> $profilePosts */
@@ -25,6 +26,7 @@ $profileIsPrivate = $profileIsPrivate ?? false;
 $profileCsrfToken = $profileCsrfToken ?? '';
 $isOwnProfile = $isOwnProfile ?? false;
 $viewerFollowsProfile = $viewerFollowsProfile ?? false;
+$profileFollowsViewer = $profileFollowsViewer ?? false;
 $profileFollowCsrfToken = $profileFollowCsrfToken ?? '';
 $profileFollowUserId = $profileFollowUserId ?? 0;
 $profilePosts = $profilePosts ?? [];
@@ -137,16 +139,15 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                     >
                                         <i data-lucide="message-circle" aria-hidden="true"></i>
                                     </button>
-                                    <button
-                                        type="button"
-                                        class="profile-follow-btn<?php echo $viewerFollowsProfile ? ' is-following' : ''; ?>"
-                                        id="profile-follow-btn"
-                                        data-user-id="<?php echo $profileFollowUserId; ?>"
-                                        data-following="<?php echo $viewerFollowsProfile ? '1' : '0'; ?>"
-                                        aria-pressed="<?php echo $viewerFollowsProfile ? 'true' : 'false'; ?>"
-                                    >
-                                        <span class="profile-follow-btn-label"><?php echo $viewerFollowsProfile ? __e('follow.following') : __e('follow.follow'); ?></span>
-                                    </button>
+                                    <?php
+                                        $followUserId = $profileFollowUserId;
+                                        $followUserName = $displayName;
+                                        $viewerFollows = $viewerFollowsProfile;
+                                        $followsViewer = $profileFollowsViewer;
+                                        $followBtnId = 'profile-follow-btn';
+                                        $followBtnClass = '';
+                                        require __DIR__ . '/includes/profile/follow-button.php';
+                                    ?>
                                     <?php endif; ?>
                                 </div>
                             </div>

@@ -241,6 +241,7 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
     $profileFollowUserId = 0;
     $isOwnProfile = false;
     $viewerFollowsProfile = false;
+    $profileFollowsViewer = false;
     $profileSlug = isset($profileRouteMatch[1]) ? normalizeUsername((string) $profileRouteMatch[1]) : '';
     $profileIsPrivate = false;
 
@@ -298,6 +299,7 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
                 $profileFollowCsrfToken = createCsrfToken('profile_follow');
                 $profileFollowUserId = $profileUserId;
                 $viewerFollowsProfile = isUserFollowedBy($currentUserId, $profileUserId);
+                $profileFollowsViewer = isUserFollowedBy($profileUserId, $currentUserId);
             }
         } else {
             $postStatsCsrfToken = '';

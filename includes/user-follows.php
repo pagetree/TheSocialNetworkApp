@@ -149,6 +149,41 @@ function fetchFollowedUserIdsAmong(int $followerId, array $targetUserIds): array
 }
 
 /**
+ * Users from $followerUserIds who follow $followingId.
+ *
+ * @param list<int> $followerUserIds
+ * @return array<int, true>
+ */
+function fetchFollowerUserIdsAmong(int $followingId, array $followerUserIds): array
+{
+    $followerUserIds = array_values(array_unique(array_filter(
+        array_map('intval', $followerUserIds),
+        static fn (int $id): bool => $id > 0 && $id !== $followingId
+    )));
+
+    if ($followingId < 1 || $followerUserIds === []) {
+        return [];
+    }
+
+    $placeholders = implode(', ', array_fill(0, count($followerUserIds), '?'));
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT follower_id
+         FROM user_follows
+         WHERE following_id = ?
+           AND follower_id IN (' . $placeholders . ')'
+    );
+    $stmt->execute(array_merge([$followingId], $followerUserIds));
+
+    $followers = [];
+    while ($row = $stmt->fetch()) {
+        $followers[(int) $row['follower_id']] = true;
+    }
+
+    return $followers;
+}
+
+/**
  * @return list<array<string, mixed>>
  */
 function fetchPublicWhoToFollowSuggestions(int $limit = SIDEBAR_WHO_TO_FOLLOW_LIMIT): array

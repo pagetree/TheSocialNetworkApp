@@ -6,6 +6,9 @@ declare(strict_types=1);
 /** @var bool $isLoggedIn */
 /** @var list<array<string, mixed>> $whoToFollowSuggestions */
 /** @var array<int, true> $whoToFollowFollowedIds */
+/** @var array<int, true> $whoToFollowFollowsViewerIds */
+
+$whoToFollowFollowsViewerIds = $whoToFollowFollowsViewerIds ?? [];
 ?>
                     <article class="who-to-follow-card">
                         <h2 class="who-to-follow-card-title"><?php echo __e('sidebar.who_to_follow'); ?></h2>
@@ -16,6 +19,7 @@ declare(strict_types=1);
                             <?php foreach ($whoToFollowSuggestions as $suggestion) :
                                 $suggestionId = (int) ($suggestion['id'] ?? 0);
                                 $viewerFollows = isset($whoToFollowFollowedIds[$suggestionId]);
+                                $followsViewer = isset($whoToFollowFollowsViewerIds[$suggestionId]);
                                 $suggestionName = (string) ($suggestion['display_name'] ?? 'User');
                                 $suggestionHandle = (string) ($suggestion['handle'] ?? '@user');
                                 $suggestionAvatar = userMediaUrl($suggestion, 'avatar_url', $url);
@@ -38,22 +42,13 @@ declare(strict_types=1);
                                             <span class="who-to-follow-handle"><?php echo htmlspecialchars($suggestionHandle, ENT_QUOTES, 'UTF-8'); ?></span>
                                         </div>
                                     </a>
-                                    <?php if ($isLoggedIn && $suggestionId > 0) : ?>
-                                    <button
-                                        type="button"
-                                        class="profile-follow-btn post-participants-follow-btn<?php echo $viewerFollows ? ' is-following' : ''; ?>"
-                                        data-user-id="<?php echo $suggestionId; ?>"
-                                        data-following="<?php echo $viewerFollows ? '1' : '0'; ?>"
-                                        aria-pressed="<?php echo $viewerFollows ? 'true' : 'false'; ?>"
-                                        aria-label="<?php echo $viewerFollows
-                                            ? __e('follow.unfollow_user', ['name' => $suggestionName])
-                                            : __e('follow.follow_user', ['name' => $suggestionName]); ?>"
-                                    >
-                                        <span class="profile-follow-btn-label profile-follow-btn-label--follow"><?php echo __e('follow.follow'); ?></span>
-                                        <span class="profile-follow-btn-label profile-follow-btn-label--following"><?php echo __e('follow.following'); ?></span>
-                                        <span class="profile-follow-btn-label profile-follow-btn-label--unfollow"><?php echo __e('follow.unfollow'); ?></span>
-                                    </button>
-                                    <?php endif; ?>
+                                    <?php if ($isLoggedIn && $suggestionId > 0) :
+                                        $followUserId = $suggestionId;
+                                        $followUserName = $suggestionName;
+                                        $followBtnClass = 'post-participants-follow-btn';
+                                        $followBtnId = '';
+                                        require dirname(__DIR__) . '/profile/follow-button.php';
+                                    endif; ?>
                                 </div>
                             </li>
                             <?php endforeach; ?>

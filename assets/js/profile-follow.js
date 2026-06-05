@@ -7,6 +7,27 @@
         return;
     }
 
+    const t = (key, replacements = {}) => {
+        if (typeof window.AppI18n?.t === "function") {
+            return window.AppI18n.t(key, replacements);
+        }
+
+        const fallbacks = {
+            "follow.follow": "Follow",
+            "follow.follow_back": "Follow back",
+            "follow.following": "Following",
+            "follow.unfollow": "Unfollow",
+            "follow.follow_user": "Follow :name",
+            "follow.follow_back_user": "Follow back :name",
+            "follow.unfollow_user": "Unfollow :name",
+        };
+        let text = fallbacks[key] || key;
+        Object.entries(replacements).forEach(([name, value]) => {
+            text = text.replaceAll(`:${name}`, String(value));
+        });
+        return text;
+    };
+
     const bindFollowButton = (followBtn) => {
         if (!(followBtn instanceof HTMLButtonElement)) {
             return;
@@ -19,26 +40,32 @@
 
         let pending = false;
 
-        const setFollowingState = (following) => {
-            followBtn.classList.toggle("is-following", following);
-            followBtn.dataset.following = following ? "1" : "0";
-            followBtn.setAttribute("aria-pressed", following ? "true" : "false");
+        const userName = followBtn.dataset.userName || "user";
+        const followsViewer = followBtn.dataset.followsViewer === "1";
 
-            const ariaName = followBtn.getAttribute("aria-label")?.replace(/^(Follow|Unfollow)\s+/, "") ?? "user";
-            followBtn.setAttribute(
-                "aria-label",
-                (following ? "Unfollow " : "Follow ") + ariaName
-            );
-
-            if (followBtn.querySelector(".profile-follow-btn-label--follow")) {
+        const updateAriaLabel = (following) => {
+            if (following) {
+                followBtn.setAttribute("aria-label", t("follow.unfollow_user", { name: userName }));
                 return;
             }
 
-            const label = followBtn.querySelector(".profile-follow-btn-label");
-            if (label) {
-                label.textContent = following ? "Following" : "Follow";
+            if (followsViewer) {
+                followBtn.setAttribute("aria-label", t("follow.follow_back_user", { name: userName }));
+                return;
             }
+
+            followBtn.setAttribute("aria-label", t("follow.follow_user", { name: userName }));
         };
+
+        const setFollowingState = (following) => {
+            followBtn.classList.toggle("is-following", following);
+            followBtn.classList.toggle("is-follow-back", !following && followsViewer);
+            followBtn.dataset.following = following ? "1" : "0";
+            followBtn.setAttribute("aria-pressed", following ? "true" : "false");
+            updateAriaLabel(following);
+        };
+
+        setFollowingState(followBtn.dataset.following === "1");
 
         followBtn.addEventListener("click", async () => {
             if (pending) {
