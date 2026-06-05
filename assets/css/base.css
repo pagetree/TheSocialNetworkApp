@@ -14,22 +14,19 @@ body {
     font-family: "Nunito Sans", "Nunito", sans-serif;
     font-size: 14px;
     line-height: 1.45;
-    background: url("https://pub-a912eacf8fe9461083def05076743bb3.r2.dev/assets/gayatri-malhotra-QTEk16LzWSI-unsplash.jpg") center / cover no-repeat;
+    background: var(--body-bg);
 }
 
-.glass-overlay {
+.app-shell {
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    background: linear-gradient(140deg, color-mix(in srgb, var(--light) 12%, transparent), color-mix(in srgb, var(--light) 4%, transparent));
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
 }
 
-.app-sidebar .profile-card,
-.app-sidebar .who-to-follow-card,
 .app-sidebar--right .post-participants-card,
-.app-main > main {
+.app-sidebar--right .who-to-follow-card,
+.app-sidebar--right .trending-hashtags-card,
+.app-content-body {
     box-shadow: var(--card-shadow);
 }

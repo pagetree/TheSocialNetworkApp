@@ -333,6 +333,55 @@ function fetchPostsByHashtag(string $tag, int $limit = POST_FEED_DEFAULT_LIMIT):
     return is_array($rows) ? hydrateFeedPostsWithMedia($rows) : [];
 }
 
+const SIDEBAR_TOP_HASHTAGS_LIMIT = 5;
+
+/**
+ * @return list<array{tag: string, post_count: int}>
+ */
+function fetchTopHashtagsByPostCount(int $limit = SIDEBAR_TOP_HASHTAGS_LIMIT): array
+{
+    if (!hashtagsAreAvailable()) {
+        return [];
+    }
+
+    $limit = max(1, min($limit, SIDEBAR_TOP_HASHTAGS_LIMIT));
+
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT tag, post_count
+         FROM hashtags
+         WHERE post_count > 0
+         ORDER BY post_count DESC, tag ASC
+         LIMIT :limit'
+    );
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    $rows = $stmt->fetchAll();
+
+    if (!is_array($rows)) {
+        return [];
+    }
+
+    $hashtags = [];
+    foreach ($rows as $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+
+        $tag = normalizeHashtagTag((string) ($row['tag'] ?? ''));
+        if ($tag === '') {
+            continue;
+        }
+
+        $hashtags[] = [
+            'tag' => $tag,
+            'post_count' => max(0, (int) ($row['post_count'] ?? 0)),
+        ];
+    }
+
+    return $hashtags;
+}
+
 /**
  * Parse a URL path segment from /hashtag/{segment}.
  */

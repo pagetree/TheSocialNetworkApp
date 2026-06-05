@@ -27,7 +27,6 @@ foreach ($steps as $index => $step) {
                             alt=""
                         >
                     </a>
-                    <?php require __DIR__ . '/lang-switcher.php'; ?>
                     <?php require __DIR__ . '/theme-toggle.php'; ?>
                 </div>
 

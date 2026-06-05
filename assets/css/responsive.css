@@ -16,15 +16,13 @@
         overflow: hidden;
     }
 
-    body:not(.welcome-page):not(.register-page) .glass-overlay {
+    body:not(.welcome-page):not(.register-page) .app-shell {
         width: 100%;
         max-width: 100%;
         min-width: 0;
         padding: 0;
         margin: 0;
         background: none !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
     }
 
     body:not(.welcome-page):not(.register-page) .app-container {
@@ -32,7 +30,7 @@
         max-width: 100%;
         min-width: 0;
         margin: 0;
-        margin-top: max(var(--mobile-offset-top), env(safe-area-inset-top));
+        margin-top: env(safe-area-inset-top, 0);
         padding: 0;
         background: none !important;
         background-image: none !important;
@@ -146,10 +144,10 @@
         min-width: 0;
         margin: 0;
         padding:
-            max(var(--element-padding), env(safe-area-inset-top))
-            max(var(--element-padding), env(safe-area-inset-right))
-            max(var(--element-padding), env(safe-area-inset-bottom))
-            max(var(--element-padding), env(safe-area-inset-left));
+            max(var(--shell-header-padding-block), env(safe-area-inset-top))
+            max(var(--shell-header-padding-inline), env(safe-area-inset-right))
+            max(var(--shell-header-padding-block), env(safe-area-inset-bottom))
+            max(var(--shell-header-padding-inline), env(safe-area-inset-left));
         background: none !important;
         background-image: none !important;
         border: 0 !important;
@@ -377,6 +375,91 @@
 }
 
 @media (min-width: 901px) {
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) {
+        background: var(--body-bg);
+        overflow: hidden;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-shell {
+        height: 100vh;
+        min-height: 0;
+        align-items: stretch;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-container {
+        width: min(1440px, 100%);
+        height: 100%;
+        margin-top: 0;
+        padding: 0 var(--app-container-padding) 0 0;
+        display: grid;
+        grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--sidebar-width);
+        grid-template-rows: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-container::before {
+        content: "";
+        grid-column: 1;
+        grid-row: 1 / -1;
+        border-right: 1px solid var(--sidebar-border-color);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main,
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main--with-right-sidebar {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        display: grid;
+        grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--sidebar-width);
+        grid-template-rows: minmax(0, 1fr);
+        min-height: 0;
+        z-index: 1;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-sidebar:not(.app-sidebar--right) {
+        grid-row: 1 / -1;
+        align-self: stretch;
+        min-height: 0;
+        max-height: 100%;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main > main,
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main > main.app-content,
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main > main.profile-page,
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main > main.post-detail-page,
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main > main.hashtag-page {
+        grid-column: 2;
+        grid-row: 1 / -1;
+        min-height: 0;
+        max-height: 100%;
+        overflow: hidden;
+        align-self: stretch;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-content-body {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-content-body::-webkit-scrollbar {
+        display: none;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main--with-right-sidebar > .app-sidebar--right,
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-sidebar--right {
+        grid-column: 3;
+        grid-row: 1 / -1;
+        min-height: 0;
+        max-height: 100%;
+        overflow: hidden;
+        align-self: stretch;
+    }
+
     body:not(.welcome-page):not(.register-page) .topbar-mobile-menu-btn {
         display: none;
     }

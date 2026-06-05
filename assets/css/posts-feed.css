@@ -1,8 +1,6 @@
 ﻿
 .post-card {
-    background: var(--elements-bg);
-    border-radius: var(--container-radius);
-    padding: var(--element-padding);
+    padding: var(--post-card-padding);
     display: grid;
     gap: var(--post-gap);
 }
@@ -15,12 +13,13 @@
 .post-card:not(.post-composer) {
     grid-template-columns: 48px minmax(0, 1fr);
     align-items: start;
+    border-radius: var(--container-radius);
     transition: background-color 0.18s ease;
 }
 
 @media (hover: hover) {
     .post-card:not(.post-composer):hover {
-        background-color: color-mix(in srgb, var(--light) 3.5%, var(--elements-bg));
+        background-color: var(--post-card-hover-bg);
     }
 }
 
@@ -36,7 +35,7 @@
 }
 
 .post-card:not(.post-composer) > .post-text {
-    margin-top: calc(-1 * var(--post-gap));
+    margin-top: calc(-3 * var(--post-gap));
 }
 
 .post-feed {

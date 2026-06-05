@@ -1,5 +1,5 @@
 
-body.onboarding-page .glass-overlay {
+body.onboarding-page .app-shell {
     align-items: flex-start;
 }
 
@@ -123,10 +123,7 @@ body.onboarding-page .app-container--onboarding {
 }
 
 .onboarding-content-card {
-    background: var(--elements-bg);
-    border-radius: var(--container-radius);
     padding: var(--element-padding);
-    border: 1px solid color-mix(in srgb, var(--light) 10%, transparent);
     min-width: 0;
     overflow-anchor: none;
 }

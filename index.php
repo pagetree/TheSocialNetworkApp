@@ -28,6 +28,16 @@ if ($path === '/health') {
     return;
 }
 
+if ($path === '/robots.txt') {
+    renderRobotsTxt();
+    return;
+}
+
+if ($path === '/sitemap.xml') {
+    renderSitemapXml();
+    return;
+}
+
 if (preg_match('#^/lang/(en|es)/?$#', $path, $localeRouteMatch)) {
     setAppLocaleCookie($localeRouteMatch[1]);
     header('Location: ' . localeRedirectTarget());
@@ -243,6 +253,7 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
             http_response_code(404);
             header('Content-Type: text/html; charset=utf-8');
             $pageTitle = __('meta.profile_not_found_title');
+            $pageSeo = seoNoindexPage('/profile/' . rawurlencode($profileSlug));
             $activeNav = 'profile';
             $mainClass = 'profile-page';
             $postStatsCsrfToken = $isLoggedIn ? createCsrfToken('post_stats') : '';
@@ -320,6 +331,7 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) 
         http_response_code(404);
         header('Content-Type: text/html; charset=utf-8');
         $pageTitle = __('meta.hashtag_invalid_title');
+        $pageSeo = seoNoindexPage('/hashtag/' . rawurlencode((string) $hashtagRouteMatch[1]));
         $activeNav = 'explore';
         $mainClass = 'app-content hashtag-page';
         $currentUser = getCurrentUser();
@@ -367,7 +379,8 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) 
 
     http_response_code(200);
     header('Content-Type: text/html; charset=utf-8');
-    $pageTitle = __('meta.hashtag_title', ['tag' => $hashtagTag]);
+    $pageSeo = seoBuildHashtagPage($hashtagTag, $hashtagPostCount);
+    $pageTitle = seoApplyPageTitle($pageSeo, __('meta.hashtag_title', ['tag' => $hashtagTag]));
     $activeNav = 'explore';
     $mainClass = 'app-content hashtag-page';
     $pageScripts = [];
@@ -392,6 +405,7 @@ if (preg_match('#^/post/(\d+)/?$#', $path, $postRouteMatch)) {
         http_response_code(404);
         header('Content-Type: text/html; charset=utf-8');
         $pageTitle = __('meta.post_not_found_title');
+        $pageSeo = seoNoindexPage('/post/' . $postId);
         $activeNav = 'explore';
         $mainClass = 'app-content post-detail-page';
         $currentUser = getCurrentUser();
@@ -447,6 +461,7 @@ http_response_code(200);
 header('Content-Type: text/html; charset=utf-8');
 
 $pageTitle = __('meta.feed_title');
+$pageSeo = seoNoindexPage('/');
 $activeNav = 'explore';
 $mainClass = 'app-content';
 $showPostComposerModal = $isLoggedIn;

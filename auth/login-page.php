@@ -13,6 +13,7 @@ $appTheme = resolveAppTheme();
     <meta name="viewport" content="width=device-width, initial-scale=1">
 <?php renderThemeHeadScript(); ?>
     <title><?php echo __e('meta.sign_in_title'); ?></title>
+<?php renderPageSeoHeadTags(__('meta.sign_in_title'), seoNoindexPage('/login')); ?>
 <?php renderAppI18nScript(); ?>
     <link rel="icon" type="image/png" href="<?php echo htmlspecialchars($url('/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,7 +36,6 @@ renderAppStylesheets($url);
                     height="72"
                 >
                 <div class="register-form-header">
-                    <?php require __DIR__ . '/../includes/layout/lang-switcher.php'; ?>
                     <?php require __DIR__ . '/../includes/layout/theme-toggle.php'; ?>
                 </div>
                 <h1 class="register-title"><?php echo __e('auth.sign_in'); ?></h1>

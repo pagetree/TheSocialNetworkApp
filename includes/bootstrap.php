@@ -34,6 +34,7 @@ require_once __DIR__ . '/hashtags.php';
 require_once __DIR__ . '/welcome-stats.php';
 require_once __DIR__ . '/post-remove.php';
 require_once __DIR__ . '/content-reports.php';
+require_once __DIR__ . '/seo.php';
 
 function jsonResponse(array $payload, int $statusCode = 200): void
 {

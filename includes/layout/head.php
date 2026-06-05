@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 /** @var string $pageTitle */
+/** @var array<string, mixed>|null $pageSeo */
 /** @var callable(string): string $url */
 
 $appTheme = resolveAppTheme();
@@ -14,6 +15,7 @@ $appTheme = resolveAppTheme();
     <meta name="viewport" content="width=device-width, initial-scale=1">
 <?php renderThemeHeadScript(); ?>
     <title><?php echo htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8'); ?></title>
+<?php renderPageSeoHeadTags($pageTitle, $pageSeo ?? null); ?>
 <?php renderAppI18nScript(); ?>
     <link rel="icon" type="image/png" href="<?php echo htmlspecialchars($url('/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">

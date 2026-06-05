@@ -11,6 +11,10 @@
     gap: var(--post-gap);
 }
 
+html[data-theme="light"] .post-composer-box {
+    background: var(--composer-bg);
+}
+
 .post-composer-input {
     width: 100%;
     min-height: 88px;

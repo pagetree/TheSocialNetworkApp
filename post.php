@@ -10,7 +10,8 @@ declare(strict_types=1);
 /** @var string $postStatsCsrfToken */
 /** @var array<string, mixed>|null $currentUser */
 
-$pageTitle = __('meta.post_title');
+$pageSeo = seoBuildPostPage($post, $url);
+$pageTitle = seoApplyPageTitle($pageSeo, __('meta.post_title'));
 $activeNav = 'explore';
 $mainClass = 'app-content post-detail-page';
 $pageScripts = ['/assets/js/reply-media-picker.js', '/assets/js/post-reply-composer.js'];
@@ -26,7 +27,6 @@ if ($isLoggedIn) {
         );
     }
 }
-$layoutHasRightSidebar = true;
 
 require __DIR__ . '/includes/layout/head.php';
 require __DIR__ . '/includes/layout/content-area-start.php';

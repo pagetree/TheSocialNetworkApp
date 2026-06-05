@@ -11,10 +11,13 @@ $pageScripts = $pageScripts ?? [];
 $onboardingLayout = !empty($onboardingLayout);
 ?>
                     </div>
+<?php if (!$onboardingLayout) : ?>
+                    </div>
+<?php endif; ?>
                 </main>
 <?php
-if (!$onboardingLayout && !empty($layoutHasRightSidebar)) {
-    require __DIR__ . '/post-right-sidebar.php';
+if (!$onboardingLayout) {
+    require __DIR__ . '/sidebar-right.php';
 }
 if (!$onboardingLayout) : ?>
             </div>

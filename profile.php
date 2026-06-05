@@ -67,9 +67,15 @@ if ($hasProfileUser) {
 $profileFollowingLabel = formatEngagementCount($profileFollowingCount);
 $profileFollowersLabel = formatEngagementCount($profileFollowersCount);
 
-$pageTitle = $hasProfileUser
-    ? __('meta.profile_title', ['name' => (string) ($profileUser['display_name'] ?? 'Profile')])
-    : __('meta.profile_default_title');
+$pageSeo = $hasProfileUser
+    ? seoBuildProfilePage($profileUser, $url, $profileIsPrivate, $isOwnProfile)
+    : seoNoindexPage('/profile');
+$pageTitle = seoApplyPageTitle(
+    $pageSeo,
+    $hasProfileUser
+        ? __('meta.profile_title', ['name' => (string) ($profileUser['display_name'] ?? 'Profile')])
+        : __('meta.profile_default_title')
+);
 $activeNav = 'profile';
 $mainClass = 'profile-page';
 $pageScripts = [];

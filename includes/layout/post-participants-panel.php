@@ -7,12 +7,7 @@ declare(strict_types=1);
 /** @var bool $isLoggedIn */
 /** @var int $currentUserId */
 /** @var array<int, true> $postParticipantFollowedIds */
-
-$postParticipants = $postParticipants ?? [];
-$postParticipantFollowedIds = $postParticipantFollowedIds ?? [];
-$currentUserId = $currentUserId ?? 0;
 ?>
-                <aside class="app-sidebar app-sidebar--right" aria-label="<?php echo __e('profile.activity_sidebar'); ?>">
                     <article class="profile-card post-participants-card">
                         <h2 class="post-participants-card-title">Relevant people</h2>
                         <?php if ($postParticipants === []) : ?>
@@ -86,4 +81,3 @@ $currentUserId = $currentUserId ?? 0;
                         </ul>
                         <?php endif; ?>
                     </article>
-                </aside>

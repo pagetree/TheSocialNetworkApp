@@ -37,6 +37,7 @@ http_response_code(200);
 header('Content-Type: text/html; charset=utf-8');
 
 $pageTitle = __('meta.onboarding_title');
+$pageSeo = seoNoindexPage('/onboarding/' . $onboardingStep);
 $activeNav = 'explore';
 $mainClass = 'onboarding-main';
 $onboardingLayout = true;
