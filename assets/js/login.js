@@ -41,6 +41,7 @@
         try {
             const response = await fetch(loginUrl, {
                 method: "POST",
+                credentials: "same-origin",
                 headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",

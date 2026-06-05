@@ -14,6 +14,7 @@ loadAppEnv();
 initAppLocale();
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/database-session-handler.php';
 require_once __DIR__ . '/../auth/session.php';
 require_once __DIR__ . '/security.php';
 sendSecurityHeaders();

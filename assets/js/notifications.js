@@ -5,6 +5,8 @@
     const readUrl = window.APP_NOTIFICATIONS_READ_URL;
     const readCsrfToken = window.APP_NOTIFICATIONS_READ_CSRF_TOKEN;
     const pollMs = 15000;
+    let pollTimer = null;
+    let authExpired = false;
 
     if (!unreadUrl) {
         return;
@@ -24,6 +26,10 @@
     }
 
     async function fetchUnreadCount() {
+        if (authExpired) {
+            return null;
+        }
+
         try {
             const response = await fetch(unreadUrl, {
                 method: "GET",
@@ -32,6 +38,15 @@
                     Accept: "application/json",
                 },
             });
+
+            if (response.status === 401) {
+                authExpired = true;
+                if (pollTimer !== null) {
+                    window.clearInterval(pollTimer);
+                    pollTimer = null;
+                }
+                return null;
+            }
 
             if (!response.ok) {
                 return null;
@@ -114,7 +129,7 @@
         markAllRead();
     } else {
         pollUnread();
-        window.setInterval(pollUnread, pollMs);
+        pollTimer = window.setInterval(pollUnread, pollMs);
         document.addEventListener("visibilitychange", pollUnread);
     }
 })();

@@ -302,8 +302,29 @@
         });
     }
 
+    function applyPeriodData(period, seriesData, statsPayload) {
+        setActivePeriod(seriesData.period || period);
+        latestSeriesData = seriesData;
+        renderChart(latestSeriesData);
+
+        if (statsPayload && statsPayload.ok) {
+            updateStatCards(statsPayload.stats || []);
+        }
+    }
+
     function loadPeriod(period) {
-        if (!config.url || period === activePeriod && chartInstance) {
+        if (period === activePeriod && chartInstance) {
+            return;
+        }
+
+        var cachedSeries = config.preloadedData && config.preloadedData[period];
+        if (cachedSeries && cachedSeries.ok) {
+            var cachedStats = config.preloadedStats && config.preloadedStats[period];
+            applyPeriodData(period, cachedSeries, cachedStats);
+            return;
+        }
+
+        if (!config.url) {
             return;
         }
 
@@ -323,7 +344,7 @@
             signal: fetchController.signal,
         }).then(function (response) {
             return response.json().then(function (payload) {
-                return { ok: response.ok, payload: payload };
+                return { ok: response.ok, status: response.status, payload: payload };
             });
         });
 
@@ -337,27 +358,29 @@
                 signal: fetchController.signal,
             }).then(function (response) {
                 return response.json().then(function (payload) {
-                    return { ok: response.ok, payload: payload };
+                    return { ok: response.ok, status: response.status, payload: payload };
                 });
             })
-            : Promise.resolve({ ok: true, payload: { ok: true, stats: [] } });
+            : Promise.resolve({ ok: true, status: 200, payload: { ok: true, stats: [] } });
 
         Promise.all([chartRequest, statsRequest])
             .then(function (results) {
                 var chartResult = results[0];
                 var statsResult = results[1];
 
+                if (chartResult.status === 401 || statsResult.status === 401) {
+                    if (loadingEl) {
+                        loadingEl.hidden = false;
+                        loadingEl.textContent = config.sessionExpiredMessage || "Session expired. Refresh and try again.";
+                    }
+                    return;
+                }
+
                 if (!chartResult.ok || !chartResult.payload || !chartResult.payload.ok) {
                     throw new Error("analytics_fetch_failed");
                 }
 
-                setActivePeriod(chartResult.payload.period || period);
-                latestSeriesData = chartResult.payload;
-                renderChart(latestSeriesData);
-
-                if (statsResult.ok && statsResult.payload && statsResult.payload.ok) {
-                    updateStatCards(statsResult.payload.stats || []);
-                }
+                applyPeriodData(chartResult.payload.period || period, chartResult.payload, statsResult.payload);
             })
             .catch(function (error) {
                 if (error && error.name === "AbortError") {

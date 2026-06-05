@@ -2,26 +2,70 @@
 
 declare(strict_types=1);
 
+function appSessionCookiePath(): string
+{
+    $basePath = appBasePath();
+
+    if ($basePath === '' || $basePath === '/') {
+        return '/';
+    }
+
+    return rtrim($basePath, '/') . '/';
+}
+
+function configureAppSessionCookie(): void
+{
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => appSessionCookiePath(),
+        'secure' => isHttpsRequest(),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+}
+
 function startAppSession(): void
 {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start([
-            'cookie_httponly' => true,
-            'cookie_samesite' => 'Lax',
-            'cookie_secure' => isHttpsRequest(),
-        ]);
+    if (session_status() !== PHP_SESSION_NONE) {
+        return;
     }
+
+    configureAppSessionCookie();
+
+    if (databaseSessionStorageAvailable()) {
+        session_set_save_handler(new DatabaseSessionHandler(createPdoConnection()), true);
+    }
+
+    session_start([
+        'cookie_httponly' => true,
+        'cookie_samesite' => 'Lax',
+        'cookie_secure' => isHttpsRequest(),
+        'cookie_path' => appSessionCookiePath(),
+    ]);
 }
 
 function getCurrentUser(): ?array
 {
     startAppSession();
 
-    if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
+    if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
+        return $_SESSION['user'];
+    }
+
+    $userId = isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : 0;
+    if ($userId < 1) {
         return null;
     }
 
-    return $_SESSION['user'];
+    $user = fetchUserById($userId);
+    if ($user === null) {
+        return null;
+    }
+
+    unset($user['password_hash'], $user['email']);
+    $_SESSION['user'] = $user;
+
+    return $user;
 }
 
 function isLoggedIn(): bool

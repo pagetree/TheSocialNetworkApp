@@ -439,8 +439,25 @@ if ($path === '/analytics') {
     $isLoggedIn = true;
     $loginCsrfToken = '';
     $analyticsDefaultPeriod = '7d';
-    $analyticsInitialData = fetchUserPostImpressionsSeries($currentUserId, $analyticsDefaultPeriod);
-    $analyticsInitialStats = fetchUserAnalyticsStats($currentUserId, $analyticsDefaultPeriod);
+    $analyticsPeriodOptions = ['24h', '7d', '30d', '1y'];
+    $analyticsPreloadedData = [];
+    $analyticsPreloadedStats = [];
+
+    foreach ($analyticsPeriodOptions as $analyticsPeriodOption) {
+        $analyticsPreloadedData[$analyticsPeriodOption] = fetchUserPostImpressionsSeries(
+            $currentUserId,
+            $analyticsPeriodOption
+        );
+        $analyticsPreloadedStats[$analyticsPeriodOption] = fetchUserAnalyticsStats(
+            $currentUserId,
+            $analyticsPeriodOption
+        );
+    }
+
+    $analyticsInitialData = $analyticsPreloadedData[$analyticsDefaultPeriod]
+        ?? fetchUserPostImpressionsSeries($currentUserId, $analyticsDefaultPeriod);
+    $analyticsInitialStats = $analyticsPreloadedStats[$analyticsDefaultPeriod]
+        ?? fetchUserAnalyticsStats($currentUserId, $analyticsDefaultPeriod);
     $showFeedReplyModal = false;
     $showQuoteModal = false;
     $showPostComposerModal = false;

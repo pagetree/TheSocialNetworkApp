@@ -218,7 +218,10 @@ if (!$onboardingLayout) : ?>
             'defaultPeriod' => $analyticsDefaultPeriod ?? '7d',
             'initialData' => $analyticsInitialData ?? ['ok' => false],
             'initialStats' => $analyticsInitialStats ?? ['ok' => false],
+            'preloadedData' => $analyticsPreloadedData ?? [],
+            'preloadedStats' => $analyticsPreloadedStats ?? [],
             'impressionsLabel' => __('analytics.impressions_series'),
+            'sessionExpiredMessage' => __('api.session_expired_short'),
         ], JSON_THROW_ON_ERROR); ?>;
     </script>
     <?php endif; ?>
