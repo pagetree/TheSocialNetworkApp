@@ -16,6 +16,7 @@ $postTimeLabel = (string) ($post['time_label'] ?? '');
 $createdAt = (string) ($post['created_at'] ?? '');
 $replyCount = formatEngagementCount((int) ($post['reply_count'] ?? 0));
 $repostCount = formatEngagementCount((int) ($post['repost_count'] ?? 0));
+$quoteCount = formatEngagementCount((int) ($post['quote_count'] ?? 0));
 $likeCount = formatEngagementCount((int) ($post['like_count'] ?? 0));
 $viewCount = formatEngagementCount((int) ($post['view_count'] ?? 0));
 $interactionCount = formatEngagementCount((int) ($post['interaction_count'] ?? 0));
@@ -104,7 +105,7 @@ $postCardClass = 'post-card post-card--linkable' . ($isRepost ? ' post-card--rep
                                 type="button"
                                 class="post-action post-action-quote"
                                 aria-label="<?php echo __e('post.quote'); ?>"
-                            ><i data-lucide="quote" aria-hidden="true"></i></button>
+                            ><i data-lucide="quote" aria-hidden="true"></i><span><?php echo htmlspecialchars($quoteCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button
                                 type="button"
                                 class="post-action<?php echo $likeActionClass; ?>"

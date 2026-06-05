@@ -165,7 +165,25 @@ if ($bodyForDb !== null) {
 consumeCsrfToken(extractCsrfToken($payload), 'post_create');
 
 $appPaths = appPaths();
-jsonResponse([
+$response = [
     'ok' => true,
     'post' => postFeedPayload($post, $appPaths['url']),
-]);
+];
+
+if ($resolvedQuotedPostId !== null && $resolvedQuotedPostId > 0) {
+    $pdo = createPdoConnection();
+    $countStmt = $pdo->prepare(
+        'SELECT quote_count
+         FROM posts
+         WHERE id = :id
+         LIMIT 1'
+    );
+    $countStmt->execute(['id' => $resolvedQuotedPostId]);
+    $countRow = $countStmt->fetch();
+    $quoteCount = (int) ($countRow['quote_count'] ?? 0);
+    $response['quoted_post_id'] = $resolvedQuotedPostId;
+    $response['quote_count'] = $quoteCount;
+    $response['quote_label'] = formatEngagementCount($quoteCount);
+}
+
+jsonResponse($response);

@@ -18,12 +18,17 @@ body.post-quote-modal-open {
 
 .post-quote-modal-overlay:not([hidden]) {
     display: flex;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.post-quote-modal-overlay:not([hidden])::-webkit-scrollbar {
+    display: none;
 }
 
 .post-quote-modal {
     position: relative;
     width: min(100%, 640px);
-    max-height: min(90vh, 820px);
     margin: auto;
     border-radius: var(--container-radius);
     background: var(--elements-bg);
@@ -31,7 +36,7 @@ body.post-quote-modal-open {
     display: flex;
     flex-direction: column;
     gap: var(--post-gap);
-    overflow: hidden;
+    overflow: visible;
     box-sizing: border-box;
 }
 
@@ -84,9 +89,8 @@ body.post-quote-modal-open {
     margin: 0;
     box-shadow: none;
     background: transparent;
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
+    flex: 0 0 auto;
+    overflow: visible;
 }
 
 .post-quote-modal-composer .post-composer-body {
@@ -109,10 +113,9 @@ body.post-quote-modal-open {
     margin: 0;
     width: 100%;
     min-width: 0;
-    height: 200px;
-    max-height: 200px;
-    overflow-x: hidden;
-    overflow-y: auto;
+    min-height: 320px;
+    height: auto;
+    overflow: visible;
     padding: calc(var(--post-card-padding) * 0.75);
     border: 1px solid color-mix(in srgb, var(--light) 12%, transparent);
     border-radius: calc(var(--container-radius) - 8px);
@@ -122,7 +125,6 @@ body.post-quote-modal-open {
     grid-template-columns: 48px minmax(0, 1fr);
     gap: var(--post-gap);
     align-items: start;
-    -webkit-overflow-scrolling: touch;
 }
 
 .post-quote-modal-preview .post-header {
@@ -140,17 +142,6 @@ body.post-quote-modal-open {
 
 .post-quote-modal-preview #post-quote-preview-media .post-media-gallery {
     width: 100%;
-}
-
-.post-quote-modal-preview .post-media-gallery--1 .post-media {
-    max-height: 120px;
-}
-
-.post-quote-modal-preview .post-media-gallery--2 .post-media,
-.post-quote-modal-preview .post-media-gallery--3 .post-media,
-.post-quote-modal-preview .post-media-gallery--4 .post-media {
-    max-height: 88px;
-    min-height: 0;
 }
 
 .post-quoted-card {

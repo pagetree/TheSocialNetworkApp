@@ -103,7 +103,7 @@ function removePostForUser(int $postId, int $userId): array
 
     $pdo = createPdoConnection();
     $ownerCheck = $pdo->prepare(
-        'SELECT id
+        'SELECT id, quoted_post_id
          FROM posts
          WHERE id = :id
            AND user_id = :user_id
@@ -114,10 +114,13 @@ function removePostForUser(int $postId, int $userId): array
         'id' => $postId,
         'user_id' => $userId,
     ]);
+    $ownedPost = $ownerCheck->fetch();
 
-    if ($ownerCheck->fetch() === false) {
+    if ($ownedPost === false) {
         return ['ok' => false, 'error' => 'Post not found.', 'status' => 404];
     }
+
+    $quotedPostId = (int) ($ownedPost['quoted_post_id'] ?? 0);
 
     $hashtagIds = fetchHashtagIdsForPost($postId);
     $replyIds = fetchActiveReplyIdsForConversation($postId);
@@ -170,6 +173,15 @@ function removePostForUser(int $postId, int $userId): array
         }
 
         $pdo->prepare('DELETE FROM post_hashtags WHERE post_id = :post_id')->execute(['post_id' => $postId]);
+
+        if ($quotedPostId > 0) {
+            $pdo->prepare(
+                'UPDATE posts
+                 SET quote_count = GREATEST(quote_count - 1, 0),
+                     updated_at = NOW()
+                 WHERE id = :id'
+            )->execute(['id' => $quotedPostId]);
+        }
 
         $pdo->commit();
     } catch (Throwable $exception) {

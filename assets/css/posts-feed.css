@@ -35,6 +35,24 @@
     text-align: left;
 }
 
+.post-card:not(.post-composer) .post-actions {
+    margin-top: 12px;
+}
+
+.post-card:not(.post-composer) .post-action {
+    gap: 8px;
+    font-size: 14px;
+}
+
+.post-card:not(.post-composer) .post-action + .post-action {
+    margin-left: 32px;
+}
+
+.post-card:not(.post-composer) .post-action svg {
+    width: 18px;
+    height: 18px;
+}
+
 .post-card:not(.post-composer) > .post-text {
     margin-top: calc(-3 * var(--post-gap));
 }

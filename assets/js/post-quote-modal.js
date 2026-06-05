@@ -277,6 +277,16 @@
                 return;
             }
 
+            if (data.quoted_post_id && data.quote_label !== undefined) {
+                document
+                    .querySelectorAll(
+                        `.post-card[data-post-id="${data.quoted_post_id}"] .post-action-quote span`
+                    )
+                    .forEach((countEl) => {
+                        countEl.textContent = data.quote_label;
+                    });
+            }
+
             closeModal();
             window.location.reload();
         } catch {

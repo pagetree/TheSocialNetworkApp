@@ -295,7 +295,7 @@ function fetchPostsByHashtag(string $tag, int $limit = POST_FEED_DEFAULT_LIMIT):
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
         'SELECT p.id, p.user_id, p.body, p.location_label, p.quoted_post_id,
-                p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
+                p.reply_count, p.repost_count, p.quote_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
                 u.display_name, u.handle, u.username, u.avatar_url,
                 quote.id AS quote_id, quote.user_id AS quote_user_id, quote.body AS quote_body,
                 quote.location_label AS quote_location_label, quote.created_at AS quote_created_at,

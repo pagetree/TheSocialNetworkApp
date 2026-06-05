@@ -95,24 +95,79 @@ function resolveQuotedPostId(int $postId): ?int
     return $repostOf > 0 ? $repostOf : (int) ($post['id'] ?? 0);
 }
 
+function incrementQuotedPostCount(int $quotedPostId, ?PDO $pdo = null): void
+{
+    if ($quotedPostId < 1) {
+        return;
+    }
+
+    $pdo = $pdo ?? createPdoConnection();
+    $stmt = $pdo->prepare(
+        'UPDATE posts
+         SET quote_count = quote_count + 1,
+             updated_at = NOW()
+         WHERE id = :id
+           AND is_deleted = FALSE'
+    );
+    $stmt->execute(['id' => $quotedPostId]);
+}
+
+function decrementQuotedPostCount(int $quotedPostId, ?PDO $pdo = null): void
+{
+    if ($quotedPostId < 1) {
+        return;
+    }
+
+    $pdo = $pdo ?? createPdoConnection();
+    $stmt = $pdo->prepare(
+        'UPDATE posts
+         SET quote_count = GREATEST(quote_count - 1, 0),
+             updated_at = NOW()
+         WHERE id = :id'
+    );
+    $stmt->execute(['id' => $quotedPostId]);
+}
+
 function createPost(int $userId, ?string $body, ?string $locationLabel = null, ?int $quotedPostId = null): ?array
 {
     $pdo = createPdoConnection();
-    $stmt = $pdo->prepare(
-        'INSERT INTO posts (user_id, body, location_label, quoted_post_id)
-         VALUES (:user_id, :body, :location_label, :quoted_post_id)
-         RETURNING id, user_id, body, location_label, quoted_post_id,
-                   reply_count, repost_count, like_count, view_count, interaction_count, created_at'
-    );
-    $stmt->execute([
-        'user_id' => $userId,
-        'body' => $body,
-        'location_label' => $locationLabel,
-        'quoted_post_id' => $quotedPostId,
-    ]);
-    $post = $stmt->fetch();
+    $pdo->beginTransaction();
 
-    return $post === false ? null : $post;
+    try {
+        $stmt = $pdo->prepare(
+            'INSERT INTO posts (user_id, body, location_label, quoted_post_id)
+             VALUES (:user_id, :body, :location_label, :quoted_post_id)
+             RETURNING id, user_id, body, location_label, quoted_post_id,
+                       reply_count, repost_count, quote_count, like_count, view_count, interaction_count, created_at'
+        );
+        $stmt->execute([
+            'user_id' => $userId,
+            'body' => $body,
+            'location_label' => $locationLabel,
+            'quoted_post_id' => $quotedPostId,
+        ]);
+        $post = $stmt->fetch();
+
+        if ($post === false) {
+            $pdo->rollBack();
+
+            return null;
+        }
+
+        if ($quotedPostId !== null && $quotedPostId > 0) {
+            incrementQuotedPostCount($quotedPostId, $pdo);
+        }
+
+        $pdo->commit();
+
+        return $post;
+    } catch (Throwable $exception) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        throw $exception;
+    }
 }
 
 /**
@@ -218,6 +273,20 @@ function deletePostForUser(int $postId, int $userId): void
 {
     $hashtagIds = fetchHashtagIdsForPost($postId);
     $pdo = createPdoConnection();
+    $quotedStmt = $pdo->prepare(
+        'SELECT quoted_post_id
+         FROM posts
+         WHERE id = :id
+           AND user_id = :user_id
+         LIMIT 1'
+    );
+    $quotedStmt->execute([
+        'id' => $postId,
+        'user_id' => $userId,
+    ]);
+    $quotedRow = $quotedStmt->fetch();
+    $quotedPostId = $quotedRow !== false ? (int) ($quotedRow['quoted_post_id'] ?? 0) : 0;
+
     $stmt = $pdo->prepare(
         'DELETE FROM posts
          WHERE id = :id
@@ -227,6 +296,11 @@ function deletePostForUser(int $postId, int $userId): void
         'id' => $postId,
         'user_id' => $userId,
     ]);
+
+    if ($stmt->rowCount() > 0 && $quotedPostId > 0) {
+        decrementQuotedPostCount($quotedPostId);
+    }
+
     recomputeHashtagPostCounts($hashtagIds);
 }
 
@@ -239,11 +313,12 @@ function fetchFeedPosts(int $limit = POST_FEED_DEFAULT_LIMIT): array
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
         'SELECT p.id, p.user_id, p.body, p.location_label, p.repost_of_post_id, p.quoted_post_id,
-                p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
+                p.reply_count, p.repost_count, p.quote_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
                 u.display_name, u.handle, u.username, u.avatar_url,
                 orig.id AS orig_id, orig.user_id AS orig_user_id, orig.body AS orig_body,
                 orig.location_label AS orig_location_label,
                 orig.reply_count AS orig_reply_count, orig.repost_count AS orig_repost_count,
+                orig.quote_count AS orig_quote_count,
                 orig.like_count AS orig_like_count, orig.view_count AS orig_view_count,
                 orig.interaction_count AS orig_interaction_count, orig.created_at AS orig_created_at,
                 orig_u.display_name AS orig_display_name, orig_u.handle AS orig_handle,
@@ -285,11 +360,12 @@ function fetchPostsByUserId(int $userId, int $limit = POST_FEED_DEFAULT_LIMIT): 
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
         'SELECT p.id, p.user_id, p.body, p.location_label, p.repost_of_post_id, p.quoted_post_id,
-                p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
+                p.reply_count, p.repost_count, p.quote_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
                 u.display_name, u.handle, u.username, u.avatar_url,
                 orig.id AS orig_id, orig.user_id AS orig_user_id, orig.body AS orig_body,
                 orig.location_label AS orig_location_label,
                 orig.reply_count AS orig_reply_count, orig.repost_count AS orig_repost_count,
+                orig.quote_count AS orig_quote_count,
                 orig.like_count AS orig_like_count, orig.view_count AS orig_view_count,
                 orig.interaction_count AS orig_interaction_count, orig.created_at AS orig_created_at,
                 orig_u.display_name AS orig_display_name, orig_u.handle AS orig_handle,
@@ -459,6 +535,7 @@ function postFeedPayload(array $row, callable $url): array
             'location_label' => $row['orig_location_label'] ?? null,
             'reply_count' => (int) ($row['orig_reply_count'] ?? 0),
             'repost_count' => (int) ($row['orig_repost_count'] ?? 0),
+            'quote_count' => (int) ($row['orig_quote_count'] ?? 0),
             'like_count' => (int) ($row['orig_like_count'] ?? 0),
             'view_count' => (int) ($row['orig_view_count'] ?? 0),
             'interaction_count' => (int) ($row['orig_interaction_count'] ?? 0),
@@ -488,6 +565,7 @@ function postFeedPayload(array $row, callable $url): array
             : null,
         'reply_count' => (int) ($contentRow['reply_count'] ?? 0),
         'repost_count' => (int) ($contentRow['repost_count'] ?? 0),
+        'quote_count' => (int) ($contentRow['quote_count'] ?? 0),
         'like_count' => (int) ($contentRow['like_count'] ?? 0),
         'view_count' => (int) ($contentRow['view_count'] ?? 0),
         'interaction_count' => (int) ($contentRow['interaction_count'] ?? 0),
