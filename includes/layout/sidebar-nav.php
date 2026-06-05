@@ -6,6 +6,7 @@ declare(strict_types=1);
 /** @var callable(string): string $sidebarNavLinkClass */
 /** @var int $notificationsUnreadCount */
 /** @var string $activeNav */
+/** @var bool $isLoggedIn */
 
 $showNotificationsBadge = ($notificationsUnreadCount ?? 0) > 0 && ($activeNav ?? '') !== 'notifications';
 ?>
@@ -43,3 +44,18 @@ $showNotificationsBadge = ($notificationsUnreadCount ?? 0) > 0 && ($activeNav ??
                             <span><?php echo __e('nav.profile'); ?></span>
                         </a>
                     </nav>
+                    <?php if (!empty($isLoggedIn)) : ?>
+                    <div class="app-sidebar-post">
+                        <button
+                            type="button"
+                            class="app-sidebar-post-btn"
+                            id="sidebar-post-btn"
+                            data-post-composer-open
+                            aria-haspopup="dialog"
+                            aria-controls="post-composer-modal-panel"
+                        >
+                            <i data-lucide="square-pen" aria-hidden="true"></i>
+                            <span><?php echo __e('composer.post'); ?></span>
+                        </button>
+                    </div>
+                    <?php endif; ?>

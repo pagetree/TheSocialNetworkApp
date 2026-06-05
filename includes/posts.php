@@ -400,6 +400,28 @@ function fetchPostsByUserId(int $userId, int $limit = POST_FEED_DEFAULT_LIMIT): 
     return is_array($rows) ? hydrateFeedPostsWithMedia($rows) : [];
 }
 
+function fetchUserPostCount(int $userId): int
+{
+    if ($userId < 1) {
+        return 0;
+    }
+
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT COUNT(*)::int
+         FROM posts p
+         LEFT JOIN posts orig ON orig.id = p.repost_of_post_id AND orig.is_deleted = FALSE
+         LEFT JOIN posts quote ON quote.id = p.quoted_post_id AND quote.is_deleted = FALSE
+         WHERE p.user_id = :user_id
+           AND p.is_deleted = FALSE
+           AND (p.repost_of_post_id IS NULL OR orig.id IS NOT NULL)
+           AND (p.quoted_post_id IS NULL OR quote.id IS NOT NULL)'
+    );
+    $stmt->execute(['user_id' => $userId]);
+
+    return max(0, (int) $stmt->fetchColumn());
+}
+
 /**
  * @return array<string, mixed>|null
  */

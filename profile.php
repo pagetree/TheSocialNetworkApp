@@ -33,7 +33,7 @@ $profilePosts = $profilePosts ?? [];
 $profileLikedPostIds = $profileLikedPostIds ?? [];
 $currentUserId = $currentUserId ?? 0;
 $showFeedReplyModal = $showFeedReplyModal ?? false;
-$showPostComposerModal = !empty($showPostComposerModal);
+$showPostComposerModal = false;
 $postCsrfToken = $postCsrfToken ?? '';
 
 $hasProfileUser = is_array($profileUser);
@@ -61,13 +61,26 @@ $showWebsite = $websiteUrl !== '';
 $showDob = $dobLabel !== '';
 $profileFollowingCount = 0;
 $profileFollowersCount = 0;
+$profilePostsCount = 0;
 if ($hasProfileUser) {
-    $followCounts = fetchUserFollowCounts((int) ($profileUser['id'] ?? 0));
+    $profileUserId = (int) ($profileUser['id'] ?? 0);
+    $followCounts = fetchUserFollowCounts($profileUserId);
     $profileFollowingCount = $followCounts['following'];
     $profileFollowersCount = $followCounts['followers'];
+    $profilePostsCount = fetchUserPostCount($profileUserId);
 }
 $profileFollowingLabel = formatEngagementCount($profileFollowingCount);
 $profileFollowersLabel = formatEngagementCount($profileFollowersCount);
+$profilePostsLabel = formatEngagementCount($profilePostsCount);
+$postComposerMentionHandle = '';
+if ($isLoggedIn && $hasProfileUser && !$isOwnProfile && $showProfileDetails) {
+    $mentionHandle = trim((string) ($profileUser['handle'] ?? ''));
+    if ($mentionHandle !== '') {
+        $postComposerMentionHandle = str_starts_with($mentionHandle, '@')
+            ? $mentionHandle
+            : '@' . $mentionHandle;
+    }
+}
 
 $pageSeo = $hasProfileUser
     ? seoBuildProfilePage($profileUser, $url, $profileIsPrivate, $isOwnProfile)
@@ -85,9 +98,6 @@ if ($isOwnProfile) {
     $pageScripts[] = '/assets/js/edit-profile.js';
 } elseif ($showProfileActions && $profileFollowUserId > 0) {
     $pageScripts[] = '/assets/js/profile-menu.js';
-}
-if ($showPostComposerModal) {
-    $pageScripts[] = '/assets/js/post-composer.js';
 }
 if ($showFeedReplyModal) {
     $pageScripts[] = '/assets/js/reply-media-picker.js';
@@ -191,7 +201,11 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                                 </div>
                                 <?php endif; ?>
                                 <?php if ($hasProfileUser && $showProfileDetails) : ?>
-                                <div class="profile-hero-social-stats" aria-label="<?php echo __e('profile.follow_stats'); ?>">
+                                <div class="profile-hero-social-stats" aria-label="<?php echo __e('sidebar.profile_stats'); ?>">
+                                    <p class="profile-hero-social-stat">
+                                        <span class="profile-hero-social-stat-value" id="profile-posts-count"><?php echo htmlspecialchars($profilePostsLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                                        <span class="profile-hero-social-stat-label"><?php echo __e('profile.tabs.posts'); ?></span>
+                                    </p>
                                     <p class="profile-hero-social-stat">
                                         <span class="profile-hero-social-stat-value" id="profile-following-count"><?php echo htmlspecialchars($profileFollowingLabel, ENT_QUOTES, 'UTF-8'); ?></span>
                                         <span class="profile-hero-social-stat-label"><?php echo __e('sidebar.following'); ?></span>
@@ -212,10 +226,6 @@ require __DIR__ . '/includes/layout/content-area-start.php';
                         <a href="#" class="profile-tab"><?php echo __e('profile.tabs.media'); ?></a>
                         <a href="#" class="profile-tab"><?php echo __e('profile.tabs.likes'); ?></a>
                     </nav>
-
-<?php if ($showPostComposerModal) {
-    require __DIR__ . '/includes/posts/post-composer-modal.php';
-} ?>
 
                     <div class="profile-feed" id="profile-post-feed">
 <?php if ($profileIsPrivate) : ?>

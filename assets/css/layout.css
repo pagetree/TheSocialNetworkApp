@@ -323,6 +323,47 @@ html[data-theme="light"] .app-sidebar-nav-link.is-active {
     display: none;
 }
 
+.app-sidebar-post {
+    flex-shrink: 0;
+    padding: 0 var(--sidebar-gutter-inline) var(--element-padding);
+}
+
+.app-sidebar-post-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sidebar-nav-link-gap);
+    width: 100%;
+    min-height: 48px;
+    padding: 0.75rem 1.25rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-on-fill);
+    font: inherit;
+    font-size: var(--sidebar-nav-link-font-size);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+.app-sidebar-post-btn svg {
+    width: var(--sidebar-nav-link-icon-size);
+    height: var(--sidebar-nav-link-icon-size);
+    stroke: currentColor;
+    flex-shrink: 0;
+}
+
+.app-sidebar-post-btn:hover,
+.app-sidebar-post-btn:focus-visible {
+    background: color-mix(in srgb, var(--accent) 88%, var(--light));
+    outline: none;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
 .app-sidebar-footer {
     margin-top: auto;
     flex-shrink: 0;

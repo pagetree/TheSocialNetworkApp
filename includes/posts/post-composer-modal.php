@@ -3,8 +3,13 @@
 declare(strict_types=1);
 
 /** @var string $composerAvatarUrl */
+/** @var bool $postComposerStandalone */
+
+$postComposerStandalone = !empty($postComposerStandalone);
+$modalRootClass = 'post-composer-modal' . ($postComposerStandalone ? ' post-composer-modal--standalone' : '');
 ?>
-                    <div class="post-composer-modal" id="post-composer-modal">
+                    <div class="<?php echo htmlspecialchars($modalRootClass, ENT_QUOTES, 'UTF-8'); ?>" id="post-composer-modal">
+                        <?php if (!$postComposerStandalone) : ?>
                         <button
                             type="button"
                             class="post-composer-fab"
@@ -15,10 +20,11 @@ declare(strict_types=1);
                         >
                             <i data-lucide="plus" aria-hidden="true"></i>
                         </button>
+                        <?php endif; ?>
                         <div
                             class="post-composer-modal-overlay"
                             id="post-composer-modal-overlay"
-                            hidden
+                            <?php echo $postComposerStandalone ? 'hidden' : ''; ?>
                         >
                             <button
                                 type="button"

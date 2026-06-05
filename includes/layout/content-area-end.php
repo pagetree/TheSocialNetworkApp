@@ -42,6 +42,21 @@ if (!$onboardingLayout) : ?>
     <?php if ($isLoggedIn && !$onboardingLayout) {
         require __DIR__ . '/media-lightbox.php';
     } ?>
+    <?php
+    if ($isLoggedIn && !$onboardingLayout && empty($showFeedComposerInline)) {
+        if (empty($composerAvatarUrl)) {
+            $composerUser = getCurrentUser();
+            $composerAvatarUrl = is_array($composerUser)
+                ? userMediaUrl($composerUser, 'avatar_url', $url)
+                : '';
+        }
+        if (empty($postCsrfToken)) {
+            $postCsrfToken = createCsrfToken('post_create');
+        }
+        $postComposerStandalone = true;
+        require dirname(__DIR__) . '/posts/post-composer-modal.php';
+    }
+    ?>
     <?php if ($isLoggedIn && $onboardingLayout) : ?>
     <script>
         window.APP_ONBOARDING = <?php echo json_encode([
@@ -178,8 +193,16 @@ if (!$onboardingLayout) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/sidebar-footer-menu.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endif; ?>
     <?php endif; ?>
-    <?php if (!empty($showPostComposerModal)) : ?>
+    <?php if ($isLoggedIn && !$onboardingLayout) : ?>
+    <script>
+        window.APP_POST_COMPOSER_MENTION = <?php echo json_encode($postComposerMentionHandle ?? '', JSON_THROW_ON_ERROR); ?>;
+    </script>
+    <?php endif; ?>
+    <?php if ($isLoggedIn && !$onboardingLayout) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-composer-modal.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php if (!empty($postCsrfToken)) : ?>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/post-composer.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php endif; ?>
     <?php endif; ?>
     <?php if ($isLoggedIn && $onboardingLayout) : ?>
     <?php foreach ($pageScripts as $scriptPath) : ?>
