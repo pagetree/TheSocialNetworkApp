@@ -20,7 +20,7 @@ $showNotificationsBadge = ($notificationsUnreadCount ?? 0) > 0 && ($activeNav ??
                             <i data-lucide="compass" aria-hidden="true"></i>
                             <span><?php echo __e('nav.explore'); ?></span>
                         </a>
-                        <a href="#" class="<?php echo $navLinkClass('messages'); ?>">
+                        <a href="<?php echo htmlspecialchars($url('/messages'), ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo $navLinkClass('messages'); ?>">
                             <i data-lucide="message-circle" aria-hidden="true"></i>
                             <span><?php echo __e('nav.chat'); ?></span>
                         </a>

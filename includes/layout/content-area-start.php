@@ -10,7 +10,10 @@ declare(strict_types=1);
 
 $activeNav = $activeNav ?? 'explore';
 $onboardingLayout = !empty($onboardingLayout);
-$appMainClass = 'app-main app-main--with-right-sidebar';
+$chatLayout = !empty($chatLayout);
+$appMainClass = $chatLayout
+    ? 'app-main app-main--chat'
+    : 'app-main app-main--with-right-sidebar';
 ?>
 <body<?php
 if (!$isLoggedIn) {
@@ -27,12 +30,17 @@ if (!$isLoggedIn) {
             <?php if (!$onboardingLayout) : ?>
             <div class="<?php echo htmlspecialchars($appMainClass, ENT_QUOTES, 'UTF-8'); ?>">
                 <?php require __DIR__ . '/sidebar.php'; ?>
+                <?php if ($chatLayout) {
+                    require __DIR__ . '/chat-contacts-sidebar.php';
+                } ?>
             <?php endif; ?>
                 <main class="<?php echo htmlspecialchars($mainClass, ENT_QUOTES, 'UTF-8'); ?>">
             <?php if ($onboardingLayout) {
                 require __DIR__ . '/onboarding-chrome.php';
             } else { ?>
                     <div class="app-content-body">
-                    <?php require __DIR__ . '/content-header.php'; ?>
+                    <?php if (!$chatLayout) {
+                        require __DIR__ . '/content-header.php';
+                    } ?>
             <?php } ?>
                     <div class="onboarding-content-card">

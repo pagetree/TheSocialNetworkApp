@@ -127,6 +127,10 @@
     grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--sidebar-width);
 }
 
+.app-main--chat {
+    grid-template-columns: var(--sidebar-width) var(--sidebar-width) minmax(0, 1fr);
+}
+
 .app-sidebar,
 .app-content {
     min-width: 0;

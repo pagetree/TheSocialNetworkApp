@@ -32,6 +32,7 @@ function appStylesheetPaths(): array
         '/assets/css/welcome.css',
         '/assets/css/register.css',
         '/assets/css/notifications.css',
+        '/assets/css/chat.css',
     ];
 }
 

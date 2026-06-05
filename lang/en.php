@@ -31,6 +31,7 @@ return [
         'profile_description_fallback' => 'View :name\'s public profile on Dots.',
         'profile_default_title' => 'Profile — Dots',
         'notifications_title' => 'Notifications — Dots',
+        'messages_title' => 'Chat — Dots',
     ],
     'lang' => [
         'switch' => 'Language',
@@ -447,6 +448,19 @@ return [
         'unfollow' => 'Unfollow',
         'follow_user' => 'Follow :name',
         'unfollow_user' => 'Unfollow :name',
+    ],
+    'chat' => [
+        'contacts_sidebar' => 'Conversations',
+        'search_placeholder' => 'Search conversations…',
+        'search_label' => 'Search conversations',
+        'unread_count' => ':count unread messages',
+        'conversation_with' => 'Conversation with :name',
+        'view_profile' => 'View profile',
+        'composer_label' => 'Write a message',
+        'message_placeholder' => 'Write a message…',
+        'send' => 'Send message',
+        'dev_title' => 'Chat is in the works',
+        'dev_hint' => 'We\'re actively building messaging — soon you\'ll be able to talk to anyone on Dots. Thanks for your patience while we get it right.',
     ],
     'notifications' => [
         'empty_title' => 'You\'re all caught up',

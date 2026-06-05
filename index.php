@@ -353,6 +353,34 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
     return;
 }
 
+if ($path === '/messages') {
+    $currentUser = getCurrentUser();
+    if ($currentUser === null) {
+        header('Location: ' . $url('/'));
+        exit;
+    }
+
+    $currentUserId = (int) $currentUser['id'];
+    $isLoggedIn = true;
+    $loginCsrfToken = '';
+    $chatLayout = true;
+
+    http_response_code(200);
+    header('Content-Type: text/html; charset=utf-8');
+
+    $pageTitle = __('meta.messages_title');
+    $pageSeo = seoNoindexPage('/messages');
+    $activeNav = 'messages';
+    $mainClass = 'app-content messages-page';
+    $pageScripts = [];
+
+    require __DIR__ . '/includes/layout/head.php';
+    require __DIR__ . '/includes/layout/content-area-start.php';
+    require __DIR__ . '/messages.php';
+    require __DIR__ . '/includes/layout/content-area-end.php';
+    return;
+}
+
 if ($path === '/notifications') {
     $currentUser = getCurrentUser();
     if ($currentUser === null) {

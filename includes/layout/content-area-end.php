@@ -16,7 +16,7 @@ $onboardingLayout = !empty($onboardingLayout);
 <?php endif; ?>
                 </main>
 <?php
-if (!$onboardingLayout) {
+if (!$onboardingLayout && empty($chatLayout)) {
     require __DIR__ . '/sidebar-right.php';
 }
 if (!$onboardingLayout) : ?>

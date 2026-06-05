@@ -122,6 +122,7 @@
 
     body:not(.welcome-page):not(.register-page) .app-main > main,
     body:not(.welcome-page):not(.register-page) .app-main > main.app-content,
+    body:not(.welcome-page):not(.register-page) .app-main > main.messages-page,
     body:not(.welcome-page):not(.register-page) .app-main > main.profile-page,
     body:not(.welcome-page):not(.register-page) .app-main > main.post-detail-page,
     body:not(.welcome-page):not(.register-page) .app-main > main.hashtag-page {
@@ -407,7 +408,8 @@
     }
 
     body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main,
-    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main--with-right-sidebar {
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main--with-right-sidebar,
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main--chat {
         grid-column: 1 / -1;
         grid-row: 1;
         display: grid;
@@ -415,6 +417,10 @@
         grid-template-rows: minmax(0, 1fr);
         min-height: 0;
         z-index: 1;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main--chat {
+        grid-template-columns: var(--sidebar-width) var(--sidebar-width) minmax(0, 1fr);
     }
 
     body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-sidebar:not(.app-sidebar--right) {
@@ -431,6 +437,20 @@
     body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main > main.profile-page,
     body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main > main.post-detail-page,
     body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main > main.hashtag-page {
+        grid-column: 2;
+        grid-row: 1 / -1;
+        min-height: 0;
+        max-height: 100%;
+        overflow: hidden;
+        align-self: stretch;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main--chat > main,
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main--chat > main.messages-page {
+        grid-column: 3;
+    }
+
+    body:not(.welcome-page):not(.register-page):not(.onboarding-page) .app-main--chat > .app-sidebar--contacts {
         grid-column: 2;
         grid-row: 1 / -1;
         min-height: 0;
