@@ -27,6 +27,7 @@ $postLinkLabel = __('post.view_by', ['name' => $authorName]);
 $viewerLiked = (bool) ($post['viewer_liked'] ?? false);
 $isRepost = (bool) ($post['is_repost'] ?? false);
 $reposter = is_array($post['reposter'] ?? null) ? $post['reposter'] : null;
+$quotedPost = is_array($post['quoted_post'] ?? null) ? $post['quoted_post'] : null;
 $likeActionClass = $viewerLiked ? ' post-action-like is-liked' : ' post-action-like';
 $postCardClass = 'post-card post-card--linkable' . ($isRepost ? ' post-card--repost' : '');
 ?>
@@ -89,6 +90,9 @@ $postCardClass = 'post-card post-card--linkable' . ($isRepost ? ' post-card--rep
                         <?php if ($hasMedia) {
                             require __DIR__ . '/post-media-gallery.php';
                         } ?>
+<?php if ($quotedPost !== null) {
+    require __DIR__ . '/post-quoted-card.php';
+} ?>
                         <footer class="post-actions" aria-label="<?php echo __e('post.engagement'); ?>">
                             <button type="button" class="post-action post-action-reply" aria-label="<?php echo __e('post.reply_to'); ?>"><i data-lucide="message-circle" aria-hidden="true"></i><span><?php echo htmlspecialchars($replyCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
                             <button
@@ -96,6 +100,11 @@ $postCardClass = 'post-card post-card--linkable' . ($isRepost ? ' post-card--rep
                                 class="post-action post-action-repost"
                                 aria-label="<?php echo __e('post.repost'); ?>"
                             ><i data-lucide="repeat-2" aria-hidden="true"></i><span><?php echo htmlspecialchars($repostCount, ENT_QUOTES, 'UTF-8'); ?></span></button>
+                            <button
+                                type="button"
+                                class="post-action post-action-quote"
+                                aria-label="<?php echo __e('post.quote'); ?>"
+                            ><i data-lucide="quote" aria-hidden="true"></i></button>
                             <button
                                 type="button"
                                 class="post-action<?php echo $likeActionClass; ?>"

@@ -216,6 +216,15 @@ return [
             'more_interests' => 'More interests',
         ],
     ],
+    'quote' => [
+        'title' => 'Quote post',
+        'write' => 'Write your quote',
+        'preview' => 'Quoted post preview',
+        'embedded' => 'Quoted post',
+        'errors' => [
+            'create_failed' => 'Unable to post quote right now.',
+        ],
+    ],
     'composer' => [
         'create_post' => 'Create post',
         'close' => 'Close',
@@ -264,6 +273,7 @@ return [
         'reply_to' => 'Reply to post',
         'repost' => 'Repost',
         'reposted' => 'reposted',
+        'quote' => 'Quote post',
         'like' => 'Like post',
         'unlike' => 'Unlike post',
         'view_stats' => 'View post stats',

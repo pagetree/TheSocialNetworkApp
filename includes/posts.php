@@ -28,11 +28,11 @@ function validatePostBody(string $body): ?string
     return null;
 }
 
-function validatePostBodyForCreate(string $body, bool $hasMedia): ?string
+function validatePostBodyForCreate(string $body, bool $hasMedia, bool $hasQuotedPost = false): ?string
 {
     $body = sanitizePostText($body);
 
-    if ($body === '' && !$hasMedia) {
+    if ($body === '' && !$hasMedia && !$hasQuotedPost) {
         return 'Write something or add media before posting.';
     }
 
@@ -69,19 +69,46 @@ function normalizePostLocationLabel(string $locationLabel): ?string
 /**
  * @return array<string, mixed>|null
  */
-function createPost(int $userId, ?string $body, ?string $locationLabel = null): ?array
+function resolveQuotedPostId(int $postId): ?int
+{
+    if ($postId < 1) {
+        return null;
+    }
+
+    $pdo = createPdoConnection();
+    $stmt = $pdo->prepare(
+        'SELECT id, repost_of_post_id
+         FROM posts
+         WHERE id = :id
+           AND is_deleted = FALSE
+         LIMIT 1'
+    );
+    $stmt->execute(['id' => $postId]);
+    $post = $stmt->fetch();
+
+    if ($post === false) {
+        return null;
+    }
+
+    $repostOf = (int) ($post['repost_of_post_id'] ?? 0);
+
+    return $repostOf > 0 ? $repostOf : (int) ($post['id'] ?? 0);
+}
+
+function createPost(int $userId, ?string $body, ?string $locationLabel = null, ?int $quotedPostId = null): ?array
 {
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
-        'INSERT INTO posts (user_id, body, location_label)
-         VALUES (:user_id, :body, :location_label)
-         RETURNING id, user_id, body, location_label,
+        'INSERT INTO posts (user_id, body, location_label, quoted_post_id)
+         VALUES (:user_id, :body, :location_label, :quoted_post_id)
+         RETURNING id, user_id, body, location_label, quoted_post_id,
                    reply_count, repost_count, like_count, view_count, interaction_count, created_at'
     );
     $stmt->execute([
         'user_id' => $userId,
         'body' => $body,
         'location_label' => $locationLabel,
+        'quoted_post_id' => $quotedPostId,
     ]);
     $post = $stmt->fetch();
 
@@ -163,6 +190,10 @@ function hydrateFeedPostsWithMedia(array $rows): array
         if ($repostOf > 0) {
             $postIds[] = $repostOf;
         }
+        $quotedPostId = (int) ($row['quoted_post_id'] ?? 0);
+        if ($quotedPostId > 0) {
+            $postIds[] = $quotedPostId;
+        }
     }
     $grouped = fetchPostMediaGroupedByPostIds($postIds);
 
@@ -172,6 +203,10 @@ function hydrateFeedPostsWithMedia(array $rows): array
         $repostOf = (int) ($row['repost_of_post_id'] ?? 0);
         if ($repostOf > 0) {
             $row['repost_media_items'] = $grouped[$repostOf] ?? [];
+        }
+        $quotedPostId = (int) ($row['quoted_post_id'] ?? 0);
+        if ($quotedPostId > 0) {
+            $row['quote_media_items'] = $grouped[$quotedPostId] ?? [];
         }
     }
     unset($row);
@@ -203,7 +238,7 @@ function fetchFeedPosts(int $limit = POST_FEED_DEFAULT_LIMIT): array
     $limit = max(1, min($limit, 100));
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
-        'SELECT p.id, p.user_id, p.body, p.location_label, p.repost_of_post_id,
+        'SELECT p.id, p.user_id, p.body, p.location_label, p.repost_of_post_id, p.quoted_post_id,
                 p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
                 u.display_name, u.handle, u.username, u.avatar_url,
                 orig.id AS orig_id, orig.user_id AS orig_user_id, orig.body AS orig_body,
@@ -212,13 +247,20 @@ function fetchFeedPosts(int $limit = POST_FEED_DEFAULT_LIMIT): array
                 orig.like_count AS orig_like_count, orig.view_count AS orig_view_count,
                 orig.interaction_count AS orig_interaction_count, orig.created_at AS orig_created_at,
                 orig_u.display_name AS orig_display_name, orig_u.handle AS orig_handle,
-                orig_u.username AS orig_username, orig_u.avatar_url AS orig_avatar_url
+                orig_u.username AS orig_username, orig_u.avatar_url AS orig_avatar_url,
+                quote.id AS quote_id, quote.user_id AS quote_user_id, quote.body AS quote_body,
+                quote.location_label AS quote_location_label, quote.created_at AS quote_created_at,
+                quote_u.display_name AS quote_display_name, quote_u.handle AS quote_handle,
+                quote_u.username AS quote_username, quote_u.avatar_url AS quote_avatar_url
          FROM posts p
          INNER JOIN users u ON u.id = p.user_id
          LEFT JOIN posts orig ON orig.id = p.repost_of_post_id AND orig.is_deleted = FALSE
          LEFT JOIN users orig_u ON orig_u.id = orig.user_id
+         LEFT JOIN posts quote ON quote.id = p.quoted_post_id AND quote.is_deleted = FALSE
+         LEFT JOIN users quote_u ON quote_u.id = quote.user_id
          WHERE p.is_deleted = FALSE
            AND (p.repost_of_post_id IS NULL OR orig.id IS NOT NULL)
+           AND (p.quoted_post_id IS NULL OR quote.id IS NOT NULL)
          ORDER BY p.created_at DESC
          LIMIT :limit'
     );
@@ -242,7 +284,7 @@ function fetchPostsByUserId(int $userId, int $limit = POST_FEED_DEFAULT_LIMIT): 
     $limit = max(1, min($limit, 100));
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
-        'SELECT p.id, p.user_id, p.body, p.location_label, p.repost_of_post_id,
+        'SELECT p.id, p.user_id, p.body, p.location_label, p.repost_of_post_id, p.quoted_post_id,
                 p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
                 u.display_name, u.handle, u.username, u.avatar_url,
                 orig.id AS orig_id, orig.user_id AS orig_user_id, orig.body AS orig_body,
@@ -251,14 +293,21 @@ function fetchPostsByUserId(int $userId, int $limit = POST_FEED_DEFAULT_LIMIT): 
                 orig.like_count AS orig_like_count, orig.view_count AS orig_view_count,
                 orig.interaction_count AS orig_interaction_count, orig.created_at AS orig_created_at,
                 orig_u.display_name AS orig_display_name, orig_u.handle AS orig_handle,
-                orig_u.username AS orig_username, orig_u.avatar_url AS orig_avatar_url
+                orig_u.username AS orig_username, orig_u.avatar_url AS orig_avatar_url,
+                quote.id AS quote_id, quote.user_id AS quote_user_id, quote.body AS quote_body,
+                quote.location_label AS quote_location_label, quote.created_at AS quote_created_at,
+                quote_u.display_name AS quote_display_name, quote_u.handle AS quote_handle,
+                quote_u.username AS quote_username, quote_u.avatar_url AS quote_avatar_url
          FROM posts p
          INNER JOIN users u ON u.id = p.user_id
          LEFT JOIN posts orig ON orig.id = p.repost_of_post_id AND orig.is_deleted = FALSE
          LEFT JOIN users orig_u ON orig_u.id = orig.user_id
+         LEFT JOIN posts quote ON quote.id = p.quoted_post_id AND quote.is_deleted = FALSE
+         LEFT JOIN users quote_u ON quote_u.id = quote.user_id
          WHERE p.user_id = :user_id
            AND p.is_deleted = FALSE
            AND (p.repost_of_post_id IS NULL OR orig.id IS NOT NULL)
+           AND (p.quoted_post_id IS NULL OR quote.id IS NOT NULL)
          ORDER BY p.created_at DESC
          LIMIT :limit'
     );
@@ -475,6 +524,45 @@ function postFeedPayload(array $row, callable $url): array
                 'username' => $reposter['username'],
             ], $url),
         ];
+    }
+
+    $quotedPostId = (int) ($row['quoted_post_id'] ?? 0);
+    if ($quotedPostId > 0 && (int) ($row['quote_id'] ?? 0) > 0) {
+        $quoteRow = [
+            'id' => (int) ($row['quote_id'] ?? 0),
+            'body' => (string) ($row['quote_body'] ?? ''),
+            'location_label' => $row['quote_location_label'] ?? null,
+            'created_at' => (string) ($row['quote_created_at'] ?? ''),
+            'display_name' => (string) ($row['quote_display_name'] ?? ''),
+            'handle' => (string) ($row['quote_handle'] ?? ''),
+            'username' => (string) ($row['quote_username'] ?? ''),
+            'avatar_url' => (string) ($row['quote_avatar_url'] ?? ''),
+            'media_items' => is_array($row['quote_media_items'] ?? null) ? $row['quote_media_items'] : [],
+        ];
+        $quoteUser = [
+            'display_name' => (string) ($quoteRow['display_name'] ?? ''),
+            'handle' => (string) ($quoteRow['handle'] ?? ''),
+            'avatar_url' => (string) ($quoteRow['avatar_url'] ?? ''),
+        ];
+        $quoteId = (int) ($quoteRow['id'] ?? 0);
+        $payload['quoted_post'] = [
+            'id' => $quoteId,
+            'body' => (string) ($quoteRow['body'] ?? ''),
+            'media' => postMediaPayloadItems($quoteRow),
+            'created_at' => (string) ($quoteRow['created_at'] ?? ''),
+            'post_url' => postUrl($quoteId, $url),
+            'author' => [
+                'display_name' => $quoteUser['display_name'],
+                'handle' => $quoteUser['handle'],
+                'username' => (string) ($quoteRow['username'] ?? ''),
+                'avatar_url' => userMediaUrl($quoteUser, 'avatar_url', $url),
+                'profile_url' => profileUrlForUser([
+                    'username' => (string) ($quoteRow['username'] ?? ''),
+                ], $url),
+            ],
+        ];
+    } else {
+        $payload['quoted_post'] = null;
     }
 
     return $payload;

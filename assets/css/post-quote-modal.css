@@ -1,0 +1,195 @@
+body.post-quote-modal-open {
+    overflow: hidden;
+}
+
+.post-quote-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    overflow: hidden;
+    background: linear-gradient(140deg, color-mix(in srgb, var(--light) 12%, transparent), color-mix(in srgb, var(--light) 4%, transparent));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.post-quote-modal-overlay:not([hidden]) {
+    display: flex;
+}
+
+.post-quote-modal {
+    position: relative;
+    width: min(100%, 640px);
+    max-height: min(90vh, 820px);
+    margin: auto;
+    border-radius: var(--container-radius);
+    background: var(--elements-bg);
+    padding: var(--element-padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--post-gap);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.post-quote-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-right: 0.25rem;
+    flex-shrink: 0;
+}
+
+.post-quote-modal-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--light);
+}
+
+.post-quote-modal-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--body-bg) 72%, transparent);
+    color: var(--light);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 140ms ease, color 140ms ease;
+}
+
+.post-quote-modal-close:hover,
+.post-quote-modal-close:focus-visible {
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    color: var(--accent);
+    outline: none;
+}
+
+.post-quote-modal-close svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+}
+
+.post-quote-modal-composer {
+    margin: 0;
+    box-shadow: none;
+    background: transparent;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.post-quote-modal-composer .post-composer-body {
+    min-width: 0;
+}
+
+.post-quote-modal-preview-slot {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: var(--post-gap);
+    align-items: start;
+    padding: 0 var(--post-card-padding) var(--post-card-padding);
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.post-quote-modal-preview {
+    grid-column: 2;
+    pointer-events: none;
+    margin: 0;
+    width: 100%;
+    min-width: 0;
+    height: 200px;
+    max-height: 200px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: calc(var(--post-card-padding) * 0.75);
+    border: 1px solid color-mix(in srgb, var(--light) 12%, transparent);
+    border-radius: calc(var(--container-radius) - 8px);
+    background: color-mix(in srgb, var(--body-bg) 40%, transparent);
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: var(--post-gap);
+    align-items: start;
+    -webkit-overflow-scrolling: touch;
+}
+
+.post-quote-modal-preview .post-header {
+    margin: 0;
+    grid-column: 1 / -1;
+}
+
+.post-quote-modal-preview .post-text,
+.post-quote-modal-preview #post-quote-preview-media,
+.post-quote-modal-preview .post-media-gallery {
+    grid-column: 2;
+    min-width: 0;
+    width: 100%;
+}
+
+.post-quote-modal-preview #post-quote-preview-media .post-media-gallery {
+    width: 100%;
+}
+
+.post-quote-modal-preview .post-media-gallery--1 .post-media {
+    max-height: 120px;
+}
+
+.post-quote-modal-preview .post-media-gallery--2 .post-media,
+.post-quote-modal-preview .post-media-gallery--3 .post-media,
+.post-quote-modal-preview .post-media-gallery--4 .post-media {
+    max-height: 88px;
+    min-height: 0;
+}
+
+.post-quoted-card {
+    position: relative;
+    display: grid;
+    gap: var(--post-gap);
+    grid-template-columns: 48px minmax(0, 1fr);
+    align-items: start;
+    margin-top: 0.25rem;
+    padding: calc(var(--post-card-padding) * 0.75);
+    border: 1px solid color-mix(in srgb, var(--light) 12%, transparent);
+    border-radius: calc(var(--container-radius) * 0.75);
+    background: color-mix(in srgb, var(--body-bg) 40%, transparent);
+}
+
+.post-quoted-card .post-header {
+    grid-column: 1 / -1;
+}
+
+.post-quoted-card .post-text,
+.post-quoted-card .post-media-gallery {
+    grid-column: 2;
+    min-width: 0;
+    width: 100%;
+}
+
+.post-quoted-card-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+}
+
+.post-quoted-card > :not(.post-quoted-card-link) {
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.post-action-quote {
+    color: inherit;
+}

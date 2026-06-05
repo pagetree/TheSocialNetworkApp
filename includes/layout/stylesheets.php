@@ -19,6 +19,7 @@ function appStylesheetPaths(): array
         '/assets/css/post-replies.css',
         '/assets/css/post-composer.css',
         '/assets/css/post-composer-modal.css',
+        '/assets/css/post-quote-modal.css',
         '/assets/css/post-menu.css',
         '/assets/css/post-media.css',
         '/assets/css/sidebar.css',

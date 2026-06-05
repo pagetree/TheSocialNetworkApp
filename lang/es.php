@@ -216,6 +216,15 @@ return [
             'more_interests' => 'Más intereses',
         ],
     ],
+    'quote' => [
+        'title' => 'Citar publicación',
+        'write' => 'Escribe tu cita',
+        'preview' => 'Vista previa de la publicación citada',
+        'embedded' => 'Publicación citada',
+        'errors' => [
+            'create_failed' => 'No se pudo publicar la cita ahora.',
+        ],
+    ],
     'composer' => [
         'create_post' => 'Crear publicación',
         'close' => 'Cerrar',
@@ -264,6 +273,7 @@ return [
         'reply_to' => 'Responder a la publicación',
         'repost' => 'Repostear',
         'reposted' => 'reposteó',
+        'quote' => 'Citar publicación',
         'like' => 'Me gusta en la publicación',
         'unlike' => 'Quitar me gusta',
         'view_stats' => 'Ver estadísticas de la publicación',

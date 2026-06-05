@@ -24,9 +24,21 @@ if ($guardError !== null) {
 $body = (string) ($payload['body'] ?? '');
 $locationLabel = (string) ($payload['location_label'] ?? '');
 $hasMedia = postMediaHasUpload('media');
+$quotedPostId = (int) ($payload['quoted_post_id'] ?? 0);
+$resolvedQuotedPostId = $quotedPostId > 0 ? resolveQuotedPostId($quotedPostId) : null;
+
+if ($quotedPostId > 0 && $resolvedQuotedPostId === null) {
+    jsonResponse([
+        'ok' => false,
+        'error' => 'Post not found.',
+    ], 404);
+    return;
+}
+
+$hasQuotedPost = $resolvedQuotedPostId !== null;
 
 $errors = [
-    validatePostBodyForCreate($body, $hasMedia),
+    validatePostBodyForCreate($body, $hasMedia, $hasQuotedPost),
     validatePostLocationLabel($locationLabel),
 ];
 
@@ -60,7 +72,7 @@ $bodyForDb = $normalizedBody === '' ? null : $normalizedBody;
 $normalizedLocation = normalizePostLocationLabel($locationLabel);
 
 try {
-    $post = createPost($userId, $bodyForDb, $normalizedLocation);
+    $post = createPost($userId, $bodyForDb, $normalizedLocation, $resolvedQuotedPostId);
 } catch (Throwable) {
     jsonResponse([
         'ok' => false,

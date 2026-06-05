@@ -302,6 +302,7 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
     $postRepostCsrfToken = '';
     $replyCsrfToken = '';
     $showFeedReplyModal = false;
+    $showQuoteModal = false;
 
     if (is_array($profileUser) && !$profileIsPrivate) {
         $profilePosts = fetchPostsByUserId((int) ($profileUser['id'] ?? 0));
@@ -311,6 +312,7 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
             $postRepostCsrfToken = createCsrfToken('post_repost');
             $replyCsrfToken = createCsrfToken('post_reply');
             $showFeedReplyModal = true;
+            $showQuoteModal = true;
 
             if ($profilePosts !== []) {
                 $profileContentPostIds = array_map(
@@ -377,6 +379,7 @@ if (preg_match('#^/hashtag/([a-z0-9_]{1,50})/?$#i', $path, $hashtagRouteMatch)) 
     $postRepostCsrfToken = $isLoggedIn ? createCsrfToken('post_repost') : '';
     $replyCsrfToken = $isLoggedIn ? createCsrfToken('post_reply') : '';
     $showFeedReplyModal = $isLoggedIn;
+    $showQuoteModal = $isLoggedIn;
     $currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
     $hashtagLikedPostIds = [];
     $hashtagRepostedPostIds = [];
@@ -468,6 +471,7 @@ $postLikeCsrfToken = $isLoggedIn ? createCsrfToken('post_like') : '';
 $postRepostCsrfToken = $isLoggedIn ? createCsrfToken('post_repost') : '';
 $replyCsrfToken = $isLoggedIn ? createCsrfToken('post_reply') : '';
 $showFeedReplyModal = $isLoggedIn;
+$showQuoteModal = $isLoggedIn;
 $currentUserId = $isLoggedIn ? (int) $currentUser['id'] : 0;
 $feedPosts = fetchFeedPosts();
 $likedPostIds = [];

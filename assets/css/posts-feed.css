@@ -29,6 +29,7 @@
 
 .post-card:not(.post-composer) .post-text,
 .post-card:not(.post-composer) .post-media-gallery,
+.post-card:not(.post-composer) .post-quoted-card,
 .post-card:not(.post-composer) .post-actions {
     grid-column: 2;
     text-align: left;
@@ -60,6 +61,7 @@
 
 .post-card--linkable .post-actions,
 .post-card--linkable .post-action-repost,
+.post-card--linkable .post-action-quote,
 .post-card--linkable .post-header,
 .post-card--linkable .post-menu,
 .post-card--linkable .post-menu-btn,

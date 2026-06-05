@@ -294,16 +294,23 @@ function fetchPostsByHashtag(string $tag, int $limit = POST_FEED_DEFAULT_LIMIT):
     $limit = max(1, min($limit, 100));
     $pdo = createPdoConnection();
     $stmt = $pdo->prepare(
-        'SELECT p.id, p.user_id, p.body, p.location_label,
+        'SELECT p.id, p.user_id, p.body, p.location_label, p.quoted_post_id,
                 p.reply_count, p.repost_count, p.like_count, p.view_count, p.interaction_count, p.created_at,
-                u.display_name, u.handle, u.username, u.avatar_url
+                u.display_name, u.handle, u.username, u.avatar_url,
+                quote.id AS quote_id, quote.user_id AS quote_user_id, quote.body AS quote_body,
+                quote.location_label AS quote_location_label, quote.created_at AS quote_created_at,
+                quote_u.display_name AS quote_display_name, quote_u.handle AS quote_handle,
+                quote_u.username AS quote_username, quote_u.avatar_url AS quote_avatar_url
          FROM posts p
          INNER JOIN post_hashtags ph ON ph.post_id = p.id
          INNER JOIN hashtags h ON h.id = ph.hashtag_id
          INNER JOIN users u ON u.id = p.user_id
+         LEFT JOIN posts quote ON quote.id = p.quoted_post_id AND quote.is_deleted = FALSE
+         LEFT JOIN users quote_u ON quote_u.id = quote.user_id
          WHERE h.tag = :tag
            AND p.is_deleted = FALSE
            AND p.repost_of_post_id IS NULL
+           AND (p.quoted_post_id IS NULL OR quote.id IS NOT NULL)
          ORDER BY p.created_at DESC
          LIMIT :limit'
     );

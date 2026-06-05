@@ -30,6 +30,9 @@ if (!$onboardingLayout) : ?>
     <?php if (!$onboardingLayout && !empty($showFeedReplyModal)) {
         require dirname(__DIR__) . '/posts/feed-reply-modal.php';
     } ?>
+    <?php if (!$onboardingLayout && !empty($showQuoteModal)) {
+        require dirname(__DIR__) . '/posts/post-quote-modal.php';
+    } ?>
     <?php if (!$onboardingLayout && !empty($postStatsCsrfToken)) {
         require dirname(__DIR__) . '/posts/post-stats-modal.php';
     } ?>
@@ -131,6 +134,11 @@ if (!$onboardingLayout) : ?>
         <?php endif; ?>
     </script>
     <?php endif; ?>
+    <?php
+    if ($isLoggedIn && !empty($showQuoteModal) && empty($postCsrfToken)) {
+        $postCsrfToken = createCsrfToken('post_create');
+    }
+    ?>
     <?php if (!empty($postCsrfToken)) : ?>
     <script>
         window.APP_POST_CREATE_URL = <?php echo json_encode($url('/posts/create'), JSON_THROW_ON_ERROR); ?>;
@@ -177,6 +185,9 @@ if (!$onboardingLayout) : ?>
     <?php endif; ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-likes.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-reposts.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php if (!empty($showQuoteModal)) : ?>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/post-quote-modal.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php endif; ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/content-report.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-remove.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/profile-follow.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
