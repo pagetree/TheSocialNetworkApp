@@ -156,6 +156,16 @@ if ($path === '/users/follow' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') 
     return;
 }
 
+if ($path === '/notifications/unread' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
+    require __DIR__ . '/auth/notifications-unread.php';
+    return;
+}
+
+if ($path === '/notifications/read' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    require __DIR__ . '/auth/notifications-read.php';
+    return;
+}
+
 if ($path === '/register') {
     if (isLoggedIn()) {
         $registerUser = getCurrentUser();
@@ -340,6 +350,49 @@ if (preg_match('#^/profile(?:/([a-z0-9_]+))?/?$#i', $path, $profileRouteMatch)) 
     http_response_code(200);
     header('Content-Type: text/html; charset=utf-8');
     require __DIR__ . '/profile.php';
+    return;
+}
+
+if ($path === '/notifications') {
+    $currentUser = getCurrentUser();
+    if ($currentUser === null) {
+        header('Location: ' . $url('/'));
+        exit;
+    }
+
+    $currentUserId = (int) $currentUser['id'];
+    $isLoggedIn = true;
+    $loginCsrfToken = '';
+    $notificationItems = fetchNotificationsForUser($currentUserId);
+    $notificationsReadCsrfToken = createCsrfToken('notifications_read');
+    $postStatsCsrfToken = createCsrfToken('post_stats');
+    $postLikeCsrfToken = createCsrfToken('post_like');
+    $postRepostCsrfToken = createCsrfToken('post_repost');
+    $replyCsrfToken = createCsrfToken('post_reply');
+    $postCsrfToken = createCsrfToken('post_create');
+    $showFeedReplyModal = true;
+    $showQuoteModal = true;
+    $showPostComposerModal = true;
+    $showNotificationsPage = true;
+
+    http_response_code(200);
+    header('Content-Type: text/html; charset=utf-8');
+
+    $pageTitle = __('meta.notifications_title');
+    $pageSeo = seoNoindexPage('/notifications');
+    $activeNav = 'notifications';
+    $contentPageTitle = __('nav.page_notifications');
+    $mainClass = 'app-content notifications-page';
+    $pageScripts = [
+        '/assets/js/post-composer.js',
+        '/assets/js/reply-media-picker.js',
+        '/assets/js/feed-reply-modal.js',
+    ];
+
+    require __DIR__ . '/includes/layout/head.php';
+    require __DIR__ . '/includes/layout/content-area-start.php';
+    require __DIR__ . '/notifications.php';
+    require __DIR__ . '/includes/layout/content-area-end.php';
     return;
 }
 

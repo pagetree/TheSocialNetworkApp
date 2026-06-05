@@ -118,6 +118,17 @@ if (!$onboardingLayout) : ?>
         window.APP_POST_REMOVE_CSRF_TOKEN = <?php echo json_encode(createCsrfToken('post_remove'), JSON_THROW_ON_ERROR); ?>;
         window.APP_CURRENT_USER_ID = <?php echo json_encode((int) ($currentUserId ?? 0), JSON_THROW_ON_ERROR); ?>;
     </script>
+    <?php
+    if (empty($notificationsReadCsrfToken)) {
+        $notificationsReadCsrfToken = createCsrfToken('notifications_read');
+    }
+    ?>
+    <script>
+        window.APP_NOTIFICATIONS_UNREAD_URL = <?php echo json_encode($url('/notifications/unread'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_NOTIFICATIONS_READ_URL = <?php echo json_encode($url('/notifications/read'), JSON_THROW_ON_ERROR); ?>;
+        window.APP_NOTIFICATIONS_READ_CSRF_TOKEN = <?php echo json_encode($notificationsReadCsrfToken, JSON_THROW_ON_ERROR); ?>;
+        window.APP_NOTIFICATIONS_PAGE = <?php echo json_encode(!empty($showNotificationsPage), JSON_THROW_ON_ERROR); ?>;
+    </script>
     <?php endif; ?>
     <?php if (!empty($replyCsrfToken)) : ?>
     <script>
@@ -191,6 +202,7 @@ if (!$onboardingLayout) : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/content-report.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/post-remove.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <script src="<?php echo htmlspecialchars($url('/assets/js/profile-follow.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <script src="<?php echo htmlspecialchars($url('/assets/js/notifications.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php else : ?>
     <script src="<?php echo htmlspecialchars($url('/assets/js/login.js'), ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endif; ?>

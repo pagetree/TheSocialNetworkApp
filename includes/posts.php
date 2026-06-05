@@ -160,6 +160,10 @@ function createPost(int $userId, ?string $body, ?string $locationLabel = null, ?
 
         $pdo->commit();
 
+        if ($quotedPostId !== null && $quotedPostId > 0 && is_array($post)) {
+            notifyPostQuote($quotedPostId, (int) ($post['id'] ?? 0), $userId);
+        }
+
         return $post;
     } catch (Throwable $exception) {
         if ($pdo->inTransaction()) {

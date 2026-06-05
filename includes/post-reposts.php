@@ -101,6 +101,8 @@ function createPostRepost(int $userId, int $postId): array
 
         $repostCount = (int) ($counts['repost_count'] ?? $post['repost_count'] ?? 0);
 
+        notifyPostRepost($postId, $userId);
+
         return [
             'ok' => true,
             'repost_count' => $repostCount,

@@ -30,6 +30,7 @@ return [
         'profile_description' => ':name on Dots. :bio',
         'profile_description_fallback' => 'View :name\'s public profile on Dots.',
         'profile_default_title' => 'Profile — Dots',
+        'notifications_title' => 'Notifications — Dots',
     ],
     'lang' => [
         'switch' => 'Language',
@@ -446,6 +447,18 @@ return [
         'unfollow' => 'Unfollow',
         'follow_user' => 'Follow :name',
         'unfollow_user' => 'Unfollow :name',
+    ],
+    'notifications' => [
+        'empty_title' => 'You\'re all caught up',
+        'empty_hint' => 'When someone likes, replies, or follows you, it\'ll show up here.',
+        'types' => [
+            'like' => ':name liked your post',
+            'reply' => ':name replied to your post',
+            'repost' => ':name reposted your post',
+            'quote' => ':name quoted your post',
+            'follow' => ':name followed you',
+            'generic' => ':name interacted with you',
+        ],
     ],
     'errors' => [
         'profile_not_found' => 'This profile could not be found.',

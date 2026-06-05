@@ -143,6 +143,10 @@ function togglePostLike(int $postId, int $userId): array
 
         $likeCount = (int) ($counts['like_count'] ?? $post['like_count'] ?? 0);
 
+        if ($liked) {
+            notifyPostLike($postId, $userId);
+        }
+
         return [
             'ok' => true,
             'liked' => $liked,

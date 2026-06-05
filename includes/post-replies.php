@@ -304,6 +304,15 @@ function createPostReply(int $conversationId, int $userId, string $body, ?int $p
         throw $exception;
     }
 
+    if (is_array($reply)) {
+        notifyPostReply(
+            $conversationId,
+            $userId,
+            $parentReplyId,
+            (int) ($reply['id'] ?? 0)
+        );
+    }
+
     $author = fetchUserById($userId);
     if ($author === null) {
         return is_array($reply) ? $reply : null;

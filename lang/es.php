@@ -30,6 +30,7 @@ return [
         'profile_description' => ':name en Dots. :bio',
         'profile_description_fallback' => 'Perfil público de :name en Dots.',
         'profile_default_title' => 'Perfil — Dots',
+        'notifications_title' => 'Notificaciones — Dots',
     ],
     'lang' => [
         'switch' => 'Idioma',
@@ -446,6 +447,18 @@ return [
         'unfollow' => 'Dejar de seguir',
         'follow_user' => 'Seguir a :name',
         'unfollow_user' => 'Dejar de seguir a :name',
+    ],
+    'notifications' => [
+        'empty_title' => 'Estás al día',
+        'empty_hint' => 'Cuando alguien interactúe contigo o te siga, lo verás aquí.',
+        'types' => [
+            'like' => 'A :name le gustó tu publicación',
+            'reply' => ':name respondió a tu publicación',
+            'repost' => ':name republicó tu publicación',
+            'quote' => ':name citó tu publicación',
+            'follow' => ':name empezó a seguirte',
+            'generic' => ':name interactuó contigo',
+        ],
     ],
     'errors' => [
         'profile_not_found' => 'No se ha encontrado este perfil.',

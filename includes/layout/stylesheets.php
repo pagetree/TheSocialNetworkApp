@@ -31,6 +31,7 @@ function appStylesheetPaths(): array
         '/assets/css/content-report-modal.css',
         '/assets/css/welcome.css',
         '/assets/css/register.css',
+        '/assets/css/notifications.css',
     ];
 }
 

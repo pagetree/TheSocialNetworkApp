@@ -16,6 +16,9 @@ $sidebarShowFooter = $isLoggedIn && is_array($sidebarUser);
 $sidebarName = $sidebarShowFooter ? (string) ($sidebarUser['display_name'] ?? 'User') : '';
 $sidebarHandle = $sidebarShowFooter ? (string) ($sidebarUser['handle'] ?? '@user') : '';
 $sidebarAvatar = $sidebarShowFooter ? userMediaUrl($sidebarUser, 'avatar_url', $url) : '';
+$notificationsUnreadCount = $sidebarShowFooter
+    ? fetchUnreadNotificationCount((int) ($sidebarUser['id'] ?? 0))
+    : 0;
 ?>
                 <aside class="app-sidebar">
                     <header class="app-shell-header">

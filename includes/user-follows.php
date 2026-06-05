@@ -110,6 +110,8 @@ function toggleUserFollow(int $followerId, int $followingId): array
         'following_id' => $followingId,
     ]);
 
+    notifyUserFollow($followingId, $followerId);
+
     return ['ok' => true, 'following' => true];
 }
 
