@@ -18,9 +18,12 @@ html[data-theme="dark"] {
     --sidebar-border-color: color-mix(in srgb, var(--light) 12%, transparent);
     --sidebar-block-padding-y: 1.25rem;
     --sidebar-nav-offset-top: 1.75rem;
-    --sidebar-nav-gap: 0.875rem;
-    --sidebar-nav-link-padding-y: 0.875rem;
-    --sidebar-nav-link-padding-x: 1rem;
+    --sidebar-nav-gap: 1rem;
+    --sidebar-nav-link-padding-y: 1.125rem;
+    --sidebar-nav-link-padding-x: 1.125rem;
+    --sidebar-nav-link-font-size: 18px;
+    --sidebar-nav-link-icon-size: 26px;
+    --sidebar-nav-link-gap: 16px;
     --app-container-padding: 3rem;
     --layout-gap: 35px;
     --element-padding: 1rem 0.5rem;

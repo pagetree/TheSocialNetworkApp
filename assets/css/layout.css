@@ -254,11 +254,11 @@ html[data-theme="light"] .app-sidebar-logo img.app-sidebar-logo-img--black {
 .app-sidebar-nav-link {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: var(--sidebar-nav-link-gap);
     padding: var(--sidebar-nav-link-padding-y) var(--sidebar-nav-link-padding-x);
     border-radius: var(--container-radius);
     color: var(--light);
-    font-size: 16px;
+    font-size: var(--sidebar-nav-link-font-size);
     font-weight: 600;
     line-height: 1;
     letter-spacing: 0.02em;
@@ -268,8 +268,8 @@ html[data-theme="light"] .app-sidebar-logo img.app-sidebar-logo-img--black {
 }
 
 .app-sidebar-nav-link svg {
-    width: 22px;
-    height: 22px;
+    width: var(--sidebar-nav-link-icon-size);
+    height: var(--sidebar-nav-link-icon-size);
     stroke: currentColor;
     flex-shrink: 0;
 }
@@ -342,6 +342,21 @@ html[data-theme="light"] .app-sidebar-nav-link.is-active {
     font-size: 12px;
     line-height: 1.45;
     color: color-mix(in srgb, var(--light) 58%, transparent);
+}
+
+.app-sidebar-footer-credit-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--light) 35%, transparent);
+    text-underline-offset: 2px;
+    transition: color 140ms ease, text-decoration-color 140ms ease;
+}
+
+.app-sidebar-footer-credit-link:hover,
+.app-sidebar-footer-credit-link:focus-visible {
+    color: var(--accent);
+    text-decoration-color: currentColor;
+    outline: none;
 }
 
 .app-sidebar-footer-row {
